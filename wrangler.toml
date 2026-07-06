@@ -1,0 +1,9 @@
+name = "pulseping"
+main = ".open-next/worker.js"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Configuration skeleton for your intended R2 Incremental Cache layer
+# [[r2_buckets]]
+# binding = "NEXT_CACHE_BUCKET"
+# bucket_name = "pulseping-cache-bucket"
