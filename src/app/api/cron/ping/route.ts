@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     }
 
     const results = await Promise.all(
-      activeMonitors.map(async (monitor) => {
+      activeMonitors.map(async (monitor: any) => {
         const startTime = performance.now();
         let statusCode = 500;
         let latency = 0;
