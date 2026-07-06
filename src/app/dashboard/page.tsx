@@ -191,7 +191,7 @@ export default async function DashboardPage() {
               <p className="text-zinc-400 dark:text-zinc-650 text-xs mt-1">Register an endpoint URL above to begin log collection.</p>
             </div>
           ) : (
-            monitors.map((monitor) => {
+            monitors.map((monitor: any) => {
               const lastLog = monitor.logs[0];
               const isUp = lastLog
                 ? lastLog.statusCode >= 200 && lastLog.statusCode < 500
@@ -201,7 +201,7 @@ export default async function DashboardPage() {
                 monitor.logs.length > 0
                   ? Math.round(
                       (monitor.logs.filter(
-                        (l) => l.statusCode >= 200 && l.statusCode < 500
+                        (l: any) => l.statusCode >= 200 && l.statusCode < 500
                       ).length /
                         monitor.logs.length) *
                         100
