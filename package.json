@@ -4,13 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx prisma generate && next build --webpack",
+    "build": "next build",
+    "preview": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare preview",
+    "deploy": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare deploy",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.5.13",
     "@clerk/themes": "^2.4.57",
+    "@opennextjs/cloudflare": "*",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "next": "16.2.6",
@@ -28,6 +31,7 @@
     "eslint-config-next": "16.2.6",
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "*"
   }
 }
