@@ -7,6 +7,7 @@
     "build": "next build",
     "preview": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare preview",
     "deploy": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare deploy",
+    "open-build": "opennextjs-cloudflare build",
     "start": "next start",
     "lint": "eslint"
   },
