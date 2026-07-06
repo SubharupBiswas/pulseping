@@ -37,7 +37,7 @@ export default async function DashboardPage() {
   });
 
   const totalMonitors = monitors.length;
-  const activeIncidents = monitors.filter((m) => {
+  const activeIncidents = monitors.filter((m: any) => {
     const last = m.logs[0];
     return last && (last.statusCode >= 500 || last.statusCode === 0);
   }).length;
