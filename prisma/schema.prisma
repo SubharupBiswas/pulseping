@@ -1,0 +1,34 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  plan      String    @default("FREE") // FREE, HOBBY, DEVELOPER
+  monitors  Monitor[]
+}
+
+model Monitor {
+  id         String    @id @default(uuid())
+  url        String
+  webhookUrl String?   // Optional field to store Discord/Slack target endpoints
+  frequency  Int       @default(10)
+  isActive   Boolean   @default(true)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  logs       PingLog[]
+}
+
+model PingLog {
+  id         String   @id @default(uuid())
+  statusCode Int
+  latency    Int      // in milliseconds
+  checkedAt  DateTime @default(now())
+  monitorId  String
+  monitor    Monitor  @relation(fields: [monitorId], references: [id])
+}

@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@next/third-parties/google": ["./src/mocks/next-third-parties-google.tsx"]
     }
   },
   "include": [
