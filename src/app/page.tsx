@@ -17,28 +17,34 @@ export default function LandingPage() {
 
         {/* ── Sticky Navigation Header ── */}
         <header className="border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/75 dark:bg-zinc-950/60 backdrop-blur-xl sticky top-0 z-50 transition-colors duration-250">
-          <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between" aria-label="Main Navigation">
+          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Main Navigation">
 
-            {/* Brand Logo Link */}
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 pointer-events-auto hover:opacity-90 transition duration-150"
-              aria-label="PulsePing Homepage"
-            >
-              <div className="w-5 h-5 rounded-md bg-zinc-950 dark:bg-zinc-50 flex items-center justify-center shadow-[0_0_12px_rgba(255,255,255,0.08)]">
-                <div className="w-1.5 h-1.5 rounded-full bg-zinc-50 dark:bg-zinc-950" />
-              </div>
-              <span className="font-semibold text-sm tracking-tight text-zinc-950 dark:text-zinc-100">PulsePing</span>
-            </Link>
+            {/* ── Zone 1: Brand (far-left, never shrinks) ── */}
+            <div className="flex items-center flex-shrink-0">
+              <Link
+                href="/"
+                className="flex items-center gap-2.5 pointer-events-auto hover:opacity-90 transition duration-150"
+                aria-label="PulsePing Homepage"
+              >
+                <div className="w-5 h-5 rounded-md bg-zinc-950 dark:bg-zinc-50 flex items-center justify-center shadow-[0_0_12px_rgba(255,255,255,0.08)]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-zinc-50 dark:bg-zinc-950" />
+                </div>
+                <span className="font-semibold text-sm tracking-tight text-zinc-950 dark:text-zinc-100">PulsePing</span>
+              </Link>
+            </div>
 
-            {/* Navigation Actions */}
-            <div className="flex items-center gap-x-4 md:gap-x-6">
+            {/* ── Zone 2: Center links (desktop only — vanishes on mobile) ── */}
+            <div className="hidden md:flex items-center gap-x-8">
               <Link
                 href="/pricing"
-                className="text-sm font-semibold text-zinc-650 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150"
+                className="text-sm font-medium text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-100 transition duration-150"
               >
                 Pricing
               </Link>
+            </div>
+
+            {/* ── Zone 3: Right utilities (always visible, tightly grouped) ── */}
+            <div className="flex items-center gap-x-3">
               <ThemeToggle />
               <Show when="signed-out">
                 <Link
@@ -49,7 +55,7 @@ export default function LandingPage() {
                 </Link>
                 <Link
                   href="/sign-up"
-                  className="text-sm font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-100 dark:hover:bg-white text-zinc-950 dark:text-zinc-950 border border-zinc-300 dark:border-zinc-800 px-3.5 py-1.5 rounded-lg transition duration-150 cursor-pointer shadow-sm hidden sm:inline-block"
+                  className="text-sm font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-100 dark:hover:bg-white text-zinc-950 dark:text-zinc-950 border border-zinc-300 dark:border-zinc-800 px-3.5 py-1.5 rounded-lg transition duration-150 cursor-pointer shadow-sm hidden sm:inline-flex"
                 >
                   Sign Up
                 </Link>

@@ -33,7 +33,7 @@ export default function SignUpPage() {
       </nav>
 
       {/* Centered Sign-Up Card */}
-      <div className="flex-1 flex items-center justify-center py-16 px-4 relative z-10">
+      <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10">
         <div className="w-full max-w-[420px]">
           {/* Page Title */}
           <div className="text-center mb-8">

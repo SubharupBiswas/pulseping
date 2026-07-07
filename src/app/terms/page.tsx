@@ -70,19 +70,29 @@ export default function TermsPage() {
 
       {/* Sticky Navigation */}
       <nav className="sticky top-0 z-50 border-b border-zinc-200 dark:border-zinc-900/60 bg-white/75 dark:bg-[#030303]/60 backdrop-blur-xl transition-colors duration-250">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group pointer-events-auto">
-            <div className="w-5 h-5 rounded-md bg-zinc-950 dark:bg-zinc-50 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.06)] group-hover:bg-zinc-800 dark:group-hover:bg-zinc-200 transition duration-150">
-              <div className="w-1.5 h-1.5 rounded-full bg-zinc-50 dark:bg-zinc-950" />
-            </div>
-            <span className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100">PulsePing</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/pricing" className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
+          {/* Zone 1: Brand */}
+          <div className="flex items-center flex-shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 group pointer-events-auto" aria-label="PulsePing Homepage">
+              <div className="w-5 h-5 rounded-md bg-zinc-950 dark:bg-zinc-50 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.06)] group-hover:bg-zinc-800 dark:group-hover:bg-zinc-200 transition duration-150">
+                <div className="w-1.5 h-1.5 rounded-full bg-zinc-50 dark:bg-zinc-950" />
+              </div>
+              <span className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100">PulsePing</span>
+            </Link>
+          </div>
+
+          {/* Zone 2: Center links (desktop only) */}
+          <div className="hidden md:flex items-center gap-x-8">
+            <Link href="/pricing" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150">Pricing</Link>
+            <Link href="/privacy" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150">Privacy</Link>
+            <Link href="/status" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150">Status</Link>
+          </div>
+
+          {/* Zone 3: Right utilities */}
+          <div className="flex items-center gap-x-3">
             <ThemeToggle />
-            <Link href="/privacy" className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
-            <Link href="/status" className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
-            <Link href="/dashboard" className="text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 px-3 py-1.5 rounded-lg transition duration-150 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]">Console</Link>
+            <Link href="/dashboard" className="text-sm font-semibold bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 px-3 py-1.5 rounded-lg transition duration-150 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]">Console</Link>
           </div>
         </div>
       </nav>
