@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛰️ PulsePing - Serverless Edge-Native Uptime Monitoring SaaS
 
-## Getting Started
+PulsePing is a developer-first, edge-native uptime monitoring platform engineered to run with zero infrastructure overhead. Operating directly on Cloudflare’s global edge network via Pages and Workers, the platform processes real-time endpoint latency telemetry, manages secure workspace sessions, validates service-level performance agreements (SLAs), and dispatches transaction alerts. By leveraging serverless architectures, PulsePing eliminates traditional VM maintenance costs while maintaining millisecond-level precision in uptime diagnostics.
 
-First, run the development server:
+## ⚡ Architecture & Core Capabilities
 
+- **Edge Worker Runtime Execution:** The entire Next.js application bundle is compiled into an optimized worker format via the OpenNext adapter, aligning with Cloudflare Pages requirements to ensure global routing, sub-millisecond edge invocation times, and native cold-start elimination.
+- **Serverless Polling Engine:** An automated edge cron pipeline (`/api/cron/ping`) triggers automated requests across active monitor streams. Using non-blocking, asynchronous task multiplexing with `Promise.all` and precise `performance.now()` telemetry, it runs health handshakes and logs latency updates directly at the edge.
+- **Payment & Tiered Monetization:** Incorporates a robust Razorpay checkout integration (`/api/create-order` and `/api/verify-payment`) matching payment verification signatures locally using HMAC-SHA256 digests. Validated transaction payloads automatically transition accounts into paid subscription tiers (FREE, PRO, BUSINESS) inside the PostgreSQL datastore.
+- **Discord Alert Integration:** A custom alerting pipeline triggers on validation failure states (HTTP status >= 500 or timeout connection errors). The edge runtime formats a rich embed payload detailing target address coordinates, status codes, and round-trip delay times, dispatching it to user-configured Discord webhook endpoints instantly.
+
+## 🛠️ Production Tech Stack
+
+| Dependency / Tool | Version | Architectural Role |
+| :--- | :--- | :--- |
+| **Next.js** | `15.3.4` | Edge-optimized full-stack framework with React 19 server & client hooks |
+| **Tailwind CSS** | `4.x` | Compiler-optimized Utility-First styling system with modern custom-variant support |
+| **Prisma Client** | `7.8.0` | ORM interface supporting serverless PostgreSQL connections |
+| **PostgreSQL / Neon** | `*` | Primary serverless datastore with connection pool pooling capabilities |
+| **Clerk Auth** | `^7.5.13` | Federated identity provider with edge-compatible middleware session control |
+| **Razorpay API** | `*` | Secure checkout order generation and cryptographic payment validation |
+| **Wrangler** | `*` | Developer CLI to compile, preview, and deploy workers to Cloudflare |
+
+## ⚙️ Advanced Performance Engineering & Hardening
+
+- **Binary Module Compression:** To bypass Cloudflare's strict maximum memory footprint thresholds for edge workers, the Prisma generator is configured with `compilerBuild = "small"`. This flag optimizes client generation by stripping unused native engines and metadata, shrinking the compiled WASM package from 3.67MB down to 1.85MB to guarantee safe execution.
+- **Scope Safety Isolation Injection:** To address minification-induced variable collisions in edge production runtimes, the custom [scripts/cloudflare-build.js](file:///Users/subharup/Developer/pulseping/scripts/cloudflare-build.js) pipeline programmatically injects a global safety boundary (`globalThis.e = undefined;`) at the top of the compiled worker bundle. This sanitizes the global scope and prevents runtime `ReferenceError` crashes.
+- **CDN Edge Asset Mapping:** A custom [_routes.json](file:///Users/subharup/Developer/pulseping/scripts/cloudflare-build.js#L20-L34) fallback generator maps assets to the edge network CDN. Explicitly routing static directory calls (`/_next/static/*`) and system items (`/favicon.ico`, `/robots.txt`) directly through the Cloudflare cache mesh significantly decreases core web vitals first-contentful paint (FCP) times and saves serverless compute CPU-cycles.
+
+## 🚀 Local Development Setup
+
+### 1. Prerequisites
+Ensure you have Node.js 18+, PostgreSQL (or a Neon serverless instance), and npm installed.
+
+### 2. Installation
+Clone the repository and install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Database Migration
+Apply the database schema using Prisma:
+```bash
+npx prisma db push
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Configuration
+Create a `.env` file at the root of the workspace and configure the following environment keys:
+```env
+# Database Credentials
+DATABASE_URL="postgresql://[username]:[password]@[host]/[database]?sslmode=require"
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Clerk Authentication Details
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+CLERK_SECRET_KEY="sk_test_..."
 
-## Learn More
+# Razorpay Checkout Credentials
+NEXT_PUBLIC_RAZORPAY_KEY_ID="rzp_test_..."
+RAZORPAY_KEY_SECRET="secret_..."
 
-To learn more about Next.js, take a look at the following resources:
+# Cron Handshake Authentication Token
+CRON_SECRET="your_cron_passphrase_here"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Google Analytics Identifier
+NEXT_PUBLIC_GA_ID="G-..."
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Turnstile Security Key
+NEXT_PUBLIC_TURNSTILE_SITE_KEY="0x..."
+```
 
-## Deploy on Vercel
+### 5. Launch local environment
+Run the local Next.js development server:
+```bash
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 6. Build compilation validation
+To test and validate the production edge assets compilation sequence:
+```bash
+npm run cloudflare-deploy
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 License
+
+This project is open-source software licensed under the [MIT License](https://opensource.org/licenses/MIT).
