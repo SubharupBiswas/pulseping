@@ -2,3 +2,10 @@
 
 /* stylelint-disable-next-line */
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Global overflow guard: prevent horizontal scroll on narrow viewports ── */
+html,
+body {
+  overflow-x: hidden;
+}
+

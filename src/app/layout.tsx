@@ -1,10 +1,14 @@
+import React from "react";
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PulsePing | Developer-First Uptime Monitoring",
+  title: {
+    default: "PulsePing | Developer-First Uptime Monitoring",
+    template: "%s | PulsePing",
+  },
   description: "PulsePing is a developer-first uptime monitoring platform. Track API endpoints, configure Discord webhooks, and analyze response latency with Neon & Prisma.",
   keywords: [
     "uptime monitoring", 
@@ -104,9 +108,9 @@ export default function RootLayout({
             }}
           />
         </head>
-        <body className="min-h-full flex flex-col transition-colors duration-250 bg-white text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans">
+        <body className="min-h-full flex flex-col overflow-x-hidden transition-colors duration-250 bg-white text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans">
           {children}
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-DKG16R7DV4"} />
         </body>
       </html>
     </ClerkProvider>

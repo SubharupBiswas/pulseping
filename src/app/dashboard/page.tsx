@@ -64,7 +64,7 @@ export default async function DashboardPage() {
           </Link>
 
           {/* Right Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-x-4 md:gap-x-6">
             <ThemeToggle />
             <span className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm transition-colors ${
               isPremium

@@ -5,7 +5,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-200 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-hidden transition-colors duration-250">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-200 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
 
       {/* === Ambient Glow Backdrops — vibrant modern SaaS blur === */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[480px] bg-gradient-to-tr from-emerald-500/10 via-indigo-500/5 to-transparent blur-3xl pointer-events-none z-0" />
@@ -32,7 +32,7 @@ export default function LandingPage() {
             </Link>
 
             {/* Navigation Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-x-4 md:gap-x-6">
               <ThemeToggle />
               <Show when="signed-out">
                 <Link
@@ -74,7 +74,7 @@ export default function LandingPage() {
             </div>
 
             {/* Hero Title */}
-            <h1 id="hero-title" className="text-4xl sm:text-[3.5rem] font-bold tracking-tighter text-zinc-950 dark:text-zinc-50 max-w-2xl mx-auto leading-[1.08] mb-6">
+            <h1 id="hero-title" className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 max-w-2xl mx-auto leading-[1.08] mb-6">
               Uptime monitoring built for{" "}
               <span className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent">
                 production teams.
@@ -95,7 +95,7 @@ export default function LandingPage() {
                 Launch Free Workspace
               </Link>
               <a
-                href="https://github.com"
+                href="https://github.com/SubharupBiswas/pulseping"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-5 py-2.5 bg-white hover:bg-zinc-50 dark:bg-zinc-900/50 dark:hover:bg-zinc-900 text-zinc-700 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-800/80 font-semibold text-sm rounded-lg transition duration-150 cursor-pointer shadow-sm"
@@ -105,7 +105,7 @@ export default function LandingPage() {
             </div>
 
             {/* Feature Pills */}
-            <div className="flex items-center justify-center gap-2.5 mt-10 flex-wrap">
+            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 px-4 mt-10">
               {["10-min polling cycles", "Discord webhook alerts", "Tiered resource controls", "PostgreSQL log persistence"].map((feat) => (
                 <span
                   key={feat}
@@ -181,7 +181,7 @@ export default function LandingPage() {
           {/* ── Feature Grid ── */}
           <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-24" aria-labelledby="features-title">
             <h2 id="features-title" className="sr-only">Platform Features</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
                   icon: "⬡",
@@ -199,10 +199,12 @@ export default function LandingPage() {
                   desc: "Every check, latency reading, and status code stored durably in Neon PostgreSQL via Prisma 7."
                 }
               ].map((feature) => (
-                <div key={feature.title} className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm transition-colors duration-250">
-                  <span className="text-emerald-600 dark:text-emerald-400 text-lg mb-3 block" aria-hidden="true">{feature.icon}</span>
-                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-200 mb-1.5 tracking-tight">{feature.title}</h3>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{feature.desc}</p>
+                <div key={feature.title} className="flex flex-col justify-between h-full bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm transition-colors duration-250">
+                  <div>
+                    <span className="text-emerald-600 dark:text-emerald-400 text-lg mb-3 block" aria-hidden="true">{feature.icon}</span>
+                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-200 mb-1.5 tracking-tight">{feature.title}</h3>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">{feature.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -224,7 +226,7 @@ export default function LandingPage() {
               <Link href="/terms" className="text-sm text-zinc-550 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
               <Link href="/privacy" className="text-sm text-zinc-550 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
               <Link href="/status" className="text-sm text-zinc-550 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-550 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">GitHub</a>
+              <a href="https://github.com/SubharupBiswas/pulseping" target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-550 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">GitHub</a>
             </div>
           </div>
         </footer>
