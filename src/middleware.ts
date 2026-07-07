@@ -1,6 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export const runtime = 'experimental-edge';
 
 const isPublicRoute = createRouteMatcher([
   "/",
