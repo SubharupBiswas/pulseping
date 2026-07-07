@@ -5,7 +5,7 @@ console.log('📦 Starting full-stack edge compilation sequence...');
 
 // 1. Run Prisma and OpenNext builds
 execSync('npx prisma generate', { stdio: 'inherit' });
-execSync('npx @opennextjs/cloudflare build --noMinify', { stdio: 'inherit' });
+execSync('npx @opennextjs/cloudflare build', { stdio: 'inherit' });
 
 // 2. Apply Global Scope ReferenceError Patch
 const workerPath = '.open-next/worker.js';

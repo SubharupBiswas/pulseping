@@ -70,7 +70,7 @@ export default function SignUpPage() {
             />
             <div className="mt-2">
               <div className="cf-turnstileMy" data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}></div>
-              <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />
+              <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="lazyOnload" async defer />
             </div>
           </div>
         </div>
