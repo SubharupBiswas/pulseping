@@ -2,7 +2,14 @@ import React from "react";
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -108,7 +115,7 @@ export default function RootLayout({
             }}
           />
         </head>
-        <body className="min-h-full flex flex-col overflow-x-hidden transition-colors duration-250 bg-white text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans">
+        <body className={`${inter.variable} min-h-full flex flex-col overflow-x-hidden transition-colors duration-250 bg-white text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased`}>
           {children}
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-DKG16R7DV4"} />
         </body>

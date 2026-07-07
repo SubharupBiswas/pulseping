@@ -80,7 +80,7 @@ export default function LandingPage() {
             </div>
 
             {/* Hero Title */}
-            <h1 id="hero-title" className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 max-w-2xl mx-auto leading-[1.08] mb-6">
+            <h1 id="hero-title" className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 max-w-3xl mx-auto leading-[1.06] mb-6">
               Uptime monitoring built for{" "}
               <span className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent">
                 production teams.
@@ -88,7 +88,7 @@ export default function LandingPage() {
             </h1>
 
             {/* Supporting Description */}
-            <p className="text-zinc-500 dark:text-zinc-400 text-base max-w-lg mx-auto leading-relaxed mb-10">
+            <p className="text-zinc-500 dark:text-zinc-400 text-base sm:text-lg max-w-lg mx-auto leading-relaxed mb-10">
               Zero-configuration endpoint tracking. Deploy serverless monitoring pipelines that log response telemetry and dispatch rich Discord embeds the instant a monitored domain degrades.
             </p>
 

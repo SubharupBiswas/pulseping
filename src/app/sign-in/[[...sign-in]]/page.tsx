@@ -13,8 +13,8 @@ export default function SignInPage() {
 
       {/* Minimal Header */}
       <nav className="relative z-10 border-b border-zinc-200 dark:border-zinc-850 bg-white/60 dark:bg-zinc-950/60 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group pointer-events-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 group pointer-events-auto" aria-label="PulsePing Homepage">
             <div className="w-5 h-5 rounded-md bg-zinc-950 dark:bg-zinc-50 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.06)] group-hover:bg-zinc-800 dark:group-hover:bg-zinc-200 transition duration-150">
               <div className="w-1.5 h-1.5 rounded-full bg-zinc-50 dark:bg-zinc-950" />
             </div>

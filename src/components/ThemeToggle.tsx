@@ -36,7 +36,9 @@ export default function ThemeToggle() {
     <button
       onClick={toggleTheme}
       className="w-8 h-8 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900/20 dark:hover:bg-zinc-800/50 flex items-center justify-center transition-all duration-200 shadow-sm cursor-pointer text-zinc-650 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
-      aria-label="Toggle visual theme mode"
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-pressed={theme === "dark"}
+      title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       id="theme-toggle-btn"
     >
       {theme === "dark" ? (

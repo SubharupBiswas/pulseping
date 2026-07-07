@@ -75,14 +75,14 @@ export default function TermsPage() {
             <div className="w-5 h-5 rounded-md bg-zinc-950 dark:bg-zinc-50 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.06)] group-hover:bg-zinc-800 dark:group-hover:bg-zinc-200 transition duration-150">
               <div className="w-1.5 h-1.5 rounded-full bg-zinc-50 dark:bg-zinc-950" />
             </div>
-            <span className="font-semibold text-[13px] tracking-tight text-zinc-900 dark:text-zinc-100">PulsePing</span>
+            <span className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100">PulsePing</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/pricing" className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
+            <Link href="/pricing" className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
             <ThemeToggle />
-            <Link href="/privacy" className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
-            <Link href="/status" className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
-            <Link href="/dashboard" className="text-[11px] font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-250 border border-zinc-800 px-3 py-1.5 rounded-lg transition duration-150 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]">Console</Link>
+            <Link href="/privacy" className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
+            <Link href="/status" className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
+            <Link href="/dashboard" className="text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 px-3 py-1.5 rounded-lg transition duration-150 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]">Console</Link>
           </div>
         </div>
       </nav>
@@ -93,28 +93,28 @@ export default function TermsPage() {
         {/* Page Header */}
         <div className="mb-12 pb-8 border-b border-zinc-200 dark:border-zinc-900/60">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-[9px] font-bold tracking-widest uppercase text-zinc-500 dark:text-zinc-650 border border-zinc-200 dark:border-zinc-800 px-2 py-0.5 rounded-full bg-zinc-50 dark:bg-transparent">Legal</span>
+            <span className="text-xs font-bold tracking-widest uppercase text-zinc-500 dark:text-zinc-650 border border-zinc-200 dark:border-zinc-800 px-2 py-0.5 rounded-full bg-zinc-50 dark:bg-transparent">Legal</span>
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 mb-3">Terms of Service</h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
             Please read these terms carefully before using PulsePing. By accessing the service, you agree to the policies outlined below.
           </p>
-          <p className="text-zinc-400 dark:text-zinc-700 text-[11px] mt-4 font-mono">Effective: January 1, 2026 · Version 1.0</p>
+          <p className="text-zinc-400 dark:text-zinc-700 text-xs mt-4 font-mono">Effective: January 1, 2026 · Version 1.0</p>
         </div>
 
         {/* Terms Sections */}
         <div className="space-y-8">
           {sections.map((section) => (
             <div key={section.title}>
-              <h2 className="text-[13px] font-bold text-zinc-800 dark:text-zinc-200 tracking-tight mb-3">{section.title}</h2>
-              <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-[1.8]">{section.body}</p>
+              <h2 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 tracking-tight mb-3">{section.title}</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.8]">{section.body}</p>
             </div>
           ))}
         </div>
 
         {/* Divider */}
         <div className="border-t border-zinc-200 dark:border-zinc-900/60 mt-12 pt-8">
-          <p className="text-[11px] text-zinc-500 dark:text-zinc-700">
+          <p className="text-xs text-zinc-500 dark:text-zinc-700">
             Questions about these terms? Contact us at{" "}
             <a href="mailto:legal@pulseping.io" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150">
               legal@pulseping.io
@@ -126,11 +126,11 @@ export default function TermsPage() {
       {/* Footer */}
       <footer className="border-t border-zinc-200 dark:border-zinc-900/40 bg-zinc-50/50 dark:bg-transparent transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="text-[11px] text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
           <div className="flex items-center gap-5">
-            <Link href="/terms" className="text-[11px] text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
-            <Link href="/privacy" className="text-[11px] text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
-            <Link href="/status" className="text-[11px] text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
+            <Link href="/terms" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
+            <Link href="/privacy" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
+            <Link href="/status" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
           </div>
         </div>
       </footer>
