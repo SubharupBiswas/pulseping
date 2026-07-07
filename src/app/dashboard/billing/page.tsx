@@ -54,7 +54,7 @@ export default async function BillingPage() {
     : [];
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-hidden transition-colors duration-250">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
 
       {/* Ambient Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[320px] bg-gradient-to-tr from-indigo-500/5 via-emerald-500/5 to-transparent blur-3xl pointer-events-none z-0" />
@@ -72,7 +72,7 @@ export default async function BillingPage() {
           </Link>
 
           {/* Right Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-x-4 md:gap-x-6">
             <ThemeToggle />
             <span className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm transition-colors ${
               isPremium
