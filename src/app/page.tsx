@@ -33,6 +33,12 @@ export default function LandingPage() {
 
             {/* Navigation Actions */}
             <div className="flex items-center gap-x-4 md:gap-x-6">
+              <Link
+                href="/pricing"
+                className="text-sm font-semibold text-zinc-650 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150"
+              >
+                Pricing
+              </Link>
               <ThemeToggle />
               <Show when="signed-out">
                 <Link
@@ -223,6 +229,7 @@ export default function LandingPage() {
               <span className="text-sm text-zinc-400 dark:text-zinc-650 font-mono">© 2026</span>
             </div>
             <div className="flex items-center gap-5">
+              <Link href="/pricing" className="text-sm text-zinc-550 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
               <Link href="/terms" className="text-sm text-zinc-550 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
               <Link href="/privacy" className="text-sm text-zinc-550 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
               <Link href="/status" className="text-sm text-zinc-550 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>

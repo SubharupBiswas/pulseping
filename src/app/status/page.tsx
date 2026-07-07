@@ -120,6 +120,7 @@ export default function StatusPage() {
             <span className="font-semibold text-sm tracking-tight text-zinc-950 dark:text-zinc-100">PulsePing</span>
           </Link>
           <div className="flex items-center gap-4">
+            <Link href="/pricing" className="text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
             <ThemeToggle />
             <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
             <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
@@ -261,7 +262,8 @@ export default function StatusPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <span className="text-sm text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
           <div className="flex items-center gap-5">
-            <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
+            <Link href="/pricing" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
+            <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-955 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
             <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
             <Link href="/status" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
           </div>

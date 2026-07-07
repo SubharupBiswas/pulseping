@@ -92,6 +92,7 @@ export default function PrivacyPage() {
             <span className="font-semibold text-[13px] tracking-tight text-zinc-900 dark:text-zinc-100">PulsePing</span>
           </Link>
           <div className="flex items-center gap-4">
+            <Link href="/pricing" className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
             <ThemeToggle />
             <Link href="/terms" className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
             <Link href="/status" className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
