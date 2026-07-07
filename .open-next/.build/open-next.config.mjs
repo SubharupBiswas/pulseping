@@ -351,6 +351,7 @@ var r2_incremental_cache_default = new R2IncrementalCache();
 
 // open-next.config.ts
 var open_next_config_default = defineCloudflareConfig({
+  minify: true,
   incrementalCache: r2_incremental_cache_default
 });
 export {

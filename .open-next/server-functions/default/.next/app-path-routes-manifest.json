@@ -12,7 +12,7 @@
   "/sign-up/[[...sign-up]]/page": "/sign-up/[[...sign-up]]",
   "/dashboard/billing/page": "/dashboard/billing",
   "/privacy/page": "/privacy",
-  "/terms/page": "/terms",
   "/dashboard/page": "/dashboard",
+  "/terms/page": "/terms",
   "/status/page": "/status"
 }

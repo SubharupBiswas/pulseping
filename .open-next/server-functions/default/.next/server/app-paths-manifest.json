@@ -12,7 +12,7 @@
   "/sign-up/[[...sign-up]]/page": "app/sign-up/[[...sign-up]]/page.js",
   "/dashboard/billing/page": "app/dashboard/billing/page.js",
   "/privacy/page": "app/privacy/page.js",
-  "/terms/page": "app/terms/page.js",
   "/dashboard/page": "app/dashboard/page.js",
+  "/terms/page": "app/terms/page.js",
   "/status/page": "app/status/page.js"
 }
