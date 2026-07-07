@@ -1,10 +1,4 @@
 <p align="center">
-  <br/>
-  <!-- Stylized SaaS Branding Banner -->
-  <img src="https://capsule-render.vercel.app/type=waving&color=000000&height=200&section=header&text=📡%20PulsePing&fontSize=50&fontColor=ffffff&fontAlignY=45" alt="PulsePing Hero Banner" width="100%" />
-</p>
-
-<p align="center">
   <h1 align="center">🛰️ PulsePing</h1>
   <p align="center"><b>Serverless Edge-Native Uptime Monitoring SaaS Platform</b></p>
 </p>
