@@ -1,6 +1,12 @@
 <p align="center">
+  <br/>
+  <!-- Stylized SaaS Branding Banner -->
+  <img src="https://capsule-render.vercel.app/type=waving&color=000000&height=200&section=header&text=📡%20PulsePing&fontSize=50&fontColor=ffffff&fontAlignY=45" alt="PulsePing Hero Banner" width="100%" />
+</p>
+
+<p align="center">
   <h1 align="center">🛰️ PulsePing</h1>
-  <p align="center"><b>Serverless Edge-Native Uptime Monitoring SaaS</b></p>
+  <p align="center"><b>Serverless Edge-Native Uptime Monitoring SaaS Platform</b></p>
 </p>
 
 <p align="center">
@@ -8,6 +14,10 @@
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /></a>
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare_Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Cloudflare" /></a>
   <a href="https://prisma.io"><img src="https://img.shields.io/badge/Prisma-7.8.0-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" /></a>
+</p>
+
+<p align="center">
+  <a href="https://pulseping.subnetmask.tech"><b>Live Production Deployment →</b></a>
 </p>
 
 ---
@@ -51,8 +61,8 @@ PulsePing is a developer-first, serverless uptime monitoring platform engineered
 ## 🛡️ Performance Engineering & Hardening
 
 - **Binary Module Compression:** To bypass Cloudflare's strict maximum memory footprint thresholds for edge workers, the Prisma generator is configured with `compilerBuild = "small"`. This flag optimizes client generation by stripping unused native engines and metadata, shrinking the compiled WASM package from 3.67MB down to 1.85MB to guarantee safe execution.
-- **Scope Safety Isolation Injection:** To address minification-induced variable collisions in edge production runtimes, the custom [scripts/cloudflare-build.js](file:///Users/subharup/Developer/pulseping/scripts/cloudflare-build.js) pipeline programmatically injects a global safety boundary (`globalThis.e = undefined;`) at the top of the compiled worker bundle. This sanitizes the global scope and prevents runtime `ReferenceError` crashes.
-- **CDN Edge Asset Mapping:** A custom [_routes.json](file:///Users/subharup/Developer/pulseping/scripts/cloudflare-build.js#L20-L34) fallback generator maps assets to the edge network CDN. Explicitly routing static directory calls (`/_next/static/*`) and system items (`/favicon.ico`, `/robots.txt`) directly through the Cloudflare cache mesh significantly decreases core web vitals first-contentful paint (FCP) times and saves serverless compute CPU-cycles.
+- **Scope Safety Isolation Injection:** To address minification-induced variable collisions in edge production runtimes, the custom `scripts/cloudflare-build.js` pipeline programmatically injects a global safety boundary (`globalThis.e = undefined;`) at the top of the compiled worker bundle. This sanitizes the global scope and prevents runtime `ReferenceError` crashes.
+- **CDN Edge Asset Mapping:** A custom `_routes.json` fallback generator maps assets to the edge network CDN. Explicitly routing static directory calls (`/_next/static/*`) and system items (`/favicon.ico`, `/robots.txt`) directly through the Cloudflare cache mesh significantly decreases core web vitals first-contentful paint (FCP) times and saves serverless compute CPU-cycles.
 
 ---
 
