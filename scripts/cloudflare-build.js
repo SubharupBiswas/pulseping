@@ -17,13 +17,21 @@ if (fs.existsSync(workerPath)) {
   console.log('🛡️ Scope safety patch injected into bundle successfully.');
 }
 
-// 3. Sync Native OpenNext Asset Routes Blueprint
+// 3. Sync or Force-Generate Asset Routes Blueprint
 const routesPath = '.open-next/_routes.json';
 const targetRoutesPath = '.open-next/assets/_routes.json';
 
 if (fs.existsSync(routesPath)) {
   fs.copyFileSync(routesPath, targetRoutesPath);
-  console.log('📁 Asset routing rules mapped to edge network CDN.');
+  console.log('📁 Native asset routing rules mapped to edge network CDN.');
+} else {
+  const routesBlueprint = {
+    version: 1,
+    include: ['/*'],
+    exclude: ['/_next/static/*', '/favicon.ico', '/robots.txt', '/sitemap.xml']
+  };
+  fs.writeFileSync(targetRoutesPath, JSON.stringify(routesBlueprint, null, 2));
+  console.log('📁 Custom asset routing fallback blueprint generated successfully.');
 }
 
 // 4. Mirror Directories across Output Trees
