@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
+    "prisma:generate": "prisma generate",
     "preview": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare preview",
     "deploy": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare deploy",
     "start": "next start",
