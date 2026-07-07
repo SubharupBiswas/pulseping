@@ -45,10 +45,13 @@ export default function ThemeToggle() {
         // Sun Icon
         <svg
           className="w-4 h-4"
+          width="16"
+          height="16"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -60,10 +63,13 @@ export default function ThemeToggle() {
         // Moon Icon
         <svg
           className="w-4 h-4"
+          width="16"
+          height="16"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"

@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { SignUp } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Link from "next/link";
@@ -5,8 +8,14 @@ import ThemeToggle from "@/components/ThemeToggle";
 import Script from "next/script";
 
 export default function SignUpPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-200 flex flex-col relative overflow-hidden transition-colors duration-250">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-955 text-zinc-900 dark:text-zinc-200 flex flex-col relative overflow-hidden transition-colors duration-250">
       
       {/* Ambient glow - vibrant modern SaaS blur */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-emerald-500/10 via-indigo-500/5 to-transparent blur-3xl pointer-events-none z-0" />
@@ -55,14 +64,14 @@ export default function SignUpPage() {
                   dividerLine: "bg-zinc-200 dark:bg-zinc-800/60",
                   dividerText: "text-zinc-450 dark:text-zinc-650 text-xs",
                   formFieldLabel: "text-zinc-600 dark:text-zinc-400 text-xs font-medium",
-                  formFieldInput: "bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-650 focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-0 rounded-lg text-sm",
-                  formButtonPrimary: "bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-white text-xs font-semibold rounded-lg py-2.5 transition duration-150 shadow-[0_1px_2px_rgba(0,0,0,0.08)]",
+                  formFieldInput: "bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-655 focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-0 rounded-lg text-sm",
+                  formButtonPrimary: "bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-955 hover:bg-zinc-800 dark:hover:bg-white text-xs font-semibold rounded-lg py-2.5 transition duration-150 shadow-[0_1px_2px_rgba(0,0,0,0.08)]",
                   footerActionText: "text-zinc-500 text-xs",
                   footerActionLink: "text-emerald-600 dark:text-emerald-500 hover:text-emerald-500 dark:hover:text-emerald-450 font-medium text-xs",
                   identityPreviewText: "text-zinc-700 dark:text-zinc-300 text-xs",
                   identityPreviewEditButton: "text-emerald-600 dark:text-emerald-500 hover:text-emerald-500 dark:hover:text-emerald-450 text-xs",
                   alertText: "text-zinc-800 dark:text-zinc-300 text-xs",
-                  formResendCodeLink: "text-emerald-600 dark:text-emerald-500 hover:text-emerald-500 dark:hover:text-emerald-450 text-xs",
+                  formResendCodeLink: "text-emerald-600 dark:text-emerald-500 hover:text-emerald-500 dark:hover:text-emerald-455 text-xs",
                 },
               } as any}
               fallbackRedirectUrl="/dashboard"
@@ -70,7 +79,12 @@ export default function SignUpPage() {
             />
             <div className="mt-2">
               <div className="cf-turnstileMy" data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}></div>
-              <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="lazyOnload" async defer />
+              {mounted && (
+                <Script
+                  src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+                  strategy="lazyOnload"
+                />
+              )}
             </div>
           </div>
         </div>
