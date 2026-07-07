@@ -9,7 +9,8 @@
     "preview": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare preview",
     "deploy": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare deploy",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cloudflare-deploy": "node scripts/cloudflare-build.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.5.13",
