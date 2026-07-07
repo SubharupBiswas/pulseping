@@ -2,9 +2,3 @@ name = "pulseping"
 pages_build_output_dir = ".open-next/assets"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
-keep_names = false
-
-# Configuration for OpenNext Incremental Cache layer
-[[r2_buckets]]
-binding = "NEXT_INC_CACHE_R2_BUCKET"
-bucket_name = "pulseping-cache-bucket"
