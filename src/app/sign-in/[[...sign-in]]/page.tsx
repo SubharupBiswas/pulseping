@@ -2,7 +2,7 @@ import { SignIn } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
-import Turnstile from "@marsview/react-turnstile";
+import Script from "next/script";
 
 export default function SignInPage() {
   return (
@@ -69,7 +69,8 @@ export default function SignInPage() {
               signUpUrl="/sign-up"
             />
             <div className="mt-2">
-              <Turnstile siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
+              <div className="cf-turnstileMy" data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}></div>
+              <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />
             </div>
           </div>
         </div>
