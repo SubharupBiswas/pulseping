@@ -2,6 +2,7 @@ import { SignUp } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
+import Turnstile from "@marsview/react-turnstile";
 
 export default function SignUpPage() {
   return (
@@ -41,7 +42,7 @@ export default function SignUpPage() {
           </div>
 
           {/* Clerk Sign-Up Component */}
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-4">
             <SignUp
               appearance={{
                 baseTheme: dark,
@@ -55,7 +56,7 @@ export default function SignUpPage() {
                   dividerText: "text-zinc-450 dark:text-zinc-650 text-xs",
                   formFieldLabel: "text-zinc-600 dark:text-zinc-400 text-xs font-medium",
                   formFieldInput: "bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-650 focus:border-zinc-400 dark:focus:border-zinc-600 focus:ring-0 rounded-lg text-sm",
-                  formButtonPrimary: "bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-905 hover:bg-zinc-800 dark:hover:bg-white text-xs font-semibold rounded-lg py-2.5 transition duration-150 shadow-[0_1px_2px_rgba(0,0,0,0.08)]",
+                  formButtonPrimary: "bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-white text-xs font-semibold rounded-lg py-2.5 transition duration-150 shadow-[0_1px_2px_rgba(0,0,0,0.08)]",
                   footerActionText: "text-zinc-500 text-xs",
                   footerActionLink: "text-emerald-600 dark:text-emerald-500 hover:text-emerald-500 dark:hover:text-emerald-450 font-medium text-xs",
                   identityPreviewText: "text-zinc-700 dark:text-zinc-300 text-xs",
@@ -67,6 +68,9 @@ export default function SignUpPage() {
               fallbackRedirectUrl="/dashboard"
               signInUrl="/sign-in"
             />
+            <div className="mt-2">
+              <Turnstile siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
+            </div>
           </div>
         </div>
       </div>
