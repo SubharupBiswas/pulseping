@@ -11,8 +11,8 @@
   "/sign-in/[[...sign-in]]/page": "/sign-in/[[...sign-in]]",
   "/sign-up/[[...sign-up]]/page": "/sign-up/[[...sign-up]]",
   "/dashboard/billing/page": "/dashboard/billing",
-  "/dashboard/page": "/dashboard",
   "/privacy/page": "/privacy",
   "/terms/page": "/terms",
+  "/dashboard/page": "/dashboard",
   "/status/page": "/status"
 }
