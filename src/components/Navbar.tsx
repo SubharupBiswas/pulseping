@@ -77,7 +77,7 @@ export default function Navbar({ activeLink, variant }: NavbarProps) {
         </div>
 
         {/* ── Zone 3: Right utilities (always visible, tightly grouped) ── */}
-        <div className="flex items-center gap-x-3">
+        <div className="flex items-center gap-x-4">
           <ThemeToggle />
           {variant === "console" ? (
             <>

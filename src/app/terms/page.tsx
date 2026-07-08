@@ -21,7 +21,7 @@ const sections = [
   },
   {
     title: "4. Monitor Stream Limits",
-    body: `Free Tier accounts may register up to two (2) active monitor streams. Pro Tier accounts support unlimited monitor stream registrations. Monitors that consistently fail validation or target private IP ranges, localhost addresses, or internal network endpoints may be suspended without notice to protect shared infrastructure. Frequency of polling is fixed at 10-minute intervals for all plans.`,
+    body: `Free Plan (₹0 INR / $0 USD) accounts may register up to two (2) active monitor streams. Pro Plan (₹499 INR / $7 USD) and Business Plan (₹1,499 INR / $20 USD) accounts support expanded monitor stream registrations. Monitors that consistently fail validation or target private IP ranges, localhost addresses, or internal network endpoints may be suspended without notice to protect shared infrastructure. Frequency of polling is fixed at 10-minute intervals for all plans.`,
   },
   {
     title: "5. Acceptable Use Policy",
@@ -29,7 +29,7 @@ const sections = [
   },
   {
     title: "6. Billing and Subscription",
-    body: `Pro Tier subscriptions are billed monthly at the rate published on the pricing page at the time of purchase. All payments are processed securely via Razorpay. Subscription fees are non-refundable except as required by applicable law. You may cancel your subscription at any time; cancellation takes effect at the end of the current billing period. Downgrades to Free Tier will enforce stream limits at the start of the next billing cycle.`,
+    body: `Pro Plan (₹499 INR / $7 USD) and Business Plan (₹1,499 INR / $20 USD) subscriptions are billed monthly at the rate published on the pricing page at the time of purchase. All payments are processed securely via Razorpay. Subscription fees are non-refundable except as required by applicable law. You may cancel your subscription at any time; cancellation takes effect at the end of the current billing period. Downgrades to Free Plan (₹0 INR / $0 USD) will enforce stream limits at the start of the next billing cycle.`,
   },
   {
     title: "7. Service Availability",
@@ -37,7 +37,7 @@ const sections = [
   },
   {
     title: "8. Data Retention",
-    body: `PingLog entries (response records) are retained for 90 days for Free Tier accounts and 12 months for Pro Tier accounts, after which they are automatically purged. Registered endpoint URLs and Discord webhook URLs are retained for the lifetime of the account. Account data is deleted within 30 days of account termination.`,
+    body: `PingLog entries (response records) are retained for 90 days for Free Plan (₹0 INR / $0 USD) accounts and 12 months for Pro Plan (₹499 INR / $7 USD) or Business Plan (₹1,499 INR / $20 USD) accounts, after which they are automatically purged. Registered endpoint URLs and Discord webhook URLs are retained for the lifetime of the account. Account data is deleted within 30 days of account termination.`,
   },
   {
     title: "9. Intellectual Property",

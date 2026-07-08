@@ -11,11 +11,35 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { amount, currency = "INR" } = body;
+    const { planId, currency = "INR" } = body;
+
+    let amount = 0;
+    const planKey = (planId || "").toLowerCase();
+
+    switch (planKey) {
+      case "pro":
+      case "plan_pro_test_id":
+        amount = currency === "INR" ? 499 * 100 : 7 * 100;
+        break;
+      case "business":
+      case "biz":
+      case "plan_biz_test_id":
+        amount = currency === "INR" ? 1499 * 100 : 20 * 100;
+        break;
+      case "plan_pro_annual_test_id":
+        amount = currency === "INR" ? 4788 * 100 : 67 * 100;
+        break;
+      case "plan_biz_annual_test_id":
+        amount = currency === "INR" ? 14388 * 100 : 200 * 100;
+        break;
+      default:
+        // fallback in case client sends raw amount
+        amount = body.amount || (currency === "INR" ? 499 * 100 : 7 * 100);
+    }
 
     if (!amount || typeof amount !== "number" || amount < 100) {
       return NextResponse.json(
-        { error: "Invalid amount. Minimum amount is 100 paise." },
+        { error: "Invalid amount. Minimum amount is 100 units." },
         { status: 400 }
       );
     }

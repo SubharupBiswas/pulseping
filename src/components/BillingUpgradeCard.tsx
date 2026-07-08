@@ -10,8 +10,18 @@ export default function BillingUpgradeCard({
   currentPlan: string;
 }) {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
+  const [currency, setCurrency] = useState<"INR" | "USD">("INR");
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
+
+  React.useEffect(() => {
+    try {
+      const isIndia = Intl.DateTimeFormat().resolvedOptions().timeZone === "Asia/Kolkata";
+      if (!isIndia) {
+        setCurrency("USD");
+      }
+    } catch {}
+  }, []);
 
   const loadRazorpayScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -57,7 +67,7 @@ export default function BillingUpgradeCard({
         const orderRes = await fetch("/api/create-order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount, currency: "INR", plan, planId }),
+          body: JSON.stringify({ planId: planId, currency: currency }),
         });
 
         let orderData: any;
@@ -173,29 +183,56 @@ export default function BillingUpgradeCard({
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Scale up your active monitoring channels and telemetry resolution cycle speeds.</p>
         </div>
 
-        {/* Monthly / Yearly Toggle */}
-        <div className="flex items-center gap-2 self-start md:self-auto bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-850">
-          <button
-            onClick={() => setBillingPeriod("monthly")}
-            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition ${
-              billingPeriod === "monthly"
-                ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
-                : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setBillingPeriod("yearly")}
-            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
-              billingPeriod === "yearly"
-                ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
-                : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
-            }`}
-          >
-            Yearly
-            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">Save 20%</span>
-          </button>
+        {/* Controls Stack (Billing Period & Currency Selectors) */}
+        <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
+          {/* Currency Toggle switch */}
+          <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-850">
+            <button
+              onClick={() => setCurrency("INR")}
+              className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] ${
+                currency === "INR"
+                  ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
+                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
+              }`}
+            >
+              ₹ INR
+            </button>
+            <button
+              onClick={() => setCurrency("USD")}
+              className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] ${
+                currency === "USD"
+                  ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
+                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
+              }`}
+            >
+              $ USD
+            </button>
+          </div>
+
+          {/* Monthly / Yearly Toggle */}
+          <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-850">
+            <button
+              onClick={() => setBillingPeriod("monthly")}
+              className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] ${
+                billingPeriod === "monthly"
+                  ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
+                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod("yearly")}
+              className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] flex items-center gap-1.5 ${
+                billingPeriod === "yearly"
+                  ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
+                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
+              }`}
+            >
+              Yearly
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">Save 20%</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -212,8 +249,10 @@ export default function BillingUpgradeCard({
               )}
             </div>
             <div className="flex items-baseline gap-1 mb-4">
-              <span className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">₹0</span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-450">/ month</span>
+              <span className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                {currency === "INR" ? "₹0" : "$0"}
+              </span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-455">/ month</span>
             </div>
             <ul className="space-y-2.5 mb-6 text-sm text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
@@ -254,12 +293,16 @@ export default function BillingUpgradeCard({
             </div>
             <div className="flex items-baseline gap-1 mb-1">
               <span className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                {billingPeriod === "monthly" ? "₹499" : "₹399"}
+                {currency === "INR"
+                  ? billingPeriod === "monthly" ? "₹499" : "₹399"
+                  : billingPeriod === "monthly" ? "$7" : "$5"}
               </span>
-              <span className="text-xs text-zinc-500 dark:text-zinc-450">/ month</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-455">/ month</span>
             </div>
             <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mb-4">
-              {billingPeriod === "yearly" ? "Billed annually (₹4,788/yr)" : "Billed monthly"}
+              {billingPeriod === "yearly"
+                ? currency === "INR" ? "Billed annually (₹4,788/yr)" : "Billed annually ($67/yr)"
+                : "Billed monthly"}
             </p>
             <ul className="space-y-2.5 mb-6 text-sm text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
@@ -283,7 +326,7 @@ export default function BillingUpgradeCard({
           <button
             onClick={() => handleUpgrade("PRO")}
             disabled={isPending || currentPlan === "PRO"}
-            className="w-full text-center text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-200/50 dark:disabled:bg-zinc-900 disabled:text-zinc-500 dark:disabled:text-zinc-650 px-4 py-2.5 rounded-lg cursor-pointer disabled:cursor-not-allowed shadow-md transition"
+            className="w-full text-center text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-200/50 dark:disabled:bg-zinc-900 disabled:text-zinc-500 dark:disabled:text-zinc-650 px-4 py-2.5 rounded-lg cursor-pointer disabled:cursor-not-allowed shadow-md transition-all duration-300 ease-in-out hover:scale-[1.01]"
           >
             {isPending ? "Connecting..." : currentPlan === "PRO" ? "Current Plan" : "Upgrade to Pro"}
           </button>
@@ -300,12 +343,16 @@ export default function BillingUpgradeCard({
             </div>
             <div className="flex items-baseline gap-1 mb-1">
               <span className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                {billingPeriod === "monthly" ? "₹1,499" : "₹1,199"}
+                {currency === "INR"
+                  ? billingPeriod === "monthly" ? "₹1,499" : "₹1,199"
+                  : billingPeriod === "monthly" ? "$20" : "$16"}
               </span>
               <span className="text-xs text-zinc-500 dark:text-zinc-455">/ month</span>
             </div>
             <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mb-4">
-              {billingPeriod === "yearly" ? "Billed annually (₹14,388/yr)" : "Billed monthly"}
+              {billingPeriod === "yearly"
+                ? currency === "INR" ? "Billed annually (₹14,388/yr)" : "Billed annually ($200/yr)"
+                : "Billed monthly"}
             </p>
             <ul className="space-y-2.5 mb-6 text-sm text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
@@ -333,7 +380,7 @@ export default function BillingUpgradeCard({
           <button
             onClick={() => handleUpgrade("BUSINESS")}
             disabled={isPending || currentPlan === "BUSINESS"}
-            className="w-full text-center text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-200/50 dark:disabled:bg-zinc-900 disabled:text-zinc-500 dark:disabled:text-zinc-650 px-4 py-2.5 rounded-lg cursor-pointer disabled:cursor-not-allowed shadow-md transition"
+            className="w-full text-center text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-200/50 dark:disabled:bg-zinc-900 disabled:text-zinc-500 dark:disabled:text-zinc-650 px-4 py-2.5 rounded-lg cursor-pointer disabled:cursor-not-allowed shadow-md transition-all duration-300 ease-in-out hover:scale-[1.01]"
           >
             {isPending ? "Connecting..." : currentPlan === "BUSINESS" ? "Current Plan" : "Upgrade to Business"}
           </button>

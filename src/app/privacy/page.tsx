@@ -36,8 +36,8 @@ const sections = [
     title: "4. Telemetry Log Retention and Purges",
     body: `Uptime logs (PingLogs) are stored for:`,
     bullets: [
-      `Free Tier: 90 days of check history, after which logs are permanently deleted.`,
-      `Pro Tier: 365 days of check history, allowing for long-term SLA reporting.`,
+      `Free Plan (₹0 INR / $0 USD): 90 days of check history, after which logs are permanently deleted.`,
+      `Pro Plan (₹499 INR / $7 USD) or Business Plan (₹1,499 INR / $20 USD): 365 days of check history, allowing for long-term SLA reporting.`,
       `Deleted Monitors: When a website monitor is deleted, all dependent PingLog entries are purged from the database immediately to preserve integrity.`,
     ],
   },
