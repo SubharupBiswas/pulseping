@@ -92,13 +92,32 @@ console.log('🩹 Scanning build output for loadInstrumentationModule hooks...')
 
 function patchFile(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
-  if (content.includes('loadInstrumentationModule')) {
-    console.log(`🩹 Patching loadInstrumentationModule in: ${filePath}`);
-    const regex = /(loadInstrumentationModule[^{]*\{)/g;
-    content = content.replace(regex, '$1return;');
+  let modified = false;
+
+  const targets = [
+    'loadInstrumentationModule',
+    'getInstrumentationModule',
+    'registerInstrumentation',
+    'ensureInstrumentationRegistered'
+  ];
+
+  for (const target of targets) {
+    if (content.includes(target)) {
+      const checkRegex = new RegExp(`${target}[^{]*\\{\\s*return;`);
+      if (!checkRegex.test(content)) {
+        console.log(`🩹 Patching ${target} in: ${filePath}`);
+        const replaceRegex = new RegExp(`(${target}[^{]*\\{)`, 'g');
+        content = content.replace(replaceRegex, '$1return;');
+        modified = true;
+      }
+    }
+  }
+
+  if (modified) {
     fs.writeFileSync(filePath, content, 'utf8');
   }
 }
+
 
 function scanAndPatch(dir) {
   if (!fs.existsSync(dir)) return;
