@@ -103,12 +103,15 @@ function patchFile(filePath) {
 
   for (const target of targets) {
     if (content.includes(target)) {
-      const checkRegex = new RegExp(`${target}[^{]*\\{\\s*return;`);
+      const checkRegex = new RegExp(`\\b(?:async\\s+)?(?:function\\s+)?${target}\\b\\s*\\([^)]*\\)\\s*\\{\\s*return;`);
       if (!checkRegex.test(content)) {
-        console.log(`🩹 Patching ${target} in: ${filePath}`);
-        const replaceRegex = new RegExp(`(${target}[^{]*\\{)`, 'g');
-        content = content.replace(replaceRegex, '$1return;');
-        modified = true;
+        const replaceRegex = new RegExp(`(\\b(?:async\\s+)?(?:function\\s+)?${target}\\b\\s*\\([^)]*\\)\\s*\\{)`, 'g');
+        if (replaceRegex.test(content)) {
+          console.log(`🩹 Patching ${target} in: ${filePath}`);
+          replaceRegex.lastIndex = 0;
+          content = content.replace(replaceRegex, '$1return;');
+          modified = true;
+        }
       }
     }
   }
