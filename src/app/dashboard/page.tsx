@@ -1,7 +1,6 @@
 import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import AddMonitorForm from "@/components/AddMonitorForm";
@@ -9,6 +8,7 @@ import BillingUpgradeCard from "@/components/BillingUpgradeCard";
 import { deleteMonitor } from "@/app/actions/monitors";
 import ThemeToggle from "@/components/ThemeToggle";
 import PulsePingLogo from "@/components/PulsePingLogo";
+import DashboardUserButton from "@/components/DashboardUserButton";
 
 export const dynamic = "force-dynamic";
 
@@ -65,26 +65,13 @@ export default async function DashboardPage() {
           {/* Right Controls */}
           <div className="flex items-center gap-x-4 md:gap-x-6">
             <ThemeToggle />
-            <span className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm transition-colors ${
-              isPremium
+            <span className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm transition-colors ${isPremium
                 ? "bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                 : "bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-850"
-            }`}>
+              }`}>
               {plan} Tier
             </span>
-            <UserButton appearance={{} as any}>
-              <UserButton.MenuItems>
-                <UserButton.Link
-                  label="Billing & Usage"
-                  labelIcon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                  }
-                  href="/dashboard/billing"
-                />
-              </UserButton.MenuItems>
-            </UserButton>
+            <DashboardUserButton />
           </div>
         </div>
       </header>
@@ -139,16 +126,14 @@ export default async function DashboardPage() {
           <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm backdrop-blur-md transition-colors">
             <h2 className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block mb-3">System Status</h2>
             <div className="flex items-center gap-2">
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                activeIncidents > 0
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${activeIncidents > 0
                   ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.35)]"
                   : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.35)] animate-pulse"
-              }`} />
-              <span className={`text-sm font-semibold tracking-tight ${
-                activeIncidents > 0 
-                  ? "text-rose-600 dark:text-rose-450 bg-rose-500/10 px-2 py-0.5 rounded" 
+                }`} />
+              <span className={`text-sm font-semibold tracking-tight ${activeIncidents > 0
+                  ? "text-rose-600 dark:text-rose-455 bg-rose-500/10 px-2 py-0.5 rounded"
                   : "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded"
-              }`}>
+                }`}>
                 {activeIncidents > 0 ? "Degradation Detected" : "All Nodes Operational"}
               </span>
             </div>
@@ -157,11 +142,10 @@ export default async function DashboardPage() {
           {/* Stat: Active Incidents */}
           <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm backdrop-blur-md transition-colors">
             <h2 className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block mb-3">Active Incidents</h2>
-            <span className={`text-2xl font-bold tracking-tight px-2 py-0.5 rounded ${
-              activeIncidents > 0 
-                ? "text-rose-600 dark:text-rose-400 bg-rose-500/10" 
+            <span className={`text-2xl font-bold tracking-tight px-2 py-0.5 rounded ${activeIncidents > 0
+                ? "text-rose-600 dark:text-rose-400 bg-rose-500/10"
                 : "text-zinc-500 dark:text-zinc-400"
-            }`}>
+              }`}>
               {activeIncidents}
             </span>
           </div>
@@ -199,12 +183,12 @@ export default async function DashboardPage() {
               const uptimePercent =
                 monitor.logs.length > 0
                   ? Math.round(
-                      (monitor.logs.filter(
-                        (l: any) => l.statusCode >= 200 && l.statusCode < 500
-                      ).length /
-                        monitor.logs.length) *
-                        100
-                    )
+                    (monitor.logs.filter(
+                      (l: any) => l.statusCode >= 200 && l.statusCode < 500
+                    ).length /
+                      monitor.logs.length) *
+                    100
+                  )
                   : null;
 
               return (
@@ -216,11 +200,10 @@ export default async function DashboardPage() {
 
                     {/* Left: URL + Meta */}
                     <div className="flex items-start gap-3 min-w-0">
-                      <div className={`mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full ${
-                        isUp
+                      <div className={`mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full ${isUp
                           ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.45)]"
                           : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.45)]"
-                      }`} />
+                        }`} />
                       <div className="min-w-0 flex-1">
                         <p className="font-mono text-sm font-semibold text-zinc-900 dark:text-zinc-200 truncate">{monitor.url}</p>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
@@ -273,11 +256,10 @@ export default async function DashboardPage() {
                           {horizontalLogs.map((log) => (
                             <div
                               key={log.id}
-                              className={`h-3 w-[3px] rounded-full transition-colors duration-200 ${
-                                log.statusCode >= 200 && log.statusCode < 500
+                              className={`h-3 w-[3px] rounded-full transition-colors duration-200 ${log.statusCode >= 200 && log.statusCode < 500
                                   ? "bg-emerald-500/20 dark:bg-emerald-500/30 hover:bg-emerald-500 border border-emerald-500/10 dark:border-emerald-500/20"
                                   : "bg-rose-500/20 dark:bg-rose-500/30 hover:bg-rose-500 border border-rose-500/10 dark:border-rose-500/20"
-                              }`}
+                                }`}
                               title={`HTTP ${log.statusCode} · ${log.latency}ms`}
                             />
                           ))}
