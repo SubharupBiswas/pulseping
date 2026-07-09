@@ -2,35 +2,44 @@ import 'server-only';
 import { neonConfig } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '@prisma/client';
-// @ts-ignore
-import ws from 'ws';
 
-// 1. Assign the native Node.js WebSocket constructor safely for server environments
-(neonConfig as any).webSocketConstructor = ws;
+let internalClientInstance: PrismaClient | undefined;
 
-const connectionString = process.env.DATABASE_URL;
+/**
+ * Lazily evaluates environment variables and prepares the Prisma instance
+ * exclusively inside request execution contexts when a query is fired.
+ */
+function initializeDatabaseClient(): PrismaClient {
+  if (internalClientInstance) return internalClientInstance;
 
-if (!connectionString || connectionString.trim() === "") {
-  throw new Error("CRITICAL RUNTIME ERROR: The DATABASE_URL environment variable is empty or unresolved.");
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString || connectionString.trim() === "") {
+    throw new Error(
+      "CRITICAL RUNTIME ERROR: The DATABASE_URL environment variable is unresolved inside this execution context. Check your Cloudflare Dashboard configuration variables."
+    );
+  }
+
+  // Bind serverless engine telemetry flags
+  (neonConfig as any).fetchHeaders = {
+    'Neon-Connection-String': connectionString,
+    'Neon-Raw-Text-Output': 'true',
+    'Neon-Array-Mode': 'true',
+  };
+
+  const adapter = new PrismaNeon({ connectionString });
+  internalClientInstance = new PrismaClient({ adapter });
+  return internalClientInstance;
 }
 
-// 2. Natively enforce metadata routing signatures directly into the serverless engine
-(neonConfig as any).fetchHeaders = {
-  'Neon-Connection-String': connectionString,
-  'Neon-Raw-Text-Output': 'true',
-  'Neon-Array-Mode': 'true',
-};
+// Export a dynamic Proxy instance. This mirrors the PrismaClient API 
+// perfectly but delays execution until a data method is invoked.
+export const db = new Proxy({} as PrismaClient, {
+  get(_, prop) {
+    const targetClient = initializeDatabaseClient();
+    const value = Reflect.get(targetClient, prop);
+    return typeof value === 'function' ? value.bind(targetClient) : value;
+  },
+});
 
-// 3. Prisma 7 Native Adapter Setup: Clean and cross-runtime compliant
-const adapter = new PrismaNeon({ connectionString });
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient({ adapter });
-
-export const db = prisma;
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+export const prisma = db;
