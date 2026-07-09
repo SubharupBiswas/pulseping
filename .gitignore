@@ -14,7 +14,11 @@
 # Next.js build & cache outputs
 /.next/
 /out/
+
+# Local package manager caches & runtime logs
 .npm-cache/
+_logs/
+_npx/
 
 # serverless & wrangler build frameworks
 /.open-next/
@@ -30,6 +34,7 @@
 .env.production
 .env.development
 .env.test
+.env*.local
 
 # development logs & script scratchpads
 *.log
@@ -39,10 +44,21 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# OS artifacts
+# OS artifacts (Mac / Windows metadata)
 .DS_Store
 Thumbs.db
 *.pem
+.Spotlight-V100
+.Trashes
+
+# IDE configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # typescript & next-env
 *.tsbuildinfo
