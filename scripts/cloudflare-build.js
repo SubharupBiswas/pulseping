@@ -4,11 +4,17 @@ const { execSync } = require('child_process');
 
 console.log('📦 Starting full-stack edge compilation sequence...');
 
-// 1. Run Prisma and OpenNext builds
+// 1. NEW: Aggressively wipe stale intermediate Next.js compiler maps
+if (fs.existsSync('.next')) {
+  fs.rmSync('.next', { recursive: true, force: true });
+  console.log('🧹 Purged stale Next.js intermediate compilation caches.');
+}
+
+// 2. Run Prisma and OpenNext builds
 execSync('npx prisma generate', { stdio: 'inherit' });
 execSync('npx @opennextjs/cloudflare build', { stdio: 'inherit' });
 
-// 2. Apply Global Scope ReferenceError Patch
+// 3. Apply Global Scope ReferenceError Patch
 const workerPath = '.open-next/worker.js';
 const targetWorkerPath = '.open-next/assets/_worker.js';
 
@@ -18,7 +24,7 @@ if (fs.existsSync(workerPath)) {
   console.log('🛡️ Scope safety patch injected into bundle successfully.');
 }
 
-// 3. Sync or Force-Generate Asset Routes Blueprint
+// 4. Sync or Force-Generate Asset Routes Blueprint
 const routesPath = '.open-next/_routes.json';
 const targetRoutesPath = '.open-next/assets/_routes.json';
 
@@ -35,7 +41,7 @@ if (fs.existsSync(routesPath)) {
   console.log('📁 Custom asset routing fallback blueprint generated successfully.');
 }
 
-// 4. Mirror Directories across Output Trees
+// 5. Mirror Directories across Output Trees
 const directories = ['cloudflare', 'middleware', '.build', 'server-functions'];
 directories.forEach(dir => {
   const source = `.open-next/${dir}`;
@@ -45,7 +51,7 @@ directories.forEach(dir => {
   }
 });
 
-// 5. NEW: Flatten Turbopack Symlinks Inside the Cloudflare Output Tree
+// 6. Flatten Turbopack Symlinks Inside the Cloudflare Output Tree
 console.log('🧹 Scanning asset output graph for dangling framework symlinks...');
 const assetsDir = path.join(process.cwd(), '.open-next', 'assets');
 
@@ -58,14 +64,10 @@ function flattenAssets(dir) {
 
     if (entry.isSymbolicLink()) {
       try {
-        // Resolve where the symlink points to
         const targetPath = fs.readlinkSync(fullPath);
         const absoluteTarget = path.resolve(dir, targetPath);
-
-        // Break the symlink link pointer completely
         fs.unlinkSync(fullPath);
 
-        // Copy the actual physical content into its exact slot
         if (fs.existsSync(absoluteTarget)) {
           fs.cpSync(absoluteTarget, fullPath, { recursive: true, dereference: true });
         }
