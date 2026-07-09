@@ -5,10 +5,10 @@
 </p>
 
 <p align="center">
-  <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-15.x-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" /></a>
+  <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-16.2.6-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /></a>
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare_Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Cloudflare" /></a>
-  <a href="https://prisma.io"><img src="https://img.shields.io/badge/Prisma-7.x-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" /></a>
+  <a href="https://prisma.io"><img src="https://img.shields.io/badge/Prisma-7.8.0-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" /></a>
 </p>
 
 <p align="center">
@@ -41,17 +41,19 @@ When an endpoint failure state is detected (unhealthy HTTP status codes $< 200$,
 
 ## ⚙️ Core Technical Stack
 
-* **Frontend Framework:** Next.js 15 App Router featuring React 19 server/client components and optimized route layout isolation.
+* **Frontend Framework:** Next.js 16.2.6 App Router running natively on the high-performance **Turbopack** compilation engine, featuring React 19 asynchronous layouts.
 * **Styling & UI:** Tailwind CSS v4.0 for optimized component styling, container queries, and fast CSS transitions.
-* **Database & ORM:** Prisma ORM integrated with a global PostgreSQL database using `@neondatabase/serverless` connection pooler and `@prisma/adapter-neon` edge driver.
+* **Database & ORM:** Prisma ORM v7.8.0 integrated with a global PostgreSQL database using the modernized, zero-pool abstraction contract from `@neondatabase/serverless` and `@prisma/adapter-neon` for execution inside V8 edge workers.
 * **Authentication:** Clerk Global Identity Provider using edge-compatible middleware session control.
-* **Payment Layer:** Razorpay checkout order generation and cryptographic HMAC-SHA256 signature verification.
+* **Payment Layer:** Razorpay checkout order generation and cryptographic HMAC-SHA256 signature verification supporting cross-currency multi-tier switches (INR/USD).
 
 ---
 
 ## 🛡️ Production Hardening & Security Release Policies
 
-* **Zero-Leak Secret Architecture:** Hardcoded private tokens, bearer credentials, and connection strings are strictly prohibited. Configuration variables are handled through secure environment maps.
+* **Server-Only Architectural Isolation:** Employs a strict compilation guard hook (`import 'server-only'`) inside the core datastore instance (`src/lib/db.ts`) to halt build trees immediately if core secrets or internal database modules leak into the browser bundle graph.
+* **Interactive Client Component Decoupling:** Extracts interactive third-party provider hydration structures (e.g., Clerk's subcomponent submenus) into dedicated, hydrated client containers (`DashboardUserButton`), keeping critical data-fetching page views entirely server-native.
+* **Turbopack Build Assembly Alignment:** Configured with an explicit empty `turbopack: {}` option mapping inside `next.config.ts` to satisfy Next.js 16's default production builder requirements during parallel OpenNext asset compilation pipelines.
 * **Prisma WASM Optimization:** Configured with `compilerBuild = "small"` to shrink compiled WASM bundles from 3.67MB to 1.85MB, satisfying Cloudflare Pages memory constraints.
 * **Global Scope Sanitization:** Integrates a custom build wrapper (`scripts/cloudflare-build.js`) that injects a global safety boundary (`globalThis.e = undefined;`) to block variable collisions during Next.js asset minification.
 * **Cache Mesh Routing:** Maps static directories (`/_next/static/*`) and static files (`/logo.svg`, `/robots.txt`) directly to the CDN edge cache via `_routes.json` settings, decreasing First Contentful Paint times and conserving execution CPU cycles.
