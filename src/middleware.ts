@@ -19,13 +19,12 @@ const clerkProxy = clerkMiddleware(async (auth, req) => {
   }
 });
 
-// Next.js 16 legacy hook matching invocation signature
 export function middleware(req: any, event: any) {
   return clerkProxy(req, event);
 }
 
-// Statically interpreted top-level constraint to satisfy OpenNext
-export const runtime = "edge";
+// 1. UPDATE THIS LINE: Align with Next.js 16's strict middleware compilation spec
+export const runtime = "experimental-edge";
 
 export const config = {
   matcher: [
