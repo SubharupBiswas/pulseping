@@ -87,4 +87,33 @@ function flattenAssets(dir) {
 flattenAssets(assetsDir);
 console.log('✨ Output tree flattened. All symlinks successfully converted to raw assets.');
 
+// 7. Patch loadInstrumentationModule hook to prevent edge crashes
+console.log('🩹 Scanning build output for loadInstrumentationModule hooks...');
+
+function patchFile(filePath) {
+  let content = fs.readFileSync(filePath, 'utf8');
+  if (content.includes('loadInstrumentationModule')) {
+    console.log(`🩹 Patching loadInstrumentationModule in: ${filePath}`);
+    const regex = /(loadInstrumentationModule[^{]*\{)/g;
+    content = content.replace(regex, '$1return;');
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
+}
+
+function scanAndPatch(dir) {
+  if (!fs.existsSync(dir)) return;
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      scanAndPatch(fullPath);
+    } else if (entry.isFile() && (entry.name.endsWith('.js') || entry.name.endsWith('.mjs') || entry.name.endsWith('.cjs'))) {
+      patchFile(fullPath);
+    }
+  }
+}
+
+scanAndPatch(path.join(process.cwd(), '.open-next'));
+console.log('✨ loadInstrumentationModule patches applied successfully.');
+
 console.log('🚀 Build assets unified. Handing over to Cloudflare Pages pipeline!');
