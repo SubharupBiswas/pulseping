@@ -4,13 +4,16 @@ const { execSync } = require('child_process');
 
 console.log('📦 Starting full-stack edge compilation sequence...');
 
-// 1. NEW: Aggressively wipe stale intermediate Next.js compiler maps
-if (fs.existsSync('.next')) {
-  fs.rmSync('.next', { recursive: true, force: true });
-  console.log('🧹 Purged stale Next.js intermediate compilation caches.');
-}
+// 1. Forcefully purge BOTH framework caches to prevent stale compilation bleed
+const cachesToClean = ['.next', '.open-next'];
+cachesToClean.forEach(dir => {
+  if (fs.existsSync(dir)) {
+    fs.rmSync(dir, { recursive: true, force: true });
+    console.log(`🧹 Purged stale build cache directory: ${dir}`);
+  }
+});
 
-// 2. Run Prisma and OpenNext builds
+// 2. Run Prisma and OpenNext builds from scratch
 execSync('npx prisma generate', { stdio: 'inherit' });
 execSync('npx @opennextjs/cloudflare build', { stdio: 'inherit' });
 
@@ -41,12 +44,13 @@ if (fs.existsSync(routesPath)) {
   console.log('📁 Custom asset routing fallback blueprint generated successfully.');
 }
 
-// 5. Mirror Directories across Output Trees
+// 5. Mirror Fresh Directories across Output Trees
 const directories = ['cloudflare', 'middleware', '.build', 'server-functions'];
 directories.forEach(dir => {
   const source = `.open-next/${dir}`;
   const destination = `.open-next/assets/${dir}`;
   if (fs.existsSync(source)) {
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
     fs.cpSync(source, destination, { recursive: true });
   }
 });
