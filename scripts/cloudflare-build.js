@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const { execSync } = require('child_process');
 
 console.log('📦 Starting full-stack edge compilation sequence...');
@@ -43,5 +44,41 @@ directories.forEach(dir => {
     fs.cpSync(source, destination, { recursive: true });
   }
 });
+
+// 5. NEW: Flatten Turbopack Symlinks Inside the Cloudflare Output Tree
+console.log('🧹 Scanning asset output graph for dangling framework symlinks...');
+const assetsDir = path.join(process.cwd(), '.open-next', 'assets');
+
+function flattenAssets(dir) {
+  if (!fs.existsSync(dir)) return;
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+
+    if (entry.isSymbolicLink()) {
+      try {
+        // Resolve where the symlink points to
+        const targetPath = fs.readlinkSync(fullPath);
+        const absoluteTarget = path.resolve(dir, targetPath);
+
+        // Break the symlink link pointer completely
+        fs.unlinkSync(fullPath);
+
+        // Copy the actual physical content into its exact slot
+        if (fs.existsSync(absoluteTarget)) {
+          fs.cpSync(absoluteTarget, fullPath, { recursive: true, dereference: true });
+        }
+      } catch (err) {
+        // Safe bypass for dangling pointers
+      }
+    } else if (entry.isDirectory()) {
+      flattenAssets(fullPath);
+    }
+  }
+}
+
+flattenAssets(assetsDir);
+console.log('✨ Output tree flattened. All symlinks successfully converted to raw assets.');
 
 console.log('🚀 Build assets unified. Handing over to Cloudflare Pages pipeline!');
