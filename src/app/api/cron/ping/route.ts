@@ -3,7 +3,6 @@ import { db } from "@/lib/db";
 import { Resend } from "resend";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -51,7 +50,7 @@ export async function GET(req: NextRequest) {
           clearTimeout(timeoutId);
         }
 
-        // Save log to the database
+        // Save log to the database via our lazy client proxy
         await db.pingLog.create({
           data: {
             monitorId: monitor.id,
@@ -70,7 +69,7 @@ export async function GET(req: NextRequest) {
           if (monitor.telegramChatId && process.env.TELEGRAM_BOT_TOKEN) {
             const telegramUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
             const text = `🚨 PulsePing Alert: Target Endpoint Offline\n\nTarget URL: ${monitor.url}\nHTTP Code: ${statusCode}\nLatency: ${latency}ms\nChecked At: ${new Date().toISOString()}`;
-            
+
             alertPromises.push(
               fetch(telegramUrl, {
                 method: "POST",
@@ -123,7 +122,7 @@ export async function GET(req: NextRequest) {
             );
           }
 
-          // 3. Discord Webhook channel (supporting both discordWebhook and legacy webhookUrl)
+          // 3. Discord Webhook channel
           const targetDiscordWebhook = monitor.discordWebhook || monitor.webhookUrl;
           if (targetDiscordWebhook) {
             const discordBody = {
