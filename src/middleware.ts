@@ -19,14 +19,14 @@ const clerkProxy = clerkMiddleware(async (auth, req) => {
   }
 });
 
-export function proxy(req: any, event: any) {
+// Next.js 16 legacy hook matching invocation signature
+export function middleware(req: any, event: any) {
   return clerkProxy(req, event);
 }
 
-// 1. Correct Next.js 16 App Router Standard: Top-level runtime declaration
+// Statically interpreted top-level constraint to satisfy OpenNext
 export const runtime = "edge";
 
-// 2. The config object now strictly holds framework routing scopes only
 export const config = {
   matcher: [
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
