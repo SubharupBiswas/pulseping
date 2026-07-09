@@ -23,8 +23,8 @@ export function middleware(req: any, event: any) {
   return clerkProxy(req, event);
 }
 
-// 1. UPDATE THIS LINE: Align with Next.js 16's strict middleware compilation spec
-export const runtime = "experimental-edge";
+// 🛑 REMOVED: export const runtime = "experimental-edge"; 
+// Leaving this out stops Next.js from emitting the broken instrumentation chunk.
 
 export const config = {
   matcher: [
