@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Show, UserButton } from "@clerk/nextjs";
 import ThemeToggle from "@/components/ThemeToggle";
+import PulsePingLogo from "@/components/PulsePingLogo";
 
 /**
  * Shared Navbar — 3-zone responsive layout
@@ -53,25 +54,26 @@ export default function Navbar({ activeLink, variant }: NavbarProps) {
         <div className="flex-shrink-0">
           <Link
             href="/"
-            className="font-bold text-xl tracking-tight text-zinc-950 dark:text-white hover:opacity-90 transition duration-150 flex items-center gap-2"
+            className="font-bold text-xl tracking-tight text-zinc-950 dark:text-white hover:opacity-90 transition duration-150 flex items-center gap-2.5"
             aria-label="PulsePing Homepage"
           >
-            📡 PulsePing
+            <PulsePingLogo size="w-6 h-6" />
+            <span>PulsePing</span>
           </Link>
         </div>
 
         {/* ── Zone 2: Center links (desktop only — vanishes on mobile) ── */}
         <div className="hidden md:flex items-center gap-x-8">
-          <Link href="/pricing" className={linkCls("pricing")}>
+          <Link href="/pricing" className={linkCls("pricing")} aria-label="View pricing plans">
             Pricing
           </Link>
-          <Link href="/status" className={linkCls("status")}>
+          <Link href="/status" className={linkCls("status")} aria-label="Check system operational status">
             Status
           </Link>
-          <Link href="/terms" className={linkCls("terms")}>
+          <Link href="/terms" className={linkCls("terms")} aria-label="Read terms of service">
             Terms
           </Link>
-          <Link href="/privacy" className={linkCls("privacy")}>
+          <Link href="/privacy" className={linkCls("privacy")} aria-label="Read privacy policy">
             Privacy
           </Link>
         </div>
@@ -84,6 +86,7 @@ export default function Navbar({ activeLink, variant }: NavbarProps) {
               <Link
                 href="/dashboard"
                 className="text-sm font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-100 border border-zinc-800 px-3 py-1.5 rounded-lg transition duration-150 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]"
+                aria-label="Access console dashboard"
               >
                 Console
               </Link>
@@ -95,12 +98,14 @@ export default function Navbar({ activeLink, variant }: NavbarProps) {
                 <Link
                   href="/sign-in"
                   className="text-sm font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-100 border border-zinc-800 px-3.5 py-1.5 rounded-lg transition duration-150 cursor-pointer shadow-sm"
+                  aria-label="Sign in to your account"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/sign-up"
                   className="text-sm font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-100 dark:hover:bg-white text-zinc-950 dark:text-zinc-950 border border-zinc-300 dark:border-zinc-800 px-3.5 py-1.5 rounded-lg transition duration-150 cursor-pointer shadow-sm hidden sm:inline-flex"
+                  aria-label="Sign up for a free account"
                 >
                   Sign Up
                 </Link>
@@ -109,6 +114,7 @@ export default function Navbar({ activeLink, variant }: NavbarProps) {
                 <Link
                   href="/dashboard"
                   className="text-sm font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-100 border border-zinc-800 px-3 py-1.5 rounded-lg transition duration-150 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]"
+                  aria-label="Access console dashboard"
                 >
                   Console
                 </Link>

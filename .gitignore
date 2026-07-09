@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -10,40 +8,46 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
+# testing & coverage
 /coverage
 
-# next.js
+# Next.js build & cache outputs
 /.next/
 /out/
+.npm-cache/
 
-# production
+# serverless & wrangler build frameworks
+/.open-next/
+/.wrangler/
+.wrangler/
+
+# production output
 /build
 
-# misc
-.DS_Store
-*.pem
+# environment files (strictly secret)
+.env
+.env.local
+.env.production
+.env.development
+.env.test
 
-# debug
+# development logs & script scratchpads
+*.log
+task-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# OS artifacts
+.DS_Store
+Thumbs.db
+*.pem
 
-# vercel
-.vercel
-
-# typescript
+# typescript & next-env
 *.tsbuildinfo
 next-env.d.ts
 
+# deployment provider state
+.vercel
 /src/generated/prisma
-
-# open-next
-/.open-next/
-
-# wrangler local state
-/.wrangler/

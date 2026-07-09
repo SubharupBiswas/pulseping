@@ -15,14 +15,18 @@ model User {
 }
 
 model Monitor {
-  id         String    @id @default(uuid())
-  url        String
-  webhookUrl String?   // Optional field to store Discord/Slack target endpoints
-  frequency  Int       @default(10)
-  isActive   Boolean   @default(true)
-  userId     String
-  user       User      @relation(fields: [userId], references: [id])
-  logs       PingLog[]
+  id             String    @id @default(uuid())
+  url            String
+  webhookUrl     String?   // Optional field to store Discord/Slack target endpoints
+  discordWebhook String?
+  slackWebhook   String?
+  telegramChatId String?
+  alertEmail     String?
+  frequency      Int       @default(10)
+  isActive       Boolean   @default(true)
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  logs           PingLog[]
 }
 
 model PingLog {

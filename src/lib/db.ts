@@ -1,35 +1,22 @@
-import { Pool } from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaClient } from "@prisma/client";
 
-// Intercept and suppress pg-driver SSL security warnings during development
-if (typeof process !== "undefined" && typeof process.emitWarning === "function") {
-  const originalEmitWarning = process.emitWarning;
-  process.emitWarning = function (warning: any, ...args: any[]) {
-    const message = typeof warning === "string" ? warning : (warning && warning.message) || "";
-    if (message.includes("SECURITY WARNING") || message.includes("SSL modes")) {
-      return;
-    }
-    return originalEmitWarning.call(process, warning, ...args);
-  };
-}
-
-
+// Global singleton pattern to prevent database connection pool exhaustion during local fast-refresh development
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
-  pgPool: Pool | undefined;
+  neonPool: Pool | undefined;
 };
 
 const connectionString = process.env.DATABASE_URL;
 
-const pool =
-  globalForPrisma.pgPool ??
-  new Pool({
-    connectionString,
-    max: 10,
-  });
+if (!connectionString) {
+  throw new Error("DATABASE_URL environment variable is missing");
+}
 
-const adapter = new PrismaPg(pool);
+const pool = globalForPrisma.neonPool ?? new Pool({ connectionString });
+
+const adapter = new PrismaNeon(pool);
 
 export const db =
   globalForPrisma.prisma ??
@@ -40,5 +27,5 @@ export const db =
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = db;
-  globalForPrisma.pgPool = pool;
+  globalForPrisma.neonPool = pool;
 }

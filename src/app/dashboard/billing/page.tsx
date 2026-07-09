@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import ThemeToggle from "@/components/ThemeToggle";
 import { UserButton } from "@clerk/nextjs";
 import { upgradeUserPlan } from "@/app/actions/billing";
+import PulsePingLogo from "@/components/PulsePingLogo";
 
 export const dynamic = "force-dynamic";
 
@@ -65,9 +66,7 @@ export default async function BillingPage() {
 
           {/* Brand Logo Link */}
           <Link href="/dashboard" className="flex items-center gap-2.5 group shrink-0 pointer-events-auto" aria-label="PulsePing Dashboard">
-            <div className="w-5 h-5 rounded-md bg-zinc-950 dark:bg-zinc-50 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.06)] group-hover:bg-zinc-800 dark:group-hover:bg-zinc-200 transition duration-150">
-              <div className="w-1.5 h-1.5 rounded-full bg-zinc-50 dark:bg-zinc-950" />
-            </div>
+            <PulsePingLogo size="w-6 h-6" />
             <span className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100">PulsePing</span>
           </Link>
 

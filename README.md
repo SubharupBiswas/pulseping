@@ -1,116 +1,114 @@
 <p align="center">
-  <h1 align="center">🛰️ PulsePing</h1>
-  <p align="center"><b>Serverless Edge-Native Uptime Monitoring SaaS Platform</b></p>
+  <img src="/public/logo.svg" alt="PulsePing Logo" width="80" height="80" />
+  <h1 align="center">PulsePing</h1>
+  <p align="center"><b>Production-Grade Serverless Edge-Native Uptime & Latency Telemetry Platform</b></p>
 </p>
 
 <p align="center">
-  <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-15.3.4-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" /></a>
+  <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-15.x-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /></a>
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare_Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Cloudflare" /></a>
-  <a href="https://prisma.io"><img src="https://img.shields.io/badge/Prisma-7.8.0-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" /></a>
+  <a href="https://prisma.io"><img src="https://img.shields.io/badge/Prisma-7.x-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" /></a>
 </p>
 
 <p align="center">
-  <a href="https://pulseping.subnetmask.tech"><b>Live Production Deployment →</b></a>
+  <a href="https://pulseping.subnetmask.tech"><b>Live Console Deployment →</b></a>
 </p>
 
 ---
 
-PulsePing is a developer-first, serverless uptime monitoring platform engineered to run with zero infrastructure overhead. Operating directly on Cloudflare’s global edge network via Pages and Workers, the platform processes real-time endpoint latency telemetry, manages secure workspace sessions, validates service-level performance agreements (SLAs), and dispatches transaction alerts. By leveraging serverless architectures, PulsePing eliminates traditional VM maintenance costs while maintaining millisecond-level precision in uptime diagnostics.
+PulsePing is an enterprise-grade, developer-first uptime and latency tracking SaaS engineered to run completely at the V8 Edge Runtime with zero traditional server overhead. Deployed on Cloudflare’s global edge network via Pages and Workers, the platform processes real-time endpoint latency telemetry, manages secure sessions, tracks service level agreements (SLAs), and dispatches concurrent alerts to keep developers ahead of production downtime.
+
+By leveraging serverless adapters and non-blocking asynchronous execution layers, PulsePing provides sub-millisecond dispatch speeds and removes the maintenance, patching, and resource constraints of typical VM-based monitoring setups.
 
 ---
 
-## ⚡ Production Lighthouse Performance Metrics
+## ⚡ Flagship Capabilities & Features
 
-> 🟢 **100%** Search Engine Optimization (SEO)  
-> 🟢 **96%** Production Best Practices  
-> 🟢 **95%** Universal Accessibility (A11y)  
-> 🟢 **93%** Core Web Vitals Desktop Performance
+### ⏱️ High-Speed Concurrent Telemetry Engine
+* **Concurrent Ping Multiplexing:** Utilizes a non-blocking asynchronous worker pool (`Promise.allSettled`) inside the edge runtime to fetch statuses of all active monitors concurrently, preventing single-slow-endpoint delays from throttling other checks.
+* **Defensive Abort Guards:** Enforces a strict 5-second connection abort timeout via `AbortController` to isolate hanging nodes and identify unresponsive target hosts.
+* **Granular Log Archival:** Captures precise latency metrics via high-resolution timers (`performance.now()`) and stores HTTP resolution states directly in the datastore.
 
----
-
-## ⚙️ Architecture & Core Capabilities
-
-- **Edge Worker Runtime Execution:** The entire Next.js application bundle is compiled into an optimized worker format via the OpenNext adapter, aligning with Cloudflare Pages requirements to ensure global routing, sub-millisecond edge invocation times, and native cold-start elimination.
-- **Serverless Polling Engine:** An automated edge cron pipeline (`/api/cron/ping`) triggers automated requests across active monitor streams. Using non-blocking, asynchronous task multiplexing with `Promise.all` and precise `performance.now()` telemetry, it runs health handshakes and logs latency updates directly at the edge.
-- **Payment & Tiered Monetization:** Incorporates a robust Razorpay checkout integration (`/api/create-order` and `/api/verify-payment`) matching payment verification signatures locally using HMAC-SHA256 digests. Validated transaction payloads automatically transition accounts into paid subscription tiers (FREE, PRO, BUSINESS) inside the PostgreSQL datastore.
-- **Discord Alert Integration:** A custom alerting pipeline triggers on validation failure states (HTTP status >= 500 or timeout connection errors). The edge runtime formats a rich embed payload detailing target address coordinates, status codes, and round-trip delay times, dispatching it to user-configured Discord webhook endpoints instantly.
+### 🔔 Non-Blocking Multi-Channel Alert Router Engine
+When an endpoint failure state is detected (unhealthy HTTP status codes $< 200$, $\ge 300$, or connection/timeout errors), PulsePing evaluates the target configuration and fires alerts concurrently through independent micro-engines:
+* **Discord Webhook Channel:** Dispatches rich markdown embed cards containing target URLs, HTTP resolution states, latency markers, and timestamps.
+* **Slack Integration:** Posts clean, block-structured Slack JSON payloads to user-configured channel webhooks.
+* **Telegram Bot Channel:** Sends text alert telemetry strings via the Telegram Bot API to defined chat IDs.
+* **Resend Email Dispatcher:** Automatically sends responsive, dark-themed HTML/CSS email reports from `alerts@pulseping.subnetmask.tech` using the serverless-ready `resend` client library.
 
 ---
 
-## 🛠️ Production Tech Stack
+## ⚙️ Core Technical Stack
 
-| Dependency / Tool | Version | Architectural Role |
-| :--- | :--- | :--- |
-| **Next.js** | `15.3.4` | Edge-optimized full-stack framework with React 19 server & client hooks |
-| **Tailwind CSS** | `v4.0` | Compiler-optimized Utility-First styling system with modern custom-variant support |
-| **Prisma Client** | `7.8.0` | ORM interface supporting serverless PostgreSQL connections |
-| **PostgreSQL / Neon** | `*` | Primary serverless datastore with connection pool pooling capabilities |
-| **Clerk Auth** | `^7.5.13` | Federated identity provider with edge-compatible middleware session control |
-| **Razorpay API** | `*` | Secure checkout order generation and cryptographic payment validation |
-| **Wrangler** | `*` | Developer CLI to compile, preview, and deploy workers to Cloudflare |
+* **Frontend Framework:** Next.js 15 App Router featuring React 19 server/client components and optimized route layout isolation.
+* **Styling & UI:** Tailwind CSS v4.0 for optimized component styling, container queries, and fast CSS transitions.
+* **Database & ORM:** Prisma ORM integrated with a global PostgreSQL database using `@neondatabase/serverless` connection pooler and `@prisma/adapter-neon` edge driver.
+* **Authentication:** Clerk Global Identity Provider using edge-compatible middleware session control.
+* **Payment Layer:** Razorpay checkout order generation and cryptographic HMAC-SHA256 signature verification.
 
 ---
 
-## 🛡️ Performance Engineering & Hardening
+## 🛡️ Production Hardening & Security Release Policies
 
-- **Binary Module Compression:** To bypass Cloudflare's strict maximum memory footprint thresholds for edge workers, the Prisma generator is configured with `compilerBuild = "small"`. This flag optimizes client generation by stripping unused native engines and metadata, shrinking the compiled WASM package from 3.67MB down to 1.85MB to guarantee safe execution.
-- **Scope Safety Isolation Injection:** To address minification-induced variable collisions in edge production runtimes, the custom `scripts/cloudflare-build.js` pipeline programmatically injects a global safety boundary (`globalThis.e = undefined;`) at the top of the compiled worker bundle. This sanitizes the global scope and prevents runtime `ReferenceError` crashes.
-- **CDN Edge Asset Mapping:** A custom `_routes.json` fallback generator maps assets to the edge network CDN. Explicitly routing static directory calls (`/_next/static/*`) and system items (`/favicon.ico`, `/robots.txt`) directly through the Cloudflare cache mesh significantly decreases core web vitals first-contentful paint (FCP) times and saves serverless compute CPU-cycles.
+* **Zero-Leak Secret Architecture:** Hardcoded private tokens, bearer credentials, and connection strings are strictly prohibited. Configuration variables are handled through secure environment maps.
+* **Prisma WASM Optimization:** Configured with `compilerBuild = "small"` to shrink compiled WASM bundles from 3.67MB to 1.85MB, satisfying Cloudflare Pages memory constraints.
+* **Global Scope Sanitization:** Integrates a custom build wrapper (`scripts/cloudflare-build.js`) that injects a global safety boundary (`globalThis.e = undefined;`) to block variable collisions during Next.js asset minification.
+* **Cache Mesh Routing:** Maps static directories (`/_next/static/*`) and static files (`/logo.svg`, `/robots.txt`) directly to the CDN edge cache via `_routes.json` settings, decreasing First Contentful Paint times and conserving execution CPU cycles.
 
 ---
 
 ## 🚀 Local Development Setup
 
-### 1. Prerequisites
-Ensure you have Node.js 18+, PostgreSQL (or a Neon serverless instance), and npm installed.
-
-### 2. Installation
-Clone the repository and install dependencies:
+### 1. Installation
+Clone the repository and install the development dependencies:
 ```bash
 npm install
 ```
 
-### 3. Database Migration
-Apply the database schema using Prisma:
+### 2. Database Generation
+Generate the local Prisma Client typings and push the database schema:
 ```bash
+npx prisma generate
 npx prisma db push
 ```
 
-### 4. Configuration
-Create a `.env` file at the root of the workspace and configure the following environment keys:
+### 3. Environment Configuration
+Create a `.env` file at the root of the workspace directory. Populate it with the required structure:
 ```env
-# Database Credentials
-DATABASE_URL="postgresql://[username]:[password]@[host]/[database]?sslmode=require"
+# Primary Serverless PostgreSQL Connection String
+DATABASE_URL="postgresql://[user]:[password]@[host]/[database]?sslmode=require"
 
-# Clerk Authentication Details
+# Clerk Authentication Keys
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
 CLERK_SECRET_KEY="sk_test_..."
 
-# Razorpay Checkout Credentials
+# Razorpay API Credentials
 NEXT_PUBLIC_RAZORPAY_KEY_ID="rzp_test_..."
 RAZORPAY_KEY_SECRET="secret_..."
 
-# Cron Handshake Authentication Token
-CRON_SECRET="your_cron_passphrase_here"
+# Telemetry Cron Validation Passphrase
+CRON_SECRET="your-secure-cron-passphrase-here"
 
-# Google Analytics Identifier
+# Security Verification & Analytics
 NEXT_PUBLIC_GA_ID="G-..."
-
-# Turnstile Security Key
 NEXT_PUBLIC_TURNSTILE_SITE_KEY="0x..."
+
+# Notification Channel APIs
+TELEGRAM_BOT_TOKEN="bot_token_here"
+RESEND_API_KEY="re_..."
 ```
 
-### 5. Launch local environment
-Run the local Next.js development server:
+### 4. Running the Development Server
+Start the local hot-reloading server:
 ```bash
 npm run dev
 ```
 
-### 6. Build compilation validation
-To test and validate the production edge assets compilation sequence:
+### 5. Production Compilation Test
+Simulate Next.js compilation and bundle workers:
 ```bash
-npm run cloudflare-deploy
+npx tsc --noEmit
 ```
 
 ---

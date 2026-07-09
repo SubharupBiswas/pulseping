@@ -5,6 +5,7 @@ import { SignUp } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Link from "next/link";
 import Script from "next/script";
+import PulsePingLogo from "@/components/PulsePingLogo";
 
 export default function SignUpPage() {
   const [mounted, setMounted] = useState(false);
@@ -24,12 +25,10 @@ export default function SignUpPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 group pointer-events-auto"
+            className="flex items-center gap-2.5 group pointer-events-auto"
             aria-label="PulsePing Homepage"
           >
-            <div className="w-5 h-5 rounded-md bg-white flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.10)] group-hover:bg-neutral-200 transition duration-150">
-              <div className="w-1.5 h-1.5 rounded-full bg-neutral-950" />
-            </div>
+            <PulsePingLogo size="w-6 h-6" />
             <span className="font-semibold text-sm tracking-tight text-white">
               PulsePing
             </span>
