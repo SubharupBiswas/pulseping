@@ -1,12 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@prisma/client", "prisma"],
+  // Correct external packaging alignment for target edge isolation
+  serverExternalPackages: ["@prisma/client", ".prisma/client"],
+
   outputFileTracingExcludes: {
     "*": ["./**/*.js.map", "./**/*.mjs.map", "./**/*.cjs.map"],
   },
-  // Explicitly initialize an empty turbopack target block to satisfy Next.js 16's
-  // compilation guard when custom webpack lifecycle hooks are present.
   turbopack: {},
   webpack: (config, { dev, isServer }) => {
     if (!dev && isServer) {
