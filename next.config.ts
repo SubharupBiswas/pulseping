@@ -1,13 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Correct external packaging alignment for target edge isolation
+  // Externalize Prisma client bundles to prevent Turbopack/Webpack compilation conflicts
   serverExternalPackages: ["@prisma/client", ".prisma/client"],
 
+  // Trim down deployment package size by omitting heavy source maps
   outputFileTracingExcludes: {
     "*": ["./**/*.js.map", "./**/*.mjs.map", "./**/*.cjs.map"],
   },
-  turbopack: {},
+
+  // Optimized Webpack pipeline configurations tailored for Cloudflare's global edge runtime
   webpack: (config, { dev, isServer }) => {
     if (!dev && isServer) {
       config.optimization = {
