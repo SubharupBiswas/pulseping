@@ -23,10 +23,11 @@ export function proxy(req: any, event: any) {
   return clerkProxy(req, event);
 }
 
-export const config = {
-  // Explicitly force Cloudflare/OpenNext to package this proxy module as an Edge Isolate
-  runtime: "edge",
+// 1. Correct Next.js 16 App Router Standard: Top-level runtime declaration
+export const runtime = "edge";
 
+// 2. The config object now strictly holds framework routing scopes only
+export const config = {
   matcher: [
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     '/(api|trpc)(.*)',
