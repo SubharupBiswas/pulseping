@@ -19,10 +19,12 @@
     "@opennextjs/cloudflare": "*",
     "@prisma/adapter-neon": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "framer-motion": "^12.42.2",
     "next": "16.2.6",
     "pg": "^8.11.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "recharts": "^3.9.2",
     "resend": "^4.1.2",
     "ws": "^8.18.0"
   },
