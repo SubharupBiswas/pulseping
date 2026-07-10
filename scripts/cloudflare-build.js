@@ -185,46 +185,46 @@ function buildPatchPatterns(target) {
   return [
     // A: Plain function declaration
     {
-      re: new RegExp(`\\b(async\\s+function\\s+${t}\\b[^{]*)\\{`, 'g'),
+      re: new RegExp(`\\b(async\\s+function\\s+${t}\\b[^{]*)\\{(?!\\s*return)`, 'g'),
       async: true,
       label: 'async-function-decl',
     },
     {
-      re: new RegExp(`\\b(function\\s+${t}\\b[^{]*)\\{`, 'g'),
+      re: new RegExp(`\\b(function\\s+${t}\\b[^{]*)\\{(?!\\s*return)`, 'g'),
       async: false,
       label: 'function-decl',
     },
     // B: Object key colon-function
     {
-      re: new RegExp(`(\\b${t}\\s*:\\s*async\\s+function\\s*\\([^)]*\\)\\s*)\\{`, 'g'),
+      re: new RegExp(`(\\b${t}\\s*:\\s*async\\s+function\\s*\\([^)]*\\)\\s*)\\{(?!\\s*return)`, 'g'),
       async: true,
       label: 'colon-async-function',
     },
     {
-      re: new RegExp(`(\\b${t}\\s*:\\s*function\\s*\\([^)]*\\)\\s*)\\{`, 'g'),
+      re: new RegExp(`(\\b${t}\\s*:\\s*function\\s*\\([^)]*\\)\\s*)\\{(?!\\s*return)`, 'g'),
       async: false,
       label: 'colon-function',
     },
     // C: Object/class method shorthand
     //    Negative lookbehind ensures we don't match after "function " or ":"
     {
-      re: new RegExp(`(?<![:\\w])(async\\s+${t}\\b\\s*\\([^)]*\\)\\s*)\\{`, 'g'),
+      re: new RegExp(`(?<![:\\w])(async\\s+${t}\\b\\s*\\([^)]*\\)\\s*)\\{(?!\\s*return)`, 'g'),
       async: true,
       label: 'async-method-shorthand',
     },
     {
-      re: new RegExp(`(?<!function\\s)(?<![:\\w])(${t}\\b\\s*\\([^)]*\\)\\s*)\\{`, 'g'),
+      re: new RegExp(`(?<!function\\s)(?<![:\\w])(${t}\\b\\s*\\([^)]*\\)\\s*)\\{(?!\\s*return)`, 'g'),
       async: false,
       label: 'method-shorthand',
     },
     // D: Arrow function property
     {
-      re: new RegExp(`(\\b${t}\\s*:\\s*async\\s*\\([^)]*\\)\\s*=>\\s*)\\{`, 'g'),
+      re: new RegExp(`(\\b${t}\\s*:\\s*async\\s*\\([^)]*\\)\\s*=>\\s*)\\{(?!\\s*return)`, 'g'),
       async: true,
       label: 'async-arrow',
     },
     {
-      re: new RegExp(`(\\b${t}\\s*:\\s*\\([^)]*\\)\\s*=>\\s*)\\{`, 'g'),
+      re: new RegExp(`(\\b${t}\\s*:\\s*\\([^)]*\\)\\s*=>\\s*)\\{(?!\\s*return)`, 'g'),
       async: false,
       label: 'arrow',
     },
@@ -256,22 +256,15 @@ function patchFile(filePath) {
 
     for (const { re, async: isAsync, label } of patterns) {
       const earlyReturn = isAsync ? 'return Promise.resolve();' : 'return;';
-      const alreadyPatchedCheck = new RegExp(
-        re.source.replace(/\\\{$/, `\\{\\s*${earlyReturn.replace('.', '\\.')}`),
-        re.flags
-      );
 
       // Reset regex state before testing
       re.lastIndex = 0;
-      alreadyPatchedCheck.lastIndex = 0;
 
       // Only patch if there's an un-patched match in this file
       if (re.test(content)) {
         re.lastIndex = 0;
         // Replace each match: inject early return right after the opening brace
         const patched = content.replace(re, (_, prefix) => {
-          // Check the character right after `{` in the original to ensure we
-          // don't already have our early return there
           return `${prefix}{${earlyReturn}`;
         });
         if (patched !== content) {
