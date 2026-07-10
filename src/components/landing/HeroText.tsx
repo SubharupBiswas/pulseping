@@ -16,6 +16,15 @@ type Props = {
  * Spring config: stiffness 260, damping 20 (slightly bouncy, premium feel).
  */
 export default function HeroText({ text, className = "", delay = 0 }: Props) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <span className="text-emerald-500">{text}</span>;
+  }
+
   const words = text.split(" ");
 
   const container = {
