@@ -17,8 +17,17 @@ cachesToClean.forEach(dir => {
 execSync('npx prisma generate', { stdio: 'inherit' });
 execSync('npx @opennextjs/cloudflare build', { stdio: 'inherit' });
 
-// 3. Apply Global Scope ReferenceError Patch
+// Overwrite the dynamic server instrumentation module loader to prevent edge isolate panic
 const workerPath = '.open-next/worker.js';
+if (fs.existsSync(workerPath)) {
+  let code = fs.readFileSync(workerPath, 'utf8');
+  const patchString = 'async loadInstrumentationModule(){return null;}';
+  code = code.replace(/async loadInstrumentationModule\s*\([^\)]*\)\s*\{/, patchString);
+  fs.writeFileSync(workerPath, code, 'utf8');
+  console.log('🛡️ Instrumentation loader patch injected into bundle successfully.');
+}
+
+// 3. Apply Global Scope ReferenceError Patch
 const targetWorkerPath = '.open-next/assets/_worker.js';
 
 if (fs.existsSync(workerPath)) {
