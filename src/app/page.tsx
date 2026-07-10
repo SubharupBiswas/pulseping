@@ -2,9 +2,13 @@ import React from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import DotGridHero from "@/components/landing/DotGridHero";
-import HeroText from "@/components/landing/HeroText";
 import MagnetCTA from "@/components/landing/MagnetCTA";
 import BentoFeatures from "@/components/landing/BentoFeatures";
+import dynamic from "next/dynamic";
+
+const HeroText = dynamic(() => import("@/components/landing/HeroText"), {
+  ssr: false,
+});
 
 export default function LandingPage() {
   return (
