@@ -15,16 +15,24 @@ cachesToClean.forEach(dir => {
 
 // 2. Run Prisma and OpenNext builds from scratch
 execSync('npx prisma generate', { stdio: 'inherit' });
-execSync('npx @opennextjs/cloudflare build', { stdio: 'inherit' });
+execSync('npx @opennextjs/cloudflare build --build-command "npm run build"', { stdio: 'inherit' });
 
 // Overwrite the dynamic server instrumentation module loader to prevent edge isolate panic
-const workerPath = '.open-next/worker.js';
-if (fs.existsSync(workerPath)) {
-  let code = fs.readFileSync(workerPath, 'utf8');
-  const patchString = 'async loadInstrumentationModule(){return null;}';
-  code = code.replace(/async loadInstrumentationModule\s*\([^\)]*\)\s*\{/, patchString);
-  fs.writeFileSync(workerPath, code, 'utf8');
-  console.log('🛡️ Instrumentation loader patch injected into bundle successfully.');
+const handlerPath = '.open-next/server-functions/default/handler.mjs';
+if (fs.existsSync(handlerPath)) {
+  let code = fs.readFileSync(handlerPath, 'utf8');
+  const targetRegex = /async loadInstrumentationModule\s*\([^\)]*\)\s*\{/;
+  if (!code.match(targetRegex)) {
+    throw new Error('CRITICAL: loadInstrumentationModule target was not found in handler.mjs!');
+  }
+  code = code.replace(targetRegex, 'async loadInstrumentationModule(){return null;}');
+  if (!code.includes('async loadInstrumentationModule(){return null;}')) {
+    throw new Error('CRITICAL: loadInstrumentationModule patch was not successfully applied!');
+  }
+  fs.writeFileSync(handlerPath, code, 'utf8');
+  console.log('🛡️ Instrumentation loader patch injected into default handler successfully.');
+} else {
+  throw new Error('CRITICAL: default handler.mjs was not found!');
 }
 
 // 3. Apply Global Scope ReferenceError Patch

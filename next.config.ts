@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
     "*": ["./**/*.js.map", "./**/*.mjs.map", "./**/*.cjs.map"],
   },
 
+  // Silence Next.js 16 Turbopack warning when custom webpack config is present
+  turbopack: {},
+
   // Optimized Webpack pipeline configurations tailored for Cloudflare's global edge runtime
   webpack: (config, { dev, isServer }) => {
     if (!dev && isServer) {
