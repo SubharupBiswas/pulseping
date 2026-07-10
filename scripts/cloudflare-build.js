@@ -92,11 +92,10 @@ console.log('✨ Output tree flattened. All symlinks successfully converted to r
 //    Recursively walk the entire .open-next/ tree and log every JS asset file.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const PATCHABLE_EXTS = new Set(['.js', '.mjs', '.cjs']);
 const PATCH_BANNER = '/* __PULSEPING_PATCHED__ */';
 
 /**
- * Recursively collect all patchable JS files under a root directory.
+ * Recursively collect target worker and handler JS files under a root directory.
  * Returns an array of absolute file paths.
  */
 function collectFiles(dir, collected = []) {
@@ -104,14 +103,26 @@ function collectFiles(dir, collected = []) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
+    const absPath = path.resolve(fullPath);
+
+    // Skip any directories or files inside blacklisted segments
+    if (
+      absPath.includes(path.sep + '.next' + path.sep) ||
+      absPath.includes(path.sep + 'node_modules' + path.sep) ||
+      absPath.includes(path.sep + '_next' + path.sep) ||
+      absPath.includes(path.sep + 'static' + path.sep)
+    ) {
+      continue;
+    }
+
     if (entry.isDirectory()) {
-      // Exclude node_modules and frontend static chunks to prevent bundle corruption
-      if (entry.name === 'node_modules' || entry.name === '_next') {
-        continue;
-      }
       collectFiles(fullPath, collected);
-    } else if (entry.isFile() && PATCHABLE_EXTS.has(path.extname(entry.name))) {
-      collected.push(fullPath);
+    } else if (entry.isFile()) {
+      const baseName = entry.name;
+      // Only process the primary worker entries and main compiled router handlers
+      if (baseName === 'worker.js' || baseName === '_worker.js' || baseName === 'handler.mjs') {
+        collected.push(fullPath);
+      }
     }
   }
   return collected;

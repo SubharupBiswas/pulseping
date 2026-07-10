@@ -128,19 +128,20 @@ function resetClient(): void {
 
 /**
  * Wraps a model method with transparent retry-on-stale-connection logic.
- * The value returned from `target[prop]` is expected to be a function whose
- * first invocation returns a Promise (standard Prisma model methods).
+ * Ensures the function is always called with the correct client/model context.
  */
 function withRetry(
   getValue: () => unknown,
-  prop: string | symbol
+  prop: string | symbol,
+  getContext: () => unknown
 ): unknown {
   const value = getValue();
   if (typeof value !== 'function') return value;
 
   return function (this: unknown, ...args: unknown[]) {
+    const context = getContext();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = (value as any).apply(this, args);
+    const result = (value as any).apply(context, args);
     if (result && typeof result.then === 'function') {
       return result.catch((err: unknown) => {
         if (isStaleConnectionError(err)) {
@@ -149,10 +150,11 @@ function withRetry(
             `resetting client and retrying once. Error: ${(err as Error).message}`
           );
           resetClient();
-          // Re-resolve the method from a fresh client and retry
-          const freshValue = Reflect.get(getClient(), prop);
+          // Re-resolve the method and context from a fresh client and retry
+          const freshContext = getContext();
+          const freshValue = getValue();
           if (typeof freshValue === 'function') {
-            return (freshValue as (...a: unknown[]) => unknown).apply(getClient(), args);
+            return (freshValue as (...a: unknown[]) => unknown).apply(freshContext, args);
           }
         }
         throw err;
@@ -163,32 +165,69 @@ function withRetry(
 }
 
 /**
- * The exported `db` instance is a lazy Proxy. In server environments it
- * transparently delegates to a real PrismaClient. In browser/SSR static-
+ * Recursively wraps object properties of the Prisma client in proxies to ensure
+ * that nested model calls (like db.user.findUnique) are fully resilient.
+ */
+function createResilientProxy<T extends object>(
+  target: T,
+  getParentClient: () => PrismaClient,
+  path: string[] = []
+): T {
+  return new Proxy(target, {
+    get(obj, prop) {
+      if (typeof window !== 'undefined') {
+        return undefined;
+      }
+
+      // Ignore special JS symbols and promise traits
+      if (typeof prop === 'symbol' || prop === 'then' || prop === 'toJSON') {
+        return Reflect.get(obj, prop);
+      }
+
+      const client = getParentClient();
+      let currentParent: any = client;
+      for (const segment of path) {
+        currentParent = currentParent?.[segment];
+      }
+      const value = Reflect.get(currentParent || obj, prop);
+
+      if (typeof value === 'function') {
+        return withRetry(
+          () => {
+            let retryParent: any = getClient();
+            for (const segment of path) {
+              retryParent = retryParent?.[segment];
+            }
+            return Reflect.get(retryParent || obj, prop);
+          },
+          prop,
+          () => {
+            let retryParent: any = getClient();
+            for (const segment of path) {
+              retryParent = retryParent?.[segment];
+            }
+            return retryParent || obj;
+          }
+        );
+      }
+
+      if (value && typeof value === 'object') {
+        return createResilientProxy(value, getParentClient, [...path, prop as string]);
+      }
+
+      return value;
+    },
+  });
+}
+
+/**
+ * The exported `db` instance is a lazy recursive Proxy. In server environments
+ * it transparently delegates to a real PrismaClient. In browser/SSR static-
  * analysis contexts (where resolveConnectionString would throw) the Proxy
  * simply returns undefined for any property access, preventing module-load
  * crashes in client bundles.
  */
-export const db = new Proxy({} as PrismaClient, {
-  get(_target, prop) {
-    // Guard: return a safe no-op proxy if we're in a browser context.
-    // This prevents the module from crashing when Next.js statically analyses
-    // server actions imported by client components.
-    if (typeof window !== 'undefined') {
-      return undefined;
-    }
-
-    const client = getClient();
-    const value = Reflect.get(client, prop);
-
-    // Wrap callable properties (model methods, $queryRaw, etc.) with retry logic
-    if (typeof value === 'function') {
-      return withRetry(() => Reflect.get(getClient(), prop), prop);
-    }
-
-    return value;
-  },
-});
+export const db = createResilientProxy({} as PrismaClient, getClient);
 
 /** Alias for consumers that prefer the `prisma` name. */
 export const prisma = db;
