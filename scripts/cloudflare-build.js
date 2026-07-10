@@ -36,6 +36,7 @@ if (fs.existsSync(handlerPath)) {
 }
 
 // 3. Apply Global Scope ReferenceError Patch
+const workerPath = '.open-next/worker.js';
 const targetWorkerPath = '.open-next/assets/_worker.js';
 
 if (fs.existsSync(workerPath)) {
