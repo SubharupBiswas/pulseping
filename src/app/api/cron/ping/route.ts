@@ -232,7 +232,7 @@ export async function GET(req: NextRequest) {
     );
 
     // Map checked results to success objects
-    const results = checkResults.map((r) => {
+    const results = checkResults.map((r: any) => {
       if (r.status === "fulfilled") {
         return r.value;
       } else {

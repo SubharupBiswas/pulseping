@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   // Externalize Prisma client bundles to prevent Turbopack/Webpack compilation conflicts
@@ -21,6 +22,13 @@ const nextConfig: NextConfig = {
         sideEffects: true,
       };
     }
+
+    // Force explicit path alias resolution to bypass Next 16 + TS 7 automatic mapping drops
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(process.cwd(), 'src'),
+    };
+
     return config;
   },
 };
