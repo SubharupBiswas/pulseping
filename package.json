@@ -40,5 +40,8 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "wrangler": "*"
+  },
+  "overrides": {
+    "glob": "^10.3.10"
   }
 }

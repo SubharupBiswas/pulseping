@@ -7,7 +7,7 @@ const config = defineCloudflareConfig({
 
 config.default = {
   ...config.default,
-  minify: true,
+  minify: false,
 };
 
 export default config;
