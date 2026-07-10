@@ -1,0 +1,238 @@
+"use client";
+
+import React, { useState, useOptimistic, useTransition } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toggleMonitor } from "@/app/actions/monitors";
+import LatencyChart from "./LatencyChart";
+import EditMonitorSheet from "./EditMonitorSheet";
+import HoldToDelete from "./HoldToDelete";
+
+type Log = {
+  id: string;
+  statusCode: number;
+  latency: number;
+  checkedAt: string;
+};
+
+type Monitor = {
+  id: string;
+  url: string;
+  isActive: boolean;
+  frequency: number;
+  alertEmail: string | null;
+  telegramChatId: string | null;
+  logs: Log[];
+};
+
+type Props = {
+  monitor: Monitor;
+};
+
+export default function MonitorCard({ monitor }: Props) {
+  const [expanded, setExpanded] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [, startTransition] = useTransition();
+
+  const [optimisticActive, setOptimisticActive] = useOptimistic(monitor.isActive);
+
+  const lastLog = monitor.logs[0] ?? null;
+  const isUp = lastLog ? lastLog.statusCode >= 200 && lastLog.statusCode < 500 : true;
+  const chronoLogs = [...monitor.logs].reverse();
+
+  const uptimePercent =
+    monitor.logs.length > 0
+      ? Math.round(
+          (monitor.logs.filter((l) => l.statusCode >= 200 && l.statusCode < 500).length /
+            monitor.logs.length) *
+            100
+        )
+      : null;
+
+  const handleToggle = () => {
+    startTransition(async () => {
+      setOptimisticActive(!optimisticActive);
+      await toggleMonitor(monitor.id);
+    });
+  };
+
+  return (
+    <>
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className={`bg-white dark:bg-zinc-900/50 border rounded-xl shadow-sm backdrop-blur-md transition-colors duration-200 group ${
+          optimisticActive
+            ? "border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700/60"
+            : "border-zinc-200/40 dark:border-zinc-800/40 opacity-70"
+        }`}
+      >
+        {/* Collapsed header — always visible */}
+        <button
+          onClick={() => setExpanded((x) => !x)}
+          className="w-full text-left p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+          aria-expanded={expanded}
+          aria-label={`Toggle details for ${monitor.url}`}
+        >
+          <div className="flex items-start gap-3 min-w-0">
+            {/* Status dot */}
+            <span
+              className={`mt-1.5 shrink-0 w-2 h-2 rounded-full transition-colors ${
+                !optimisticActive
+                  ? "bg-zinc-300 dark:bg-zinc-700"
+                  : isUp
+                  ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.45)]"
+                  : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.45)]"
+              }`}
+            />
+
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="font-mono text-sm font-semibold text-zinc-900 dark:text-zinc-200 truncate">
+                  {monitor.url}
+                </p>
+                {!optimisticActive && (
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500">
+                    Paused
+                  </span>
+                )}
+                {/* SSL badge — N/A on edge runtime */}
+                <span
+                  className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-600"
+                  title="SSL expiry not available in edge runtime"
+                >
+                  SSL N/A
+                </span>
+              </div>
+
+              {/* Meta row */}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Latency:{" "}
+                  <span className="text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded font-mono">
+                    {lastLog ? `${lastLog.latency}ms` : "—"}
+                  </span>
+                </span>
+                <span className="text-zinc-300 dark:text-zinc-700 text-xs">•</span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                  HTTP:{" "}
+                  <span
+                    className={`font-mono font-bold px-1.5 py-0.5 rounded ${
+                      isUp
+                        ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
+                        : "text-rose-600 dark:text-rose-400 bg-rose-500/10"
+                    }`}
+                  >
+                    {lastLog ? lastLog.statusCode : "Pending"}
+                  </span>
+                </span>
+                {uptimePercent !== null && (
+                  <>
+                    <span className="text-zinc-300 dark:text-zinc-700 text-xs">•</span>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Uptime:{" "}
+                      <span className="font-mono text-zinc-700 dark:text-zinc-300">{uptimePercent}%</span>
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: uptime ribbon + expand caret */}
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="flex gap-[2px] items-end h-5">
+              {Array.from({ length: Math.max(0, 12 - chronoLogs.length) }).map((_, i) => (
+                <div key={`e-${i}`} className="w-[3px] h-3 rounded-full bg-zinc-100 dark:bg-zinc-800" />
+              ))}
+              {chronoLogs.map((log) => {
+                const logOk = log.statusCode >= 200 && log.statusCode < 500;
+                return (
+                  <div
+                    key={log.id}
+                    className={`w-[3px] rounded-full transition-colors duration-200 ${
+                      logOk
+                        ? "bg-emerald-400/60 dark:bg-emerald-500/40 hover:bg-emerald-500"
+                        : "bg-rose-400/60 dark:bg-rose-500/40 hover:bg-rose-500"
+                    }`}
+                    style={{ height: `${Math.min(20, Math.max(8, (log.latency / 500) * 20))}px` }}
+                    title={`HTTP ${log.statusCode} · ${log.latency}ms`}
+                  />
+                );
+              })}
+            </div>
+            <span
+              className={`text-zinc-400 dark:text-zinc-600 transition-transform duration-200 text-xs ${
+                expanded ? "rotate-180" : "rotate-0"
+              }`}
+            >
+              ▼
+            </span>
+          </div>
+        </button>
+
+        {/* Expanded body */}
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              key="body"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800/60 pt-4">
+                {/* Latency chart */}
+                <LatencyChart logs={monitor.logs} />
+
+                {/* Action row */}
+                <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/60">
+                  {/* Pause / Resume toggle */}
+                  <button
+                    onClick={handleToggle}
+                    className={`flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-md border transition-all duration-200 ${
+                      optimisticActive
+                        ? "border-amber-200 dark:border-amber-900/60 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50"
+                        : "border-emerald-200 dark:border-emerald-900/60 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/50"
+                    }`}
+                  >
+                    <span>{optimisticActive ? "⏸ Pause" : "▶ Resume"}</span>
+                  </button>
+
+                  {/* Edit */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setEditOpen(true); }}
+                    className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                  >
+                    ✎ Edit
+                  </button>
+
+                  {/* Hold to delete */}
+                  <HoldToDelete monitorId={monitor.id} />
+
+                  {/* Frequency badge */}
+                  <span className="ml-auto text-xs text-zinc-400 dark:text-zinc-600 font-mono">
+                    every {monitor.frequency}m
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Edit slide-over */}
+      <EditMonitorSheet
+        monitorId={monitor.id}
+        url={monitor.url}
+        alertEmail={monitor.alertEmail}
+        telegramChatId={monitor.telegramChatId}
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+      />
+    </>
+  );
+}

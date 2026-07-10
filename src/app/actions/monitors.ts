@@ -11,7 +11,6 @@ export async function createMonitor(url: string, userId: string, webhookUrl?: st
       throw new Error("Access denied. Authentication signature mismatch.");
     }
 
-    // 1. Fetch or create the user profile to identify their operational plan tier
     let userRecord = await db.user.findUnique({ where: { id: userId } });
     if (!userRecord) {
       userRecord = await db.user.create({
@@ -19,7 +18,6 @@ export async function createMonitor(url: string, userId: string, webhookUrl?: st
       });
     }
 
-    // 2. Query active monitor allocations to enforce resource caps
     const currentCount = await db.monitor.count({ where: { userId } });
     const plan = userRecord.plan;
 
@@ -35,20 +33,16 @@ export async function createMonitor(url: string, userId: string, webhookUrl?: st
       throw new Error("Invalid target protocol. URL must be http:// or https://");
     }
 
-    // 3. Webhook configurations and validation rules
     if (webhookUrl) {
       if (plan === "FREE") {
         throw new Error("Webhook alerts are a premium feature. Upgrade to Pro or Business Tier to activate alerts.");
       }
-
       const parsedWebhook = new URL(webhookUrl);
       if (plan === "PRO" && !parsedWebhook.hostname.includes("discord")) {
         throw new Error("Pro Tier only supports Discord webhook alert channels. Upgrade to Business Tier to activate Slack or Custom webhooks.");
       }
     }
 
-    // 4. Default frequency configuration based on plan
-    // FREE: 10 mins, PRO: 1 min, BUSINESS: 30 secs
     const frequency = plan === "FREE" ? 10 : plan === "PRO" ? 1 : 30;
 
     const monitor = await db.monitor.create({
@@ -81,11 +75,64 @@ export async function deleteMonitor(monitorId: string) {
 
     await db.pingLog.deleteMany({ where: { monitorId } });
     await db.monitor.delete({ where: { id: monitorId } });
-    
+
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error: any) {
     console.error("FAILED_TO_DELETE_MONITOR:", error);
     return { success: false, error: error.message || "Failed to terminate channel" };
+  }
+}
+
+export async function toggleMonitor(monitorId: string) {
+  try {
+    const session = await auth();
+    if (!session.userId) throw new Error("Unauthorized.");
+
+    const target = await db.monitor.findUnique({ where: { id: monitorId } });
+    if (!target || target.userId !== session.userId) {
+      throw new Error("Permission denied.");
+    }
+
+    await db.monitor.update({
+      where: { id: monitorId },
+      data: { isActive: !target.isActive },
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true, isActive: !target.isActive };
+  } catch (error: any) {
+    console.error("FAILED_TO_TOGGLE_MONITOR:", error);
+    return { success: false, error: error.message || "Failed to toggle monitor" };
+  }
+}
+
+export async function updateMonitorAlert(
+  monitorId: string,
+  alertEmail: string | null,
+  telegramChatId: string | null
+) {
+  try {
+    const session = await auth();
+    if (!session.userId) throw new Error("Unauthorized.");
+
+    const target = await db.monitor.findUnique({ where: { id: monitorId } });
+    if (!target || target.userId !== session.userId) {
+      throw new Error("Permission denied.");
+    }
+
+    await db.monitor.update({
+      where: { id: monitorId },
+      data: {
+        alertEmail: alertEmail || null,
+        telegramChatId: telegramChatId || null,
+      },
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error: any) {
+    console.error("FAILED_TO_UPDATE_MONITOR_ALERT:", error);
+    return { success: false, error: error.message || "Failed to update alert settings" };
   }
 }

@@ -9,25 +9,94 @@
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
-/* ── Global overflow guard: prevent horizontal scroll on narrow viewports ── */
-html,
-body {
+/* ── Global overflow guard ── */
+html, body {
   overflow-x: hidden;
 }
 
-/* ── Smooth scroll behavior ── */
 html {
   scroll-behavior: smooth;
 }
 
-/* ── Global focus-visible ring for keyboard accessibility (AAA) ── */
+/* ── Keyboard accessibility focus ring ── */
 *:focus-visible {
   outline: 2px solid #10b981;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* ── Eliminate focus ring for mouse/touch users ── */
 *:focus:not(:focus-visible) {
   outline: none;
+}
+
+/* ── Bento card cursor-glow effect ── */
+.bento-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.bento-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(16, 185, 129, 0.08),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+.bento-card:hover::before {
+  opacity: 1;
+}
+
+/* ── Chart entry animation ── */
+@keyframes chart-draw {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.chart-animate path[stroke] {
+  stroke-dasharray: 1000;
+  animation: chart-draw 1.2s ease-out forwards;
+}
+
+/* ── Slide-over sheet ── */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slide-out-right {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
+}
+
+.sheet-enter {
+  animation: slide-in-right 0.28s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.sheet-exit {
+  animation: slide-out-right 0.22s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* ── Hold-to-delete fill ── */
+@keyframes hold-fill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+/* ── Status pulse animation ── */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(1.15); }
+}
+
+.pulse-dot {
+  animation: status-pulse 2s ease-in-out infinite;
 }
