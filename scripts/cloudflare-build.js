@@ -21,7 +21,7 @@ execSync('npx @opennextjs/cloudflare build --build-command "npm run build"', { s
 const handlerPath = '.open-next/server-functions/default/handler.mjs';
 if (fs.existsSync(handlerPath)) {
   let code = fs.readFileSync(handlerPath, 'utf8');
-  const targetRegex = /async loadInstrumentationModule\s*\([^\)]*\)\s*\{/;
+  const targetRegex = /async loadInstrumentationModule\s*\([^\)]*\)\s*\{\s*\}/;
   if (!code.match(targetRegex)) {
     throw new Error('CRITICAL: loadInstrumentationModule target was not found in handler.mjs!');
   }
