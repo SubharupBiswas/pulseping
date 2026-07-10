@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { deleteMonitor } from "@/app/actions/monitors";
 
 type Props = {
@@ -10,6 +11,11 @@ type Props = {
 
 const HOLD_DURATION = 1500; // ms
 
+/**
+ * HoldToDelete — press-and-hold delete with Framer Motion progress bar.
+ * Progress uses motion.div scaleX (0→1) for GPU-composited animation.
+ * Adds a red glow on the progress fill for dramatic effect.
+ */
 export default function HoldToDelete({ monitorId, onDeleted }: Props) {
   const [holding, setHolding] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -57,15 +63,27 @@ export default function HoldToDelete({ monitorId, onDeleted }: Props) {
           : "border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/40 hover:border-rose-300 dark:hover:border-rose-900/40 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20"
       }`}
     >
-      {/* Fill progress bar */}
-      {holding && (
-        <span
-          className="absolute inset-0 bg-rose-500/15 dark:bg-rose-500/20 pointer-events-none"
-          style={{ width: `${progress}%`, transition: "none" }}
-        />
-      )}
+      {/* Framer Motion progress fill with glow */}
+      <AnimatePresence>
+        {holding && (
+          <motion.span
+            key="progress-fill"
+            className="absolute inset-y-0 left-0 bg-rose-500/20 dark:bg-rose-500/25 pointer-events-none"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: progress / 100 }}
+            exit={{ opacity: 0 }}
+            style={{
+              originX: 0,
+              width: "100%",
+              boxShadow: `${progress > 20 ? "4px 0 12px rgba(244,63,94,0.35)" : "none"}`,
+              transition: "box-shadow 0.1s ease",
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <span className="relative z-10">
-        {fired ? "Deleting…" : holding ? "Hold…" : "Delete"}
+        {fired ? "Deleting…" : holding ? "Hold…" : "⌫ Delete"}
       </span>
     </button>
   );

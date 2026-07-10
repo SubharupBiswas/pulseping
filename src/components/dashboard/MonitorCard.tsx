@@ -2,10 +2,18 @@
 
 import React, { useState, useOptimistic, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import { toggleMonitor } from "@/app/actions/monitors";
-import LatencyChart from "./LatencyChart";
 import EditMonitorSheet from "./EditMonitorSheet";
 import HoldToDelete from "./HoldToDelete";
+
+// Recharts accesses window / ResizeObserver — must be dynamically loaded with ssr:false
+const LatencyChart = dynamic(() => import("./LatencyChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-32 rounded-lg bg-zinc-100 dark:bg-zinc-800/40 animate-pulse" />
+  ),
+});
 
 type Log = {
   id: string;
@@ -59,10 +67,10 @@ export default function MonitorCard({ monitor }: Props) {
     <>
       <motion.div
         layout
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
+        exit={{ opacity: 0, y: -8, scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 260, damping: 22 }}
         className={`bg-white dark:bg-zinc-900/50 border rounded-xl shadow-sm backdrop-blur-md transition-colors duration-200 group ${
           optimisticActive
             ? "border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700/60"
@@ -181,7 +189,7 @@ export default function MonitorCard({ monitor }: Props) {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+              transition={{ type: "spring", stiffness: 260, damping: 22 }}
               className="overflow-hidden"
             >
               <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800/60 pt-4">
@@ -193,7 +201,7 @@ export default function MonitorCard({ monitor }: Props) {
                   {/* Pause / Resume toggle */}
                   <button
                     onClick={handleToggle}
-                    className={`flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-md border transition-all duration-200 ${
+                    className={`btn-shimmer flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-md border transition-all duration-200 ${
                       optimisticActive
                         ? "border-amber-200 dark:border-amber-900/60 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50"
                         : "border-emerald-200 dark:border-emerald-900/60 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/50"
@@ -205,7 +213,7 @@ export default function MonitorCard({ monitor }: Props) {
                   {/* Edit */}
                   <button
                     onClick={(e) => { e.stopPropagation(); setEditOpen(true); }}
-                    className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    className="btn-shimmer flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                   >
                     ✎ Edit
                   </button>
