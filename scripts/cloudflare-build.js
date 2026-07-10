@@ -105,6 +105,10 @@ function collectFiles(dir, collected = []) {
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
+      // Exclude node_modules and frontend static chunks to prevent bundle corruption
+      if (entry.name === 'node_modules' || entry.name === '_next') {
+        continue;
+      }
       collectFiles(fullPath, collected);
     } else if (entry.isFile() && PATCHABLE_EXTS.has(path.extname(entry.name))) {
       collected.push(fullPath);
