@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export const runtime = "edge";
+export const runtime = "experimental-edge";
 
 const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
 
