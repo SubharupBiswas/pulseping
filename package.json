@@ -35,13 +35,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
+    "eslint-config-next": "^16.2.6",
+    "glob": "^10.4.5",
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "wrangler": "*"
-  },
-  "overrides": {
-    "glob": "^10.3.10"
   }
 }
