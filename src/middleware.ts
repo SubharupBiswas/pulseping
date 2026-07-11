@@ -17,11 +17,12 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // 1. Skip Next.js internals, static files, and explicitly exclude the public cron route from running Clerk at all
+    // 1. Intercept all routes except Next.js internals, static assets, and the public cron endpoint
     "/((?!_next|api/cron/ping|[^?]*\\.(?:html|css|js|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // 2. Run Clerk for all other API paths except our public cron ping route
-    "/api/(?!cron/ping)(.*)",
-    // 3. Run Clerk for all trpc routes
+    // 2. Explicitly target our specific active transaction API endpoints to satisfy Next.js route validation constraints
+    "/api/create-order",
+    "/api/verify-payment",
+    // 3. Intercept all trpc routes safely
     "/trpc(.*)",
   ],
 };
