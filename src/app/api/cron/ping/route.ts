@@ -28,13 +28,22 @@ export async function GET(req: NextRequest) {
       where: { isActive: true },
     });
 
-    if (activeMonitors.length === 0) {
-      return NextResponse.json({ success: true, message: "No active monitors found." });
+    const now = new Date();
+    const monitorsToPing = activeMonitors.filter((monitor: any) => {
+      if (!monitor.lastChecked) {
+        return true; // Immediately due if never checked
+      }
+      const elapsedMinutes = (now.getTime() - new Date(monitor.lastChecked).getTime()) / (1000 * 60);
+      return elapsedMinutes >= monitor.frequency;
+    });
+
+    if (monitorsToPing.length === 0) {
+      return NextResponse.json({ success: true, message: "No active monitors are due for polling at this time." });
     }
 
     // High-speed concurrent check of all endpoints using Promise.allSettled
     const checkResults = await Promise.allSettled(
-      activeMonitors.map(async (monitor: any) => {
+      monitorsToPing.map(async (monitor: any) => {
         const startTime = performance.now();
         let statusCode = 500;
         let latency = 0;
@@ -69,6 +78,12 @@ export async function GET(req: NextRequest) {
             statusCode,
             latency,
           },
+        });
+
+        // Update the lastChecked field on the monitor record
+        await db.monitor.update({
+          where: { id: monitor.id },
+          data: { lastChecked: new Date() },
         });
 
         const isFailure = statusCode < 200 || statusCode >= 300 || statusCode === 0;

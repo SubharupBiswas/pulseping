@@ -24,6 +24,7 @@ model Monitor {
   alertEmail     String?
   frequency      Int       @default(10)
   isActive       Boolean   @default(true)
+  lastChecked    DateTime?
   userId         String
   user           User      @relation(fields: [userId], references: [id])
   logs           PingLog[]
