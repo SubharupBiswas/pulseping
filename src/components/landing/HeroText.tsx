@@ -1,68 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-type Props = {
+interface Props {
   text: string;
   className?: string;
   delay?: number;
-};
+}
 
-/**
- * HeroText — hover.dev spring word-cascade reveal.
- * Splits text into individual words, each springs in with blur-to-sharp,
- * opacity 0→1, and a subtle upward translate.
- * Spring config: stiffness 260, damping 20 (slightly bouncy, premium feel).
- */
 export default function HeroText({ text, className = "", delay = 0 }: Props) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const words = text.split(" ");
 
-  const container = {
-    hidden: {},
-    show: {
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: delay,
-      },
-    },
-  };
-
-  const wordVariant = {
-    hidden: {
-      opacity: 0,
-      y: 22,
-      filter: "blur(6px)",
-    },
-    show: {
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-      transition: {
-        type: "spring" as const,
-        stiffness: 260,
-        damping: 20,
-      },
-    },
-  };
-
   return (
-    <motion.span
-      className={`inline ${className}`}
-      variants={container}
-      initial="hidden"
-      animate="show"
-      aria-label={text}
-    >
+    <span className={className}>
       {words.map((word, i) => (
         <motion.span
           key={i}
-          variants={wordVariant}
-          className="inline-block mr-[0.25em]"
+          style={{ display: "inline-block" }}
+          initial={mounted ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: delay + i * 0.05,
+            duration: 0.4,
+            ease: "easeOut"
+          }}
+          className="mr-1 inline-block"
         >
           {word}
         </motion.span>
       ))}
-    </motion.span>
+    </span>
   );
 }
