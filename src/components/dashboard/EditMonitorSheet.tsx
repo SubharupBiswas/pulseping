@@ -8,13 +8,15 @@ type Props = {
   url: string;
   alertEmail: string | null;
   telegramChatId: string | null;
+  alertOnFailure: boolean;
   open: boolean;
   onClose: () => void;
 };
 
-export default function EditMonitorSheet({ monitorId, url, alertEmail, telegramChatId, open, onClose }: Props) {
+export default function EditMonitorSheet({ monitorId, url, alertEmail, telegramChatId, alertOnFailure: initialAlertOnFailure, open, onClose }: Props) {
   const [email, setEmail] = useState(alertEmail ?? "");
   const [telegram, setTelegram] = useState(telegramChatId ?? "");
+  const [alertOnFailure, setAlertOnFailure] = useState(initialAlertOnFailure);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -26,7 +28,8 @@ export default function EditMonitorSheet({ monitorId, url, alertEmail, telegramC
       const result = await updateMonitorAlert(
         monitorId,
         email.trim() || null,
-        telegram.trim() || null
+        telegram.trim() || null,
+        alertOnFailure
       );
       if (result.success) {
         setSaved(true);
@@ -99,6 +102,31 @@ export default function EditMonitorSheet({ monitorId, url, alertEmail, telegramC
             <p className="text-xs text-zinc-400 dark:text-zinc-600">
               Get Telegram alerts via your bot. Use a group chat ID for team alerts.
             </p>
+          </div>
+
+          <div
+            onClick={() => !isPending && setAlertOnFailure(!alertOnFailure)}
+            className="flex items-center justify-between pt-2 border-t border-zinc-100 dark:border-zinc-800 cursor-pointer select-none"
+          >
+            <div>
+              <span className="block text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+                Alert on Failure
+              </span>
+              <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+                Dispatch notifications immediately if checks fail.
+              </p>
+            </div>
+            <div
+              className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                alertOnFailure ? "bg-emerald-500" : "bg-zinc-200 dark:bg-zinc-800"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                  alertOnFailure ? "translate-x-4" : "translate-x-0"
+                }`}
+              />
+            </div>
           </div>
 
           {error && (

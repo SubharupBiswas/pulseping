@@ -22,6 +22,7 @@ model Monitor {
   slackWebhook   String?
   telegramChatId String?
   alertEmail     String?
+  alertOnFailure Boolean   @default(true)
   frequency      Int       @default(10)
   isActive       Boolean   @default(true)
   lastChecked    DateTime?

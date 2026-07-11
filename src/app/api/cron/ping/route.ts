@@ -58,8 +58,8 @@ async function checkMonitor(monitor: any) {
 
   const isFailure = statusCode < 200 || statusCode >= 300 || statusCode === 0;
 
-  // If the endpoint check failed, trigger concurrent notification channels
-  if (isFailure) {
+  // If the endpoint check failed and failure alerts are enabled, trigger notification channels
+  if (isFailure && monitor.alertOnFailure !== false) {
     const alertPromises: Promise<any>[] = [];
 
     // 1. Telegram alert channel

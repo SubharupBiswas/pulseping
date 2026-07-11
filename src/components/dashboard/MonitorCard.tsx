@@ -29,6 +29,7 @@ type Monitor = {
   frequency: number;
   alertEmail: string | null;
   telegramChatId: string | null;
+  alertOnFailure: boolean;
   logs: Log[];
 };
 
@@ -149,8 +150,58 @@ export default function MonitorCard({ monitor }: Props) {
             </div>
           </div>
 
-          {/* Right: uptime ribbon + expand caret */}
+          {/* Right: sparkline + uptime ribbon + expand caret */}
           <div className="flex items-center gap-4 shrink-0">
+
+            {/* SVG Latency Sparkline — last 10 log entries */}
+            {(() => {
+              const sparkLogs = chronoLogs.slice(-10);
+              if (sparkLogs.length < 2) return null;
+              const latencies = sparkLogs.map((l) => l.latency);
+              const minL = Math.min(...latencies);
+              const maxL = Math.max(...latencies);
+              const range = maxL - minL || 1;
+              const W = 72;
+              const H = 28;
+              const pad = 2;
+              const step = (W - pad * 2) / (sparkLogs.length - 1);
+              const points = sparkLogs.map((l, i) => {
+                const x = pad + i * step;
+                const y = pad + (1 - (l.latency - minL) / range) * (H - pad * 2);
+                return `${x.toFixed(1)},${y.toFixed(1)}`;
+              }).join(" ");
+              const sparkColor = isUp ? "#10b981" : "#f43f5e"; // emerald-500 / rose-500
+              return (
+                <svg
+                  width={W}
+                  height={H}
+                  viewBox={`0 0 ${W} ${H}`}
+                  aria-hidden="true"
+                  className="shrink-0 opacity-80 group-hover:opacity-100 transition-opacity"
+                >
+                  <polyline
+                    points={points}
+                    fill="none"
+                    stroke={sparkColor}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ transition: "stroke 0.2s" }}
+                  />
+                  {/* Endpoint dot */}
+                  {sparkLogs.length > 0 && (() => {
+                    const last = sparkLogs[sparkLogs.length - 1];
+                    const x = pad + (sparkLogs.length - 1) * step;
+                    const y = pad + (1 - (last.latency - minL) / range) * (H - pad * 2);
+                    return (
+                      <circle cx={x.toFixed(1)} cy={y.toFixed(1)} r="2.5" fill={sparkColor} />
+                    );
+                  })()}
+                </svg>
+              );
+            })()}
+
+            {/* Bar uptime ribbon */}
             <div className="flex gap-[2px] items-end h-5">
               {Array.from({ length: Math.max(0, 12 - chronoLogs.length) }).map((_, i) => (
                 <div key={`e-${i}`} className="w-[3px] h-3 rounded-full bg-zinc-100 dark:bg-zinc-800" />
@@ -238,6 +289,7 @@ export default function MonitorCard({ monitor }: Props) {
         url={monitor.url}
         alertEmail={monitor.alertEmail}
         telegramChatId={monitor.telegramChatId}
+        alertOnFailure={monitor.alertOnFailure}
         open={editOpen}
         onClose={() => setEditOpen(false)}
       />

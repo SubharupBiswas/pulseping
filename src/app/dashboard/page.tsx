@@ -56,6 +56,7 @@ export default async function DashboardPage() {
     frequency: m.frequency,
     alertEmail: m.alertEmail ?? null,
     telegramChatId: m.telegramChatId ?? null,
+    alertOnFailure: m.alertOnFailure,
     logs: m.logs.map((l: any) => ({
       id: l.id,
       statusCode: l.statusCode,

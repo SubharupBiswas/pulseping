@@ -6,6 +6,9 @@ import { createMonitor } from "@/app/actions/monitors";
 export default function AddMonitorForm({ userId }: { userId: string }) {
   const [url, setUrl] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
+  const [alertEmail, setAlertEmail] = useState("");
+  const [telegramChatId, setTelegramChatId] = useState("");
+  const [alertOnFailure, setAlertOnFailure] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -22,10 +25,20 @@ export default function AddMonitorForm({ userId }: { userId: string }) {
 
     startTransition(async () => {
       try {
-        const result = await createMonitor(url.trim(), userId, webhookUrl.trim() || undefined);
+        const result = await createMonitor(
+          url.trim(),
+          userId,
+          webhookUrl.trim() || undefined,
+          alertEmail.trim() || undefined,
+          telegramChatId.trim() || undefined,
+          alertOnFailure
+        );
         if (result.success) {
           setUrl("");
           setWebhookUrl("");
+          setAlertEmail("");
+          setTelegramChatId("");
+          setAlertOnFailure(true);
           setSuccess(true);
           setTimeout(() => setSuccess(false), 4000);
         } else {
@@ -98,9 +111,79 @@ export default function AddMonitorForm({ userId }: { userId: string }) {
           </div>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Alert Email Input */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="monitor-email"
+              className="block text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400"
+            >
+              Alert Email <span className="text-zinc-400 dark:text-zinc-500">(optional)</span>
+            </label>
+            <input
+              id="monitor-email"
+              type="email"
+              value={alertEmail}
+              onChange={(e) => setAlertEmail(e.target.value)}
+              placeholder="alerts@yourdomain.com"
+              className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 font-mono text-sm placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-700 focus:ring-1 focus:ring-zinc-400/30 dark:focus:ring-zinc-700/30 transition duration-150 disabled:opacity-45 disabled:cursor-not-allowed shadow-sm"
+              disabled={isPending}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+
+          {/* Telegram Chat ID Input */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="monitor-telegram"
+              className="block text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400"
+            >
+              Telegram Chat ID <span className="text-zinc-400 dark:text-zinc-500">(optional)</span>
+            </label>
+            <input
+              id="monitor-telegram"
+              type="text"
+              value={telegramChatId}
+              onChange={(e) => setTelegramChatId(e.target.value)}
+              placeholder="-1001234567890"
+              className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 font-mono text-sm placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-700 focus:ring-1 focus:ring-zinc-400/30 dark:focus:ring-zinc-700/30 transition duration-150 disabled:opacity-45 disabled:cursor-not-allowed shadow-sm"
+              disabled={isPending}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
+        </div>
+
+        {/* Alert on Failure Toggle */}
+        <div
+          onClick={() => !isPending && setAlertOnFailure(!alertOnFailure)}
+          className="flex items-center justify-between py-2 border-t border-b border-zinc-200 dark:border-zinc-800/80 cursor-pointer select-none"
+        >
+          <div>
+            <span className="block text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+              Alert on Failure
+            </span>
+            <p className="text-xs text-zinc-400 dark:text-zinc-550 mt-0.5">
+              Dispatch notifications immediately if target checks fail.
+            </p>
+          </div>
+          <div
+            className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+              alertOnFailure ? "bg-emerald-500" : "bg-zinc-200 dark:bg-zinc-800"
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                alertOnFailure ? "translate-x-4" : "translate-x-0"
+              }`}
+            />
+          </div>
+        </div>
+
         {/* Submit Action */}
         <div className="flex items-center justify-between pt-1 gap-3">
-          <p className="text-sm text-zinc-500 dark:text-zinc-455">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
             Monitoring runs every 10 minutes via serverless cron.
           </p>
           <button
@@ -129,7 +212,7 @@ export default function AddMonitorForm({ userId }: { userId: string }) {
       {/* Error Toast */}
       {error && (
         <div className="mt-4 flex items-center gap-2.5 text-sm font-mono text-rose-600 dark:text-rose-400 bg-rose-500/[0.04] border border-rose-500/15 px-3.5 py-2.5 rounded-lg" role="alert">
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-505 shrink-0" />
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
           <span>
             <span className="text-rose-700 dark:text-rose-400 font-bold">error //</span> {error}
           </span>

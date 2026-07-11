@@ -4,7 +4,14 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
-export async function createMonitor(url: string, userId: string, webhookUrl?: string) {
+export async function createMonitor(
+  url: string,
+  userId: string,
+  webhookUrl?: string,
+  alertEmail?: string | null,
+  telegramChatId?: string | null,
+  alertOnFailure: boolean = true
+) {
   try {
     const session = await auth();
     if (!session.userId || session.userId !== userId) {
@@ -52,7 +59,10 @@ export async function createMonitor(url: string, userId: string, webhookUrl?: st
         userId,
         frequency,
         isActive: true,
-      },
+        alertEmail: alertEmail || null,
+        telegramChatId: telegramChatId || null,
+        alertOnFailure,
+      } as any,
     });
 
     revalidatePath("/dashboard");
@@ -110,7 +120,8 @@ export async function toggleMonitor(monitorId: string) {
 export async function updateMonitorAlert(
   monitorId: string,
   alertEmail: string | null,
-  telegramChatId: string | null
+  telegramChatId: string | null,
+  alertOnFailure: boolean = true
 ) {
   try {
     const session = await auth();
@@ -126,7 +137,8 @@ export async function updateMonitorAlert(
       data: {
         alertEmail: alertEmail || null,
         telegramChatId: telegramChatId || null,
-      },
+        alertOnFailure,
+      } as any,
     });
 
     revalidatePath("/dashboard");
