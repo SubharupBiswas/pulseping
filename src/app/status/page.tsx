@@ -1,10 +1,21 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
-export const metadata = {
-  title: "System Status | PulsePing",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "System Status",
   description: "Live operational status of PulsePing's monitoring infrastructure, API gateways, cron executors, and database nodes.",
+  alternates: {
+    canonical: "https://pulseping.subnetmask.tech/status",
+  },
+  openGraph: {
+    title: "System Status | PulsePing",
+    description: "Live operational status of PulsePing's monitoring infrastructure, API gateways, cron executors, and database nodes.",
+    url: "https://pulseping.subnetmask.tech/status",
+  },
 };
+
 
 const systemComponents = [
   {

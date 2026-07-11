@@ -45,10 +45,18 @@ export default function LandingPage() {
               id="hero-title"
               className="relative z-10 text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-zinc-950 dark:text-zinc-50 max-w-3xl mx-auto leading-tight mb-6"
             >
-              <HeroText text="Uptime monitoring built for" delay={0.1} />
-              {" "}
-              <span className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent">
-                <HeroText text="production teams." delay={0.35} />
+              <span className="block">
+                <HeroText text="Uptime monitoring" delay={0.1} />
+              </span>
+              <span className="block">
+                <HeroText text="built for" delay={0.2} />
+              </span>
+              <span className="block bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent">
+                <HeroText
+                  text="production teams."
+                  delay={0.3}
+                  className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent"
+                />
               </span>
             </h1>
 

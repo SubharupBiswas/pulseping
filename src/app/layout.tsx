@@ -51,7 +51,10 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "YOUR_GOOGLE_VERIFICATION_TOKEN_HERE",
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
   },
   openGraph: {
     title: "PulsePing | Developer-First Uptime Monitoring",
