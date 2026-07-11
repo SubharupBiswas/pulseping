@@ -15,7 +15,7 @@ export default function HeroText({ text, className = "", delay = 0 }: Props) {
     setMounted(true);
   }, []);
 
-  const containerClass = `${className} inline-flex flex-wrap gap-x-[0.25em]`.trim();
+  const containerClass = className.trim();
 
   if (!mounted) {
     // Render the exact structural fallback representation matching server HTML output
