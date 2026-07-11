@@ -15,30 +15,34 @@ export default function HeroText({ text, className = "", delay = 0 }: Props) {
     setMounted(true);
   }, []);
 
+  const containerClass = `${className} inline-flex flex-wrap gap-x-[0.25em]`.trim();
+
   if (!mounted) {
     // Render the exact structural fallback representation matching server HTML output
-    return <span className={className}>{text}</span>;
+    return <span className={containerClass}>{text}</span>;
   }
 
   const words = text.split(" ");
 
   return (
-    <span className={className}>
+    <span className={containerClass}>
       {words.map((word, i) => (
-        <motion.span
-          key={i}
-          style={{ display: "inline-block" }}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: delay + i * 0.04,
-            duration: 0.35,
-            ease: "easeOut"
-          }}
-          className="mr-1 inline-block"
-        >
-          {word}
-        </motion.span>
+        <React.Fragment key={i}>
+          <motion.span
+            style={{ display: "inline-block", willChange: "transform" }}
+            initial={{ opacity: 0, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: delay + i * 0.04,
+              duration: 0.35,
+              ease: [0.22, 1, 0.36, 1] // cubic-bezier transition curve
+            }}
+            className="inline-block"
+          >
+            {word}
+          </motion.span>
+          {i < words.length - 1 && " "}
+        </React.Fragment>
       ))}
     </span>
   );

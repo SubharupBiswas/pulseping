@@ -60,30 +60,6 @@ export default function SignInPage() {
           <SignIn
             appearance={{
               baseTheme: dark,
-              elements: {
-                rootBox: "w-full",
-                card: "bg-neutral-900 border border-neutral-800/60 shadow-xl rounded-2xl w-full",
-                headerTitle: "text-white",
-                headerSubtitle: "text-neutral-400",
-                socialButtonsBlockButton:
-                  "bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 transition duration-150 rounded-lg text-xs font-medium",
-                dividerLine: "bg-neutral-800",
-                dividerText: "text-neutral-500 text-xs",
-                formFieldLabel: "text-neutral-300 text-xs font-medium",
-                formFieldInput:
-                  "bg-neutral-950 border border-neutral-800 text-white placeholder-neutral-600 focus:border-emerald-500 focus:ring-0 rounded-lg text-sm",
-                formButtonPrimary:
-                  "bg-white text-black hover:bg-neutral-200 transition-colors text-xs font-semibold rounded-lg py-2.5",
-                footerActionText: "text-neutral-400 text-xs",
-                footerActionLink:
-                  "text-white hover:text-neutral-200 font-medium text-xs",
-                identityPreviewText: "text-neutral-300 text-xs",
-                identityPreviewEditButton:
-                  "text-emerald-400 hover:text-emerald-300 text-xs",
-                alertText: "text-neutral-300 text-xs",
-                formResendCodeLink:
-                  "text-emerald-400 hover:text-emerald-300 text-xs",
-              },
             } as any}
             fallbackRedirectUrl="/dashboard"
             signUpUrl="/sign-up"

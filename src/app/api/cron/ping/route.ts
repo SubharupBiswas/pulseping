@@ -5,9 +5,21 @@ import { Resend } from "resend";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  if (!process.env.CRON_SECRET) {
+    return NextResponse.json({ error: "Configuration Error: CRON_SECRET is not defined." }, { status: 500 });
+  }
+
   const authHeader = req.headers.get("authorization");
   if (!authHeader || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized invocation" }, { status: 401 });
+  }
+
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ 
+      success: false, 
+      error: "Service Unavailable", 
+      details: "DATABASE_URL environment variable is missing." 
+    }, { status: 503 });
   }
 
   try {
@@ -241,8 +253,12 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, processed: results.length, data: results });
-  } catch (error) {
+  } catch (error: any) {
     console.error("CRON_ENGINE_ERROR:", error);
-    return NextResponse.json({ success: false, error: "Internal operation crash" }, { status: 500 });
+    return NextResponse.json({ 
+      success: false, 
+      error: "Internal operation crash", 
+      details: error?.message || String(error)
+    }, { status: 500 });
   }
 }
