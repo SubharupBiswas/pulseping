@@ -4,11 +4,7 @@ import Navbar from "@/components/Navbar";
 import DotGridHero from "@/components/landing/DotGridHero";
 import MagnetCTA from "@/components/landing/MagnetCTA";
 import BentoFeatures from "@/components/landing/BentoFeatures";
-import dynamic from "next/dynamic";
-
-const HeroText = dynamic(() => import("@/components/landing/HeroText"), {
-  ssr: false,
-});
+import SafeHeroText from "@/components/landing/SafeHeroText";
 
 export default function LandingPage() {
   return (
@@ -49,10 +45,10 @@ export default function LandingPage() {
               id="hero-title"
               className="relative z-10 text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 max-w-3xl mx-auto leading-[1.06] mb-6"
             >
-              <HeroText text="Uptime monitoring built for" delay={0.1} />
+              <SafeHeroText text="Uptime monitoring built for" delay={0.1} />
               {" "}
               <span className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent">
-                <HeroText text="production teams." delay={0.35} />
+                <SafeHeroText text="production teams." delay={0.35} />
               </span>
             </h1>
 
