@@ -2,3 +2,6 @@ name = "pulseping"
 pages_build_output_dir = ".open-next/assets"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
+
+[vars]
+WRANGLER_VERSION = "4.110.0"

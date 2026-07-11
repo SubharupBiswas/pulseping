@@ -126,7 +126,7 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 240, damping: 22, delay: 0.1 }}
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 leading-[1.1] mb-4"
+            className="text-3xl sm:text-5xl font-extrabold text-zinc-950 dark:text-zinc-50 leading-tight mb-4"
           >
             Predictable Pricing for{" "}
             <span className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent">

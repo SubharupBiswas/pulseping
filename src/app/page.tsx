@@ -43,7 +43,7 @@ export default function LandingPage() {
             {/* Hero Title — spring word reveal via client island */}
             <h1
               id="hero-title"
-              className="relative z-10 text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 max-w-3xl mx-auto leading-[1.06] mb-6"
+              className="relative z-10 text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-zinc-950 dark:text-zinc-50 max-w-3xl mx-auto leading-tight mb-6"
             >
               <HeroText text="Uptime monitoring built for" delay={0.1} />
               {" "}
