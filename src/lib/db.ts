@@ -7,19 +7,29 @@ declare global {
 }
 
 const createEdgeClient = () => {
-  // Enforce strict pool bounds and quick idle timeouts to prevent V8 socket leaks
-  const pool = new Pool({ 
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL runtime environment variable is completely missing!");
+  }
+
+  const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    idleTimeoutMillis: 2000, 
+    idleTimeoutMillis: 2000,
     max: 10
   });
   const adapter = new PrismaNeon(pool as any);
   return new PrismaClient({ adapter } as any);
 };
 
-// Force production isolates to maintain a single context thread while keeping local hot-reloads stable
-export const prisma = process.env.NODE_ENV === "production"
-  ? createEdgeClient()
-  : (globalThis.prisma ??= createEdgeClient());
+// The Proxy traps lookups and defers execution until the request loop is actively handling data
+export const prisma = new Proxy({} as PrismaClient, {
+  get(target, prop, receiver) {
+    const instance = process.env.NODE_ENV === "production"
+      ? createEdgeClient()
+      : (globalThis.prisma ??= createEdgeClient());
+
+    const value = Reflect.get(instance, prop, receiver);
+    return typeof value === "function" ? value.bind(instance) : value;
+  }
+});
 
 export const db = prisma;
