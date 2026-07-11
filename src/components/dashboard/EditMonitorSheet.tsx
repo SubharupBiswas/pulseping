@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { updateMonitorAlert } from "@/app/actions/monitors";
 
 type Props = {
@@ -14,12 +15,23 @@ type Props = {
 };
 
 export default function EditMonitorSheet({ monitorId, url, alertEmail, telegramChatId, alertOnFailure: initialAlertOnFailure, open, onClose }: Props) {
+  const router = useRouter();
   const [email, setEmail] = useState(alertEmail ?? "");
   const [telegram, setTelegram] = useState(telegramChatId ?? "");
   const [alertOnFailure, setAlertOnFailure] = useState(initialAlertOnFailure);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setEmail(alertEmail ?? "");
+      setTelegram(telegramChatId ?? "");
+      setAlertOnFailure(initialAlertOnFailure);
+      setError(null);
+      setSaved(false);
+    }
+  }, [open, alertEmail, telegramChatId, initialAlertOnFailure]);
 
   const handleSave = () => {
     setError(null);
@@ -33,6 +45,7 @@ export default function EditMonitorSheet({ monitorId, url, alertEmail, telegramC
       );
       if (result.success) {
         setSaved(true);
+        router.refresh();
         setTimeout(() => { setSaved(false); onClose(); }, 1200);
       } else {
         setError(result.error ?? "Failed to save.");

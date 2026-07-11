@@ -284,15 +284,17 @@ export default function MonitorCard({ monitor }: Props) {
       </motion.div>
 
       {/* Edit slide-over */}
-      <EditMonitorSheet
-        monitorId={monitor.id}
-        url={monitor.url}
-        alertEmail={monitor.alertEmail}
-        telegramChatId={monitor.telegramChatId}
-        alertOnFailure={monitor.alertOnFailure}
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-      />
+      {editOpen && (
+        <EditMonitorSheet
+          monitorId={monitor.id}
+          url={monitor.url}
+          alertEmail={monitor.alertEmail}
+          telegramChatId={monitor.telegramChatId}
+          alertOnFailure={monitor.alertOnFailure}
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+        />
+      )}
     </>
   );
 }
