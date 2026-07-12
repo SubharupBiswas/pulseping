@@ -167,7 +167,7 @@ export default function SettingsTab({
               onChange={(e) => handleThresholdChange(Number(e.target.value))}
               className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none accent-emerald-500"
             />
-            <div className="flex justify-between text-xs text-zinc-400 dark:text-zinc-600 mt-1">
+            <div className="flex justify-between text-xs text-zinc-400 dark:text-zinc-650 mt-1">
               <span>1 (immediate)</span>
               <span>10 (conservative)</span>
             </div>
@@ -184,7 +184,7 @@ export default function SettingsTab({
 
         {/* Existing channels list */}
         {alertChannels.length === 0 ? (
-          <p className="text-xs text-zinc-400 dark:text-zinc-650 italic mb-6">No integration channels connected yet.</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 italic mb-6">No integration channels connected yet.</p>
         ) : (
           <div className="space-y-3 mb-6">
             {alertChannels.map((channel) => (
@@ -194,7 +194,7 @@ export default function SettingsTab({
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-650 dark:text-zinc-350">
+                    <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400">
                       {channel.providerType}
                     </span>
                     {channel.userFriendlyName && (
@@ -203,7 +203,7 @@ export default function SettingsTab({
                       </span>
                     )}
                   </div>
-                  <p className="font-mono text-[10px] text-zinc-400 dark:text-zinc-550 truncate mt-1">
+                  <p className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400 truncate mt-1">
                     {channel.destinationUrl}
                   </p>
                 </div>
@@ -225,7 +225,7 @@ export default function SettingsTab({
 
         {/* Add Channel Form */}
         <form onSubmit={handleAddChannel} className="border-t border-zinc-100 dark:border-zinc-800 pt-5 space-y-4">
-          <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-505 dark:text-zinc-400">Connect New Channel</h4>
+          <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Connect New Channel</h4>
           <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3">
             <div className="space-y-1">
               <label htmlFor="provider-select" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Provider</label>
@@ -234,7 +234,7 @@ export default function SettingsTab({
                 value={newProvider}
                 onChange={(e) => setNewProvider(e.target.value)}
                 disabled={isPending}
-                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
               >
                 <option value="DISCORD">Discord</option>
                 <option value="SLACK">Slack</option>
@@ -268,14 +268,14 @@ export default function SettingsTab({
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="e.g. Production Alerts"
                 disabled={isPending}
-                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
               />
             </div>
 
             <button
               type="submit"
               disabled={isPending || !newUrl.trim()}
-              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-955 disabled:bg-zinc-100 dark:disabled:bg-zinc-900 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:cursor-not-allowed font-semibold text-xs rounded-lg transition shadow-md flex items-center gap-1.5"
+              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-100 dark:disabled:bg-zinc-900 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:cursor-not-allowed font-semibold text-xs rounded-lg transition shadow-md flex items-center gap-1.5"
             >
               {isPending ? "Connecting..." : "Add Channel"}
             </button>
@@ -285,24 +285,24 @@ export default function SettingsTab({
 
       {/* Per-monitor alert config */}
       {monitors.length > 0 && (
-        <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3">
+        <div className="space-y-4">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 pl-1">
             Per-Monitor Notification Routing
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {monitors.map((monitor) => {
               return (
                 <div
                   key={monitor.id}
-                  className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-4 shadow-sm"
+                  className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm space-y-4 mb-4"
                 >
-                  <p className="font-mono text-xs font-semibold text-zinc-600 dark:text-zinc-400 truncate mb-3">
+                  <p className="font-mono text-sm font-bold text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-2 truncate">
                     {monitor.url}
                   </p>
 
                   {/* Channel multiselect grid */}
                   {alertChannels.length === 0 ? (
-                    <p className="text-xs text-zinc-400 dark:text-zinc-500 italic">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-450 italic">
                       No global alert channels configured. Add integration channels above.
                     </p>
                   ) : (
@@ -312,10 +312,10 @@ export default function SettingsTab({
                         return (
                           <label
                             key={channel.id}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all cursor-pointer select-none ${
+                            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg border transition-all cursor-pointer select-none ${
                               active
                                 ? "bg-emerald-500/5 dark:bg-emerald-500/[0.02] border-emerald-500/30 text-emerald-700 dark:text-emerald-400"
-                                : "bg-zinc-50/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700"
+                                : "bg-zinc-50/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700"
                             }`}
                           >
                             <input
@@ -323,10 +323,10 @@ export default function SettingsTab({
                               checked={active}
                               disabled={isPending}
                               onChange={(e) => handleToggleChannel(monitor.id, channel.id, e.target.checked)}
-                              className="w-3.5 h-3.5 rounded text-emerald-500 border-zinc-300 focus:ring-emerald-500/40 dark:bg-zinc-950 dark:border-zinc-800"
+                              className="w-4 h-4 rounded text-emerald-500 border-zinc-300 focus:ring-emerald-500/40 dark:bg-zinc-950 dark:border-zinc-800"
                             />
                             <div className="min-w-0 flex-1 truncate">
-                              <span className="text-[9px] font-bold uppercase tracking-wider bg-zinc-200 dark:bg-zinc-800 px-1 rounded mr-1">
+                              <span className="text-[9px] font-bold uppercase tracking-wider bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 px-1 rounded mr-1">
                                 {channel.providerType}
                               </span>
                               <span className="text-xs font-semibold">
@@ -347,8 +347,8 @@ export default function SettingsTab({
 
       {monitors.length === 0 && (
         <div className="text-center py-10">
-          <p className="text-sm text-zinc-400 dark:text-zinc-600">No monitors provisioned yet.</p>
-          <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">Add a monitor stream to configure notification routing.</p>
+          <p className="text-sm text-zinc-400 dark:text-zinc-650">No monitors provisioned yet.</p>
+          <p className="text-xs text-zinc-400 dark:text-zinc-650 mt-1">Add a monitor stream to configure notification routing.</p>
         </div>
       )}
     </div>
