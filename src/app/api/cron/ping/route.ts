@@ -161,6 +161,119 @@ async function checkMonitor(monitor: any) {
   if (isFailure && monitor.alertOnFailure !== false) {
     const alertPromises: Promise<any>[] = [];
 
+    // Query user's relational alert channels
+    let alertChannels: any[] = [];
+    try {
+      alertChannels = await (db as any).alertChannel.findMany({
+        where: { userId: monitor.userId },
+      });
+    } catch (dbErr) {
+      console.error("Failed to query relational alert channels:", dbErr);
+    }
+
+    // Dynamic relational dispatcher loop
+    alertChannels.forEach((channel) => {
+      const p = (async () => {
+        try {
+          const type = (channel.providerType || "").toUpperCase();
+          const dest = channel.destinationUrl;
+          if (!dest) return;
+
+          if (type === "DISCORD") {
+            const diagnosticField = aiDiagnostic
+              ? [{ name: "AI Root-Cause Diagnosis", value: aiDiagnostic, inline: false }]
+              : [];
+            await fetch(dest, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: "PulsePing Bot",
+                embeds: [{
+                  title: "🚨 INCIDENT DETECTED: Endpoint Offline",
+                  description: "The monitoring engine failed to receive a healthy response.",
+                  color: 15548997,
+                  fields: [
+                    { name: "Target URL", value: `\`${monitor.url}\``, inline: false },
+                    { name: "HTTP Code", value: `🔴 ${statusCode}`, inline: true },
+                    { name: "Latency", value: `${latency}ms`, inline: true },
+                    ...diagnosticField,
+                  ],
+                  timestamp: new Date().toISOString(),
+                  footer: { text: "PulsePing Automated AlertChannel Dispatcher" },
+                }],
+              }),
+            });
+          } else if (type === "SLACK") {
+            const diagnosticText = aiDiagnostic ? `\n*AI Diagnosis:* ${aiDiagnostic}` : "";
+            await fetch(dest, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                blocks: [
+                  { type: "header", text: { type: "plain_text", text: "🚨 PulsePing Incident Detected", emoji: true } },
+                  { type: "section", text: { type: "mrkdwn", text: `*Target URL:* \`${monitor.url}\`\n*HTTP Code:* 🔴 ${statusCode}\n*Latency:* ${latency}ms${diagnosticText}` } },
+                  { type: "context", elements: [{ type: "mrkdwn", text: "PulsePing Automated AlertChannel Dispatcher" }] },
+                ],
+              }),
+            });
+          } else if (type === "WEBHOOK") {
+            await fetch(dest, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                event: "monitor.failure",
+                monitorId: monitor.id,
+                url: monitor.url,
+                statusCode,
+                latency,
+                checkedAt: new Date().toISOString(),
+                aiDiagnostic,
+                errorBody,
+              }),
+            });
+          } else if (type === "EMAIL") {
+            if (process.env.RESEND_API_KEY) {
+              const resend = new Resend(process.env.RESEND_API_KEY);
+              const diagnosticRow = aiDiagnostic
+                ? `<div><div class="stat-label">AI Diagnosis</div><div class="stat-value" style="color:#f59e0b;font-size:14px;">${aiDiagnostic}</div></div>`
+                : "";
+              const htmlContent = `<!DOCTYPE html><html><head><style>
+                body{background:#0a0a0a;color:#fff;font-family:sans-serif;padding:24px;margin:0}
+                .container{max-width:600px;margin:0 auto;background:#121212;border:1px solid #222;border-radius:12px;padding:32px}
+                h1{color:#f43f5e;font-size:24px;margin-top:0}
+                p{color:#a3a3a3;font-size:16px;line-height:1.5}
+                .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;border-top:1px solid #222;border-bottom:1px solid #222;padding:16px 0}
+                .stat-label{font-size:12px;text-transform:uppercase;color:#737373;font-weight:bold}
+                .stat-value{font-size:18px;color:#f5f5f5;font-weight:600;margin-top:4px;word-break:break-all}
+                .footer{font-size:12px;color:#525252;margin-top:32px;border-top:1px solid #222;padding-top:16px;text-align:center}
+              </style></head><body><div class="container">
+                <h1>🚨 Incident Detected</h1>
+                <p>Your target endpoint is offline.</p>
+                <div class="stat-grid">
+                  <div><div class="stat-label">Target URL</div><div class="stat-value">${monitor.url}</div></div>
+                  <div><div class="stat-label">Resolution Code</div><div class="stat-value" style="color:#f43f5e">${statusCode}</div></div>
+                  <div><div class="stat-label">Response Latency</div><div class="stat-value">${latency}ms</div></div>
+                  <div><div class="stat-label">Timestamp (UTC)</div><div class="stat-value">${new Date().toISOString()}</div></div>
+                  ${diagnosticRow}
+                </div>
+                <p class="footer">PulsePing Automated AlertChannel Dispatcher</p>
+              </div></body></html>`;
+
+              await resend.emails.send({
+                from: "PulsePing Alerts <alerts@pulseping.subnetmask.tech>",
+                to: dest,
+                subject: `[PulsePing] Target Offline: ${monitor.url}`,
+                html: htmlContent,
+              });
+            }
+          }
+        } catch (dispatchErr) {
+          console.error(`AlertChannel dispatch error for channel ${channel.id}:`, dispatchErr);
+        }
+      })();
+      alertPromises.push(p);
+    });
+
     // 1. Telegram
     if (monitor.telegramChatId) {
       if (!process.env.TELEGRAM_BOT_TOKEN) {

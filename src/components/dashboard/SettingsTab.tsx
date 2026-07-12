@@ -127,7 +127,7 @@ export default function SettingsTab({
   };
 
   return (
-    <div className="space-y-8">
+    <div key="settings-tab-main-card" className="space-y-8">
       {/* Global toggles */}
       <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm">
         <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-4">Global Notification Settings</h3>
@@ -247,6 +247,7 @@ export default function SettingsTab({
               >
                 <option value="DISCORD">Discord</option>
                 <option value="SLACK">Slack</option>
+                <option value="EMAIL">Email</option>
                 <option value="WEBHOOK">Webhook</option>
               </select>
             </div>

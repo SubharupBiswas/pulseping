@@ -308,15 +308,15 @@ export default function BillingUpgradeCard({
             <ul className="space-y-2.5 mb-6 text-xs text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Up to 20 active monitor streams</span>
+                <span>Up to 20 Active Monitors</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>1-minute polling cycles</span>
+                <span>1-Minute Polling Cycles</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Advanced Telemetry (POST/PUT, Custom Headers, Content-Match)</span>
+                <span>Advanced Telemetry (POST/PUT/PATCH verbs, Custom Headers, Content-Match checking)</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
@@ -324,7 +324,7 @@ export default function BillingUpgradeCard({
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Inverse Heartbeats & Cron Job Tracking (Dead-Man Switch)</span>
+                <span>Inverse Heartbeats & Cron Dead-Man Switches</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
@@ -339,7 +339,7 @@ export default function BillingUpgradeCard({
           <button
             onClick={() => handleUpgrade("PRO")}
             disabled={isPending || currentPlan === "PRO"}
-            className="w-full text-center text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-200/50 dark:disabled:bg-zinc-900 disabled:text-zinc-500 dark:disabled:text-zinc-650 px-4 py-2.5 rounded-lg cursor-pointer disabled:cursor-not-allowed shadow-md transition-all duration-300 ease-in-out hover:scale-[1.01]"
+            className="w-full text-center text-xs font-semibold bg-zinc-900 hover:bg-zinc-850 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-200/50 dark:disabled:bg-zinc-900 disabled:text-zinc-500 dark:disabled:text-zinc-650 px-4 py-2.5 rounded-lg cursor-pointer disabled:cursor-not-allowed shadow-md transition-all duration-300 ease-in-out hover:scale-[1.01]"
           >
             {isPending ? "Connecting..." : currentPlan === "PRO" ? "Current Plan" : "Upgrade to Pro"}
           </button>
@@ -370,27 +370,27 @@ export default function BillingUpgradeCard({
             <ul className="space-y-2.5 mb-6 text-xs text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span className="font-semibold text-zinc-900 dark:text-zinc-200">Unlimited monitor streams</span>
+                <span className="font-semibold text-zinc-900 dark:text-zinc-200">Unlimited Monitors</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>30-second real-time polling</span>
+                <span>30-Second Polling Cycles</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Advanced Telemetry (POST/PUT, Custom Headers, Content-Match)</span>
+                <span>Full access to all Advanced Telemetry parameters</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Automated TLS/SSL Certificate Expiration Tracking</span>
+                <span>Automated TLS/SSL</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Inverse Heartbeats & Cron Job Tracking (Dead-Man Switch)</span>
+                <span>Inverse Heartbeats</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Public-Facing Releasable Status Pages (1-min ISR)</span>
+                <span>Public Status Pages</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
