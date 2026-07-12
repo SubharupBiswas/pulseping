@@ -18,6 +18,16 @@ model User {
   heartbeats                   Heartbeat[]
   statusPages                  StatusPage[]
   alertChannels                AlertChannel[]
+  invoices                     Invoice[]
+}
+
+model Invoice {
+  id        String   @id @default(uuid())
+  userId    String
+  date      DateTime @default(now())
+  amount    String
+  status    String
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Monitor {

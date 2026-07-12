@@ -1,0 +1,10 @@
+# Build Caches and Environments
+.next/
+.open-next/
+.wrangler/
+.npm-cache/
+node_modules/
+.env.local
+scratchpad/
+tests/
+*.test.tsx

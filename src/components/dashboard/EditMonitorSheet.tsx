@@ -16,6 +16,7 @@ type Props = {
   keywordCheck: string | null;
   sslTrack: boolean;
   isHeartbeat: boolean;
+  isPremium: boolean;
   open: boolean;
   onClose: () => void;
 };
@@ -32,6 +33,7 @@ export default function EditMonitorSheet({
   keywordCheck: initialKeywordCheck,
   sslTrack: initialSslTrack,
   isHeartbeat: initialIsHeartbeat,
+  isPremium,
   open,
   onClose,
 }: Props) {
@@ -87,18 +89,25 @@ export default function EditMonitorSheet({
     setError(null);
     setSaved(false);
     startTransition(async () => {
+      const finalMethod = isPremium ? method : "GET";
+      const finalHeaders = isPremium ? (headersVal.trim() || null) : null;
+      const finalBody = isPremium ? (bodyVal.trim() || null) : null;
+      const finalKeywordCheck = isPremium ? (keywordCheck.trim() || null) : null;
+      const finalSslTrack = isPremium ? sslTrack : false;
+      const finalIsHeartbeat = isPremium ? isHeartbeat : false;
+
       const result = await updateMonitorAlert(
         monitorId,
         email.trim() || null,
         telegram.trim() || null,
         null,
         alertOnFailure,
-        method,
-        headersVal.trim() || null,
-        bodyVal.trim() || null,
-        keywordCheck.trim() || null,
-        sslTrack,
-        isHeartbeat
+        finalMethod,
+        finalHeaders,
+        finalBody,
+        finalKeywordCheck,
+        finalSslTrack,
+        finalIsHeartbeat
       );
       if (result.success) {
         setSaved(true);
@@ -185,6 +194,15 @@ export default function EditMonitorSheet({
               Advanced Telemetry
             </h3>
 
+            {!isPremium && (
+              <div className="flex items-start gap-3 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 rounded-xl text-xs text-amber-700 dark:text-amber-300 leading-relaxed shadow-sm">
+                <span className="text-base shrink-0 select-none">🔒</span>
+                <p>
+                  Advanced Telemetry features are locked under your current plan level. Upgrade to a premium tier to configure HTTP methods, custom headers, keyword matching, and live SSL tracking.
+                </p>
+              </div>
+            )}
+
             {/* HTTP Method Selector */}
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
@@ -193,8 +211,8 @@ export default function EditMonitorSheet({
               <select
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
-                disabled={isPending}
-                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition font-medium"
+                disabled={isPending || !isPremium}
+                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition font-medium disabled:opacity-50"
               >
                 <option value="GET" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">GET</option>
                 <option value="POST" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">POST</option>
@@ -213,9 +231,9 @@ export default function EditMonitorSheet({
                 value={headersVal}
                 onChange={(e) => setHeadersVal(e.target.value)}
                 placeholder='{"Authorization": "Bearer ...", "Content-Type": "application/json"}'
-                disabled={isPending}
+                disabled={isPending || !isPremium}
                 rows={3}
-                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition resize-none disabled:opacity-50"
+                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-650 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition resize-none disabled:opacity-50"
               />
             </div>
 
@@ -229,7 +247,7 @@ export default function EditMonitorSheet({
                   value={bodyVal}
                   onChange={(e) => setBodyVal(e.target.value)}
                   placeholder='{"key": "value"}'
-                  disabled={isPending}
+                  disabled={isPending || !isPremium}
                   rows={3}
                   className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition resize-none disabled:opacity-50"
                 />
@@ -246,8 +264,8 @@ export default function EditMonitorSheet({
                 value={keywordCheck}
                 onChange={(e) => setKeywordCheck(e.target.value)}
                 placeholder="e.g. success"
-                disabled={isPending}
-                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-650 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition disabled:opacity-50"
+                disabled={isPending || !isPremium}
+                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-655 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition disabled:opacity-50"
               />
               <p className="text-[10px] text-zinc-400 dark:text-zinc-600 mt-0.5">
                 Checks that the target response body string contains this specific keyword.
@@ -257,8 +275,8 @@ export default function EditMonitorSheet({
             {/* Interaction Switches Block */}
             <div className="space-y-3 pt-2">
               <div
-                onClick={() => !isPending && setSslTrack(!sslTrack)}
-                className="flex items-center justify-between cursor-pointer select-none"
+                onClick={() => !isPending && isPremium && setSslTrack(!sslTrack)}
+                className={`flex items-center justify-between select-none ${isPremium ? "cursor-pointer" : "opacity-60 cursor-not-allowed"}`}
               >
                 <div>
                   <span className="block text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
@@ -282,8 +300,8 @@ export default function EditMonitorSheet({
               </div>
 
               <div
-                onClick={() => !isPending && setIsHeartbeat(!isHeartbeat)}
-                className="flex items-center justify-between cursor-pointer select-none"
+                onClick={() => !isPending && isPremium && setIsHeartbeat(!isHeartbeat)}
+                className={`flex items-center justify-between select-none ${isPremium ? "cursor-pointer" : "opacity-60 cursor-not-allowed"}`}
               >
                 <div>
                   <span className="block text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">

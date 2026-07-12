@@ -36,29 +36,23 @@ export default async function BillingPage() {
   // Calculate simulated renewal date (30 days from now)
   const renewalDateString = isPremium
     ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
     : "N/A";
 
-  // Mock past test invoices
-  const mockInvoices = isPremium
-    ? [
-        {
-          id: "INV-2026-002",
-          date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }),
-          amount: plan === "PRO" ? "₹499.00" : "₹1,499.00",
-          status: "Paid",
-        },
-        {
-          id: "INV-2026-001",
-          date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }),
-          amount: plan === "PRO" ? "₹499.00" : "₹1,499.00",
-          status: "Paid",
-        },
-      ]
-    : [];
+  const dbInvoices = await (db as any).invoice.findMany({
+    where: { userId },
+    orderBy: { date: "desc" },
+  });
+
+  const invoices = dbInvoices.map((inv: any) => ({
+    id: inv.id,
+    date: inv.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }),
+    amount: inv.amount,
+    status: inv.status,
+  }));
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
@@ -79,11 +73,10 @@ export default async function BillingPage() {
           {/* Right Controls */}
           <div className="flex items-center gap-x-4 md:gap-x-6">
             <ThemeToggle />
-            <span className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm transition-colors ${
-              isPremium
+            <span className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm transition-colors ${isPremium
                 ? "bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                 : "bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-850"
-            }`}>
+              }`}>
               {plan} Tier
             </span>
             <UserButton appearance={{} as any}>
@@ -117,13 +110,13 @@ export default async function BillingPage() {
         {/* Header Title */}
         <div className="mb-8">
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-100">Billing & Usage</h1>
-          <p className="text-sm text-zinc-550 dark:text-zinc-400 mt-1">Manage subscription tiers, renewals, and download payment receipts.</p>
+          <p className="text-sm text-zinc-555 dark:text-zinc-400 mt-1">Manage subscription tiers, renewals, and download payment receipts.</p>
         </div>
 
         {/* Current Subscription Grid */}
         <section className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 mb-8 shadow-sm backdrop-blur-md transition-colors">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">Subscription Summary</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-b border-zinc-200 dark:border-zinc-800/60 pb-5 mb-5">
             <div>
               <p className="text-xs text-zinc-450 dark:text-zinc-500 uppercase tracking-widest font-bold">Active Tier</p>
@@ -174,10 +167,10 @@ export default async function BillingPage() {
         <section className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm backdrop-blur-md transition-colors">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">Payment Invoices</h3>
 
-          {mockInvoices.length === 0 ? (
+          {invoices.length === 0 ? (
             <div className="border border-dashed border-zinc-200 dark:border-zinc-800/80 rounded-xl p-8 text-center bg-zinc-50/20 dark:bg-transparent">
-              <p className="text-zinc-500 dark:text-zinc-400 text-sm font-mono">No invoice records found.</p>
-              <p className="text-xs text-zinc-400 dark:text-zinc-550 mt-1">Upgrade your operational subscription tier to generate billing statements.</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm font-mono">No invoices found</p>
+              <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Upgrade your operational subscription tier to generate billing statements.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -192,7 +185,7 @@ export default async function BillingPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/40 text-zinc-800 dark:text-zinc-300">
-                  {mockInvoices.map((inv) => (
+                  {invoices.map((inv: any) => (
                     <tr key={inv.id} className="hover:bg-zinc-50/30 dark:hover:bg-zinc-900/10 transition duration-100">
                       <td className="py-3 font-mono font-semibold">{inv.id}</td>
                       <td className="py-3">{inv.date}</td>

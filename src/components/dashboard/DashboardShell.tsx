@@ -268,7 +268,7 @@ export default function DashboardShell({
                     ) : (
                       <div className="space-y-3">
                         {filteredMonitors.map((monitor) => (
-                          <MonitorCard key={monitor.id} monitor={monitor} />
+                          <MonitorCard key={monitor.id} monitor={monitor} isPremium={isPremium} />
                         ))}
                       </div>
                     )}

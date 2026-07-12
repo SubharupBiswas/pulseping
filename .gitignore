@@ -67,5 +67,15 @@ next-env.d.ts
 # deployment provider state
 .vercel
 /src/generated/prisma
-
 *.code-workspace
+
+# Build Caches and Environments
+.next/
+.open-next/
+.wrangler/
+.npm-cache/
+node_modules/
+.env.local
+scratchpad/
+tests/
+*.test.tsx

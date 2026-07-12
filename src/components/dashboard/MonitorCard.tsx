@@ -45,9 +45,10 @@ type Monitor = {
 
 type Props = {
   monitor: Monitor;
+  isPremium: boolean;
 };
 
-export default function MonitorCard({ monitor }: Props) {
+export default function MonitorCard({ monitor, isPremium }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [, startTransition] = useTransition();
@@ -332,6 +333,7 @@ export default function MonitorCard({ monitor }: Props) {
           keywordCheck={monitor.keywordCheck}
           sslTrack={monitor.sslTrack}
           isHeartbeat={monitor.isHeartbeat}
+          isPremium={isPremium}
           open={editOpen}
           onClose={() => setEditOpen(false)}
         />
