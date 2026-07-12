@@ -143,7 +143,7 @@ export default async function DashboardPage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[440px] bg-gradient-to-tr from-emerald-500/10 via-indigo-500/5 to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/75 dark:bg-zinc-955 backdrop-blur-xl transition-colors duration-250">
+      <header className="sticky top-0 z-50 bg-zinc-900 dark:bg-zinc-950/40 border-b border-zinc-200 dark:border-zinc-850 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
 
           <Link href="/" className="flex items-center gap-2.5 group shrink-0" aria-label="PulsePing Home">
@@ -172,7 +172,7 @@ export default async function DashboardPage() {
 
         {/* Page title */}
         <div className="mb-8">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-955 dark:text-zinc-100">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-100">
             Overview
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">

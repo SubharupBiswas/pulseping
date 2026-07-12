@@ -75,6 +75,7 @@ export default function SettingsTab({
 
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
+  const [noChangesNotice, setNoChangesNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleThresholdChange = (val: number) => {
@@ -158,14 +159,37 @@ export default function SettingsTab({
   );
 
   const handleSaveMonitor = (monitorId: string) => {
+    const monitor = monitors.find((m) => m.id === monitorId);
+    if (!monitor) return;
+
     const vals = monitorInputs[monitorId];
+    const currentEmail = vals.email.trim() || null;
+    const currentTelegram = vals.telegram.trim() || null;
+    const currentWebhook = vals.webhook.trim() || null;
+
+    const initialEmail = monitor.alertEmail?.trim() || null;
+    const initialTelegram = monitor.telegramChatId?.trim() || null;
+    const initialWebhook = monitor.webhookUrl?.trim() || null;
+
+    if (
+      currentEmail === initialEmail &&
+      currentTelegram === initialTelegram &&
+      currentWebhook === initialWebhook
+    ) {
+      setNoChangesNotice(monitorId);
+      setTimeout(() => {
+        setNoChangesNotice((prev) => (prev === monitorId ? null : prev));
+      }, 3000);
+      return;
+    }
+
     setSaving(monitorId);
     startTransition(async () => {
       await updateMonitorAlert(
         monitorId,
-        vals.email.trim() || null,
-        vals.telegram.trim() || null,
-        vals.webhook.trim() || null
+        currentEmail,
+        currentTelegram,
+        currentWebhook
       );
       setSaving(null);
       setSaved(monitorId);
@@ -211,7 +235,7 @@ export default function SettingsTab({
                   Trigger alert after this many consecutive failures.
                 </p>
               </div>
-              <span className="text-sm font-bold font-mono text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-lg">
+              <span className="text-sm font-bold font-mono text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-855 px-3 py-1 rounded-lg">
                 {threshold}×
               </span>
             </div>
@@ -223,7 +247,7 @@ export default function SettingsTab({
               onChange={(e) => handleThresholdChange(Number(e.target.value))}
               layout={false}
               key="global-threshold-slider-input"
-              className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-855 rounded-full appearance-none accent-emerald-500"
+              className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none accent-emerald-500"
             />
             <div className="flex justify-between text-xs text-zinc-400 dark:text-zinc-650 mt-1">
               <span>1 (immediate)</span>
@@ -294,10 +318,10 @@ export default function SettingsTab({
                 disabled={isPending}
                 className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-medium block"
               >
-                <option value="DISCORD" className="bg-white dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100">Discord</option>
-                <option value="SLACK" className="bg-white dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100">Slack</option>
-                <option value="EMAIL" className="bg-white dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100">Email</option>
-                <option value="WEBHOOK" className="bg-white dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100">Webhook</option>
+                <option value="DISCORD" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Discord</option>
+                <option value="SLACK" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Slack</option>
+                <option value="EMAIL" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Email</option>
+                <option value="WEBHOOK" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Webhook</option>
               </select>
             </div>
 
@@ -335,7 +359,7 @@ export default function SettingsTab({
             <button
               type="submit"
               disabled={isPending || !newUrl.trim()}
-              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm rounded-xl transition-colors duration-200 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm block w-full sm:w-auto text-center"
+              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm rounded-xl transition-colors duration-200 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-zinc-955 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm block w-full sm:w-auto text-center"
             >
               {isPending ? "Connecting..." : "Add Channel"}
             </button>
@@ -376,7 +400,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="alerts@yourdomain.com"
-                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-650 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-medium block"
                       />
                     </div>
 
@@ -394,7 +418,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="https://discord.com/api/webhooks/..."
-                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-650 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-mono"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-medium block font-mono"
                       />
                     </div>
 
@@ -412,7 +436,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="-1001234567890"
-                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-650 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-mono"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-medium block font-mono"
                       />
                     </div>
                   </div>
@@ -421,6 +445,11 @@ export default function SettingsTab({
                     {saved === monitor.id && (
                       <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono">
                         ✓ Saved
+                      </span>
+                    )}
+                    {noChangesNotice === monitor.id && (
+                      <span className="text-xs text-amber-600 dark:text-amber-400 font-mono">
+                        ⚠️ No changes detected to save.
                       </span>
                     )}
                     <button
