@@ -26,10 +26,14 @@ export default async function DashboardPage() {
   }
 
   // Ensure user record exists
-  let userRecord = await db.user.findUnique({ where: { id: userId } });
+  let userRecord = await db.user.findUnique({
+    where: { id: userId },
+    include: { alertChannels: true } as any,
+  });
   if (!userRecord) {
     userRecord = await db.user.create({
       data: { id: userId, email: userId, plan: "FREE" },
+      include: { alertChannels: true } as any,
     });
   }
 
@@ -68,6 +72,13 @@ export default async function DashboardPage() {
       latency: l.latency,
       checkedAt: l.checkedAt instanceof Date ? l.checkedAt.toISOString() : l.checkedAt,
     })),
+  }));
+
+  const serializedAlertChannels = ((userRecord as any).alertChannels || []).map((ch: any) => ({
+    id: ch.id,
+    providerType: ch.providerType,
+    destinationUrl: ch.destinationUrl,
+    userFriendlyName: ch.userFriendlyName ?? null,
   }));
 
   return (
@@ -148,6 +159,9 @@ export default async function DashboardPage() {
           plan={plan}
           isPremium={isPremium}
           alertThreshold={(userRecord as any).alertThreshold ?? 3}
+          emailNotificationsEnabled={(userRecord as any).emailNotificationsEnabled !== false}
+          telegramNotificationsEnabled={Boolean((userRecord as any).telegramNotificationsEnabled)}
+          alertChannels={serializedAlertChannels}
         />
       </main>
 

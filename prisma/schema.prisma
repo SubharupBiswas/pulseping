@@ -8,13 +8,16 @@ generator client {
 }
 
 model User {
-  id             String       @id @default(uuid())
-  email          String       @unique
-  plan           String       @default("FREE") // FREE, HOBBY, DEVELOPER
-  alertThreshold Int          @default(3)
-  monitors       Monitor[]
-  heartbeats     Heartbeat[]
-  statusPages    StatusPage[]
+  id                           String         @id @default(uuid())
+  email                        String         @unique
+  plan                         String         @default("FREE") // FREE, HOBBY, DEVELOPER
+  alertThreshold               Int            @default(3)
+  emailNotificationsEnabled    Boolean        @default(true)
+  telegramNotificationsEnabled Boolean        @default(false)
+  monitors                     Monitor[]
+  heartbeats                   Heartbeat[]
+  statusPages                  StatusPage[]
+  alertChannels                AlertChannel[]
 }
 
 model Monitor {
@@ -84,4 +87,14 @@ model StatusPageMonitor {
   monitor      Monitor    @relation(fields: [monitorId], references: [id], onDelete: Cascade)
 
   @@id([statusPageId, monitorId])
+}
+
+model AlertChannel {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  providerType     String   // e.g. DISCORD, SLACK, WEBHOOK
+  destinationUrl   String
+  userFriendlyName String?
+  createdAt        DateTime @default(now())
 }

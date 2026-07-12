@@ -27,12 +27,22 @@ type Monitor = {
   logs: Log[];
 };
 
+type AlertChannel = {
+  id: string;
+  providerType: string;
+  destinationUrl: string;
+  userFriendlyName: string | null;
+};
+
 type Props = {
   monitors: Monitor[];
   userId: string;
   plan: string;
   isPremium: boolean;
   alertThreshold: number;
+  emailNotificationsEnabled: boolean;
+  telegramNotificationsEnabled: boolean;
+  alertChannels: AlertChannel[];
 };
 
 type StatusFilter = "ALL" | "UP" | "DOWN" | "PAUSED";
@@ -50,7 +60,16 @@ const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
   { id: "PAUSED", label: "Paused" },
 ];
 
-export default function DashboardShell({ monitors, userId, plan, isPremium, alertThreshold }: Props) {
+export default function DashboardShell({
+  monitors,
+  userId,
+  plan,
+  isPremium,
+  alertThreshold,
+  emailNotificationsEnabled,
+  telegramNotificationsEnabled,
+  alertChannels,
+}: Props) {
   const [activeTab, setActiveTab] = useState("streams");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [logSearch, setLogSearch] = useState("");
@@ -340,7 +359,14 @@ export default function DashboardShell({ monitors, userId, plan, isPremium, aler
 
           {activeTab === "settings" && (
             <section aria-label="Notification Settings">
-              <SettingsTab monitors={monitors} userId={userId} initialThreshold={alertThreshold} />
+              <SettingsTab
+                monitors={monitors}
+                userId={userId}
+                initialThreshold={alertThreshold}
+                emailNotificationsEnabled={emailNotificationsEnabled}
+                telegramNotificationsEnabled={telegramNotificationsEnabled}
+                alertChannels={alertChannels}
+              />
             </section>
           )}
         </motion.div>
