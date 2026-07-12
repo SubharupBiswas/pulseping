@@ -176,7 +176,7 @@ export default function SettingsTab({
   return (
     <div key="settings-tab-main-card" className="space-y-8">
       {/* Global toggles */}
-      <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-2xl p-5">
         <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-4">Global Notification Settings</h3>
 
         <div className="space-y-4">
@@ -234,7 +234,7 @@ export default function SettingsTab({
       </div>
 
       {/* Dynamic Integration Channels Deck */}
-      <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-2xl p-5">
         <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2">Integration Channels</h3>
         <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-6">
           Connect Discord webhooks, Slack webhooks, or generic API callback endpoints.
@@ -294,10 +294,10 @@ export default function SettingsTab({
                 disabled={isPending}
                 className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-medium block"
               >
-                <option value="DISCORD" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Discord</option>
-                <option value="SLACK" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Slack</option>
-                <option value="EMAIL" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Email</option>
-                <option value="WEBHOOK" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Webhook</option>
+                <option value="DISCORD" className="bg-white dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100">Discord</option>
+                <option value="SLACK" className="bg-white dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100">Slack</option>
+                <option value="EMAIL" className="bg-white dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100">Email</option>
+                <option value="WEBHOOK" className="bg-white dark:bg-zinc-955 text-zinc-900 dark:text-zinc-100">Webhook</option>
               </select>
             </div>
 
@@ -335,7 +335,7 @@ export default function SettingsTab({
             <button
               type="submit"
               disabled={isPending || !newUrl.trim()}
-              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-100 dark:disabled:bg-zinc-900 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:cursor-not-allowed font-semibold text-xs rounded-lg transition shadow-md flex items-center gap-1.5"
+              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm rounded-xl transition-colors duration-200 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm block w-full sm:w-auto text-center"
             >
               {isPending ? "Connecting..." : "Add Channel"}
             </button>
@@ -355,7 +355,7 @@ export default function SettingsTab({
               return (
                 <div
                   key={monitor.id}
-                  className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm space-y-4 mb-4"
+                  className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-2xl p-5 space-y-4 mb-4"
                 >
                   <p className="font-mono text-sm font-bold text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-2 truncate">
                     {monitor.url}
@@ -376,7 +376,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="alerts@yourdomain.com"
-                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-650 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition"
                       />
                     </div>
 
@@ -394,7 +394,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="https://discord.com/api/webhooks/..."
-                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-mono"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-650 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-mono"
                       />
                     </div>
 
@@ -412,7 +412,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="-1001234567890"
-                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-mono"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-650 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-mono"
                       />
                     </div>
                   </div>
@@ -426,7 +426,7 @@ export default function SettingsTab({
                     <button
                       onClick={() => handleSaveMonitor(monitor.id)}
                       disabled={saving === monitor.id}
-                      className="text-xs font-semibold px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-955 hover:bg-zinc-800 dark:hover:bg-white transition disabled:opacity-60 flex items-center gap-1.5"
+                      className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm rounded-xl transition-colors duration-200 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-zinc-955 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm block w-full sm:w-auto text-center flex items-center justify-center gap-1.5"
                     >
                       {saving === monitor.id && (
                         <span className="w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
