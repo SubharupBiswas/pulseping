@@ -331,8 +331,8 @@ export default function SettingsTab({
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                        Alert Email
+                      <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1.5">
+                        ALERT EMAIL
                       </label>
                       <input
                         type="email"
@@ -344,13 +344,13 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="alerts@yourdomain.com"
-                        className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-emerald-500/40 font-medium text-sm rounded-lg block w-full p-2.5"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                        Webhook URL
+                      <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1.5">
+                        WEBHOOK URL
                       </label>
                       <input
                         type="url"
@@ -362,13 +362,13 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="https://discord.com/api/webhooks/..."
-                        className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-emerald-500/40 font-medium text-sm rounded-lg block w-full p-2.5 font-mono"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                        Telegram Chat ID
+                      <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1.5">
+                        TELEGRAM CHAT ID
                       </label>
                       <input
                         type="text"
@@ -380,7 +380,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="-1001234567890"
-                        className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-955 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition font-medium w-full p-2.5 block"
                       />
                     </div>
                   </div>
