@@ -171,6 +171,14 @@ export default function BillingUpgradeCard({
     });
   };
 
+  const formatPrice = (value: number, curr: "INR" | "USD") => {
+    return new Intl.NumberFormat(curr === "INR" ? "en-IN" : "en-US", {
+      style: "currency",
+      currency: curr,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
   if (currentPlan === "PRO" || currentPlan === "BUSINESS") return null;
 
   return (
@@ -192,7 +200,7 @@ export default function BillingUpgradeCard({
               className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] ${
                 currency === "INR"
                   ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
+                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-455 dark:hover:text-zinc-350"
               }`}
             >
               ₹ INR
@@ -202,7 +210,7 @@ export default function BillingUpgradeCard({
               className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] ${
                 currency === "USD"
                   ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
+                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-455 dark:hover:text-zinc-350"
               }`}
             >
               $ USD
@@ -216,7 +224,7 @@ export default function BillingUpgradeCard({
               className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] ${
                 billingPeriod === "monthly"
                   ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
+                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-455 dark:hover:text-zinc-350"
               }`}
             >
               Monthly
@@ -226,7 +234,7 @@ export default function BillingUpgradeCard({
               className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] flex items-center gap-1.5 ${
                 billingPeriod === "yearly"
                   ? "bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-450 dark:hover:text-zinc-350"
+                  : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-455 dark:hover:text-zinc-350"
               }`}
             >
               Yearly
@@ -250,26 +258,26 @@ export default function BillingUpgradeCard({
             </div>
             <div className="flex items-baseline gap-1 mb-4">
               <span className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                {currency === "INR" ? "₹0" : "$0"}
+                {formatPrice(0, currency)}
               </span>
               <span className="text-xs text-zinc-500 dark:text-zinc-455">/ month</span>
             </div>
-            <ul className="space-y-2.5 mb-6 text-sm text-zinc-500 dark:text-zinc-400">
+            <ul className="space-y-2.5 mb-6 text-xs text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Up to 2 active monitor streams</span>
+                <span>Max 5 Active Monitors</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>10-minute standard polling</span>
+                <span>Standard Uptime Monitoring (HTTP GET only)</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Basic email notifications</span>
+                <span>30-Day Historical Data Retention Guard</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-zinc-400 dark:text-zinc-650">✗</span>
-                <span className="text-zinc-400 dark:text-zinc-650">Discord webhook channel alerts</span>
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>Basic Email Alerts</span>
               </li>
             </ul>
           </div>
@@ -294,32 +302,44 @@ export default function BillingUpgradeCard({
             <div className="flex items-baseline gap-1 mb-1">
               <span className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
                 {currency === "INR"
-                  ? billingPeriod === "monthly" ? "₹499" : "₹399"
-                  : billingPeriod === "monthly" ? "$7" : "$5"}
+                  ? billingPeriod === "monthly" ? formatPrice(499, "INR") : formatPrice(399, "INR")
+                  : billingPeriod === "monthly" ? formatPrice(7, "USD") : formatPrice(5, "USD")}
               </span>
               <span className="text-xs text-zinc-500 dark:text-zinc-455">/ month</span>
             </div>
             <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mb-4">
               {billingPeriod === "yearly"
-                ? currency === "INR" ? "Billed annually (₹4,788/yr)" : "Billed annually ($67/yr)"
+                ? currency === "INR" ? `Billed annually (${formatPrice(4788, "INR")}/yr)` : `Billed annually (${formatPrice(67, "USD")}/yr)`
                 : "Billed monthly"}
             </p>
-            <ul className="space-y-2.5 mb-6 text-sm text-zinc-500 dark:text-zinc-400">
+            <ul className="space-y-2.5 mb-6 text-xs text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
                 <span>Up to 20 active monitor streams</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>1-minute high-frequency polling</span>
+                <span>1-minute polling cycles</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Discord webhook alert channels</span>
+                <span>Advanced Telemetry (POST/PUT, Custom Headers, Content-Match)</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>7-day telemetry log archive</span>
+                <span>Automated TLS/SSL Certificate Expiration Tracking</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>Inverse Heartbeats & Cron Job Tracking (Dead-Man Switch)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>Public-Facing Releasable Status Pages (1-min ISR)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>✦ AI-Powered Incident Root-Cause Diagnostics</span>
               </li>
             </ul>
           </div>
@@ -344,17 +364,17 @@ export default function BillingUpgradeCard({
             <div className="flex items-baseline gap-1 mb-1">
               <span className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
                 {currency === "INR"
-                  ? billingPeriod === "monthly" ? "₹1,499" : "₹1,199"
-                  : billingPeriod === "monthly" ? "$20" : "$16"}
+                  ? billingPeriod === "monthly" ? formatPrice(1499, "INR") : formatPrice(1199, "INR")
+                  : billingPeriod === "monthly" ? formatPrice(20, "USD") : formatPrice(16, "USD")}
               </span>
               <span className="text-xs text-zinc-500 dark:text-zinc-455">/ month</span>
             </div>
             <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mb-4">
               {billingPeriod === "yearly"
-                ? currency === "INR" ? "Billed annually (₹14,388/yr)" : "Billed annually ($200/yr)"
+                ? currency === "INR" ? `Billed annually (${formatPrice(14388, "INR")}/yr)` : `Billed annually (${formatPrice(200, "USD")}/yr)`
                 : "Billed monthly"}
             </p>
-            <ul className="space-y-2.5 mb-6 text-sm text-zinc-500 dark:text-zinc-400">
+            <ul className="space-y-2.5 mb-6 text-xs text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
                 <span className="font-semibold text-zinc-900 dark:text-zinc-200">Unlimited monitor streams</span>
@@ -365,15 +385,27 @@ export default function BillingUpgradeCard({
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Slack/Discord/Custom webhooks</span>
+                <span>Advanced Telemetry (POST/PUT, Custom Headers, Content-Match)</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>30-day log persistence</span>
+                <span>Automated TLS/SSL Certificate Expiration Tracking</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Multi-seat team dashboards</span>
+                <span>Inverse Heartbeats & Cron Job Tracking (Dead-Man Switch)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>Public-Facing Releasable Status Pages (1-min ISR)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>✦ AI-Powered Incident Root-Cause Diagnostics</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>Priority developer support</span>
               </li>
             </ul>
           </div>

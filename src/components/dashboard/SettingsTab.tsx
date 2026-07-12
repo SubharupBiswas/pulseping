@@ -2,6 +2,7 @@
 
 import React, { useState, useTransition } from "react";
 import { updateMonitorAlert } from "@/app/actions/monitors";
+import { updateUserAlertThreshold } from "@/app/actions/billing";
 
 type Monitor = {
   id: string;
@@ -12,6 +13,8 @@ type Monitor = {
 
 type Props = {
   monitors: Monitor[];
+  userId: string;
+  initialThreshold: number;
 };
 
 function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
@@ -33,14 +36,21 @@ function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean
   );
 }
 
-export default function SettingsTab({ monitors }: Props) {
+export default function SettingsTab({ monitors, userId, initialThreshold }: Props) {
   const [globalEmail, setGlobalEmail] = useState(true);
   const [globalTelegram, setGlobalTelegram] = useState(false);
-  const [threshold, setThreshold] = useState(3);
+  const [threshold, setThreshold] = useState(initialThreshold ?? 3);
 
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+
+  const handleThresholdChange = (val: number) => {
+    setThreshold(val);
+    startTransition(async () => {
+      await updateUserAlertThreshold(userId, val);
+    });
+  };
 
   const [monitorSettings, setMonitorSettings] = useState<
     Record<string, { email: string; telegram: string }>
@@ -108,7 +118,7 @@ export default function SettingsTab({ monitors }: Props) {
               min={1}
               max={10}
               value={threshold}
-              onChange={(e) => setThreshold(Number(e.target.value))}
+              onChange={(e) => handleThresholdChange(Number(e.target.value))}
               className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none accent-emerald-500"
             />
             <div className="flex justify-between text-xs text-zinc-400 dark:text-zinc-600 mt-1">

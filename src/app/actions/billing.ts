@@ -27,3 +27,23 @@ export async function upgradeUserPlan(userId: string, targetPlan: "FREE" | "PRO"
     return { success: false, error: error.message || "Failed to update billing profile structures" };
   }
 }
+
+export async function updateUserAlertThreshold(userId: string, alertThreshold: number) {
+  try {
+    const session = await auth();
+    if (!session.userId || session.userId !== userId) {
+      throw new Error("Access denied. Authentication mismatch.");
+    }
+
+    await db.user.update({
+      where: { id: userId },
+      data: { alertThreshold } as any,
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error: any) {
+    console.error("ALERT_THRESHOLD_MUTATION_CRASH:", error);
+    return { success: false, error: error.message || "Failed to update threshold" };
+  }
+}

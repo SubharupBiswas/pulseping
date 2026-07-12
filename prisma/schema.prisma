@@ -8,12 +8,13 @@ generator client {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  email       String       @unique
-  plan        String       @default("FREE") // FREE, HOBBY, DEVELOPER
-  monitors    Monitor[]
-  heartbeats  Heartbeat[]
-  statusPages StatusPage[]
+  id             String       @id @default(uuid())
+  email          String       @unique
+  plan           String       @default("FREE") // FREE, HOBBY, DEVELOPER
+  alertThreshold Int          @default(3)
+  monitors       Monitor[]
+  heartbeats     Heartbeat[]
+  statusPages    StatusPage[]
 }
 
 model Monitor {

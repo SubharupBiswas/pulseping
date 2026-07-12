@@ -142,6 +142,7 @@ export default async function DashboardPage() {
           userId={userId}
           plan={plan}
           isPremium={isPremium}
+          alertThreshold={(userRecord as any).alertThreshold ?? 3}
         />
       </main>
 

@@ -32,6 +32,7 @@ type Props = {
   userId: string;
   plan: string;
   isPremium: boolean;
+  alertThreshold: number;
 };
 
 type StatusFilter = "ALL" | "UP" | "DOWN" | "PAUSED";
@@ -49,7 +50,7 @@ const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
   { id: "PAUSED", label: "Paused" },
 ];
 
-export default function DashboardShell({ monitors, userId, plan, isPremium }: Props) {
+export default function DashboardShell({ monitors, userId, plan, isPremium, alertThreshold }: Props) {
   const [activeTab, setActiveTab] = useState("streams");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [logSearch, setLogSearch] = useState("");
@@ -339,7 +340,7 @@ export default function DashboardShell({ monitors, userId, plan, isPremium }: Pr
 
           {activeTab === "settings" && (
             <section aria-label="Notification Settings">
-              <SettingsTab monitors={monitors} />
+              <SettingsTab monitors={monitors} userId={userId} initialThreshold={alertThreshold} />
             </section>
           )}
         </motion.div>
