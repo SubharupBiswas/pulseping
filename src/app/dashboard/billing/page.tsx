@@ -1,12 +1,14 @@
 import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import ThemeToggle from "@/components/ThemeToggle";
 import { UserButton } from "@clerk/nextjs";
 import { upgradeUserPlan } from "@/app/actions/billing";
 import PulsePingLogo from "@/components/PulsePingLogo";
+import BillingUpgradeCard from "@/components/BillingUpgradeCard";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +25,10 @@ export default async function BillingPage() {
       data: { id: userId, email: userId, plan: "FREE" },
     });
   }
+
+  const headersList = await headers();
+  const country = headersList.get("cf-ipcountry") || headersList.get("x-vercel-ip-country") || "US";
+  const defaultCurrency = country === "IN" ? "INR" : "USD";
 
   const plan = userRecord.plan;
   const isPremium = plan === "PRO" || plan === "BUSINESS";
@@ -160,6 +166,9 @@ export default async function BillingPage() {
             )}
           </div>
         </section>
+
+        {/* Upgrade Billing Options */}
+        <BillingUpgradeCard userId={userId} currentPlan={plan} currency={defaultCurrency} />
 
         {/* Invoice History */}
         <section className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm backdrop-blur-md transition-colors">

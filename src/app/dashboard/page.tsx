@@ -2,6 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -31,6 +32,10 @@ export default async function DashboardPage() {
       data: { id: userId, email: userId, plan: "FREE" },
     });
   }
+
+  const headersList = await headers();
+  const country = headersList.get("cf-ipcountry") || headersList.get("x-vercel-ip-country") || "US";
+  const defaultCurrency = country === "IN" ? "INR" : "USD";
 
   // Fetch monitors with full log history for charts and filters
   const monitors = await db.monitor.findMany({
@@ -133,7 +138,7 @@ export default async function DashboardPage() {
             </Link>
           </div>
         ) : (
-          <BillingUpgradeCard userId={userId} currentPlan={plan} />
+          <BillingUpgradeCard userId={userId} currentPlan={plan} currency={defaultCurrency} />
         )}
 
         {/* Interactive Dashboard Shell */}

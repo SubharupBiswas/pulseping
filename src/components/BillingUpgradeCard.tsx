@@ -5,23 +5,16 @@ import React, { useState, useTransition } from "react";
 export default function BillingUpgradeCard({
   userId,
   currentPlan,
+  currency: initialCurrency = "USD",
 }: {
   userId: string;
   currentPlan: string;
+  currency?: "INR" | "USD";
 }) {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
-  const [currency, setCurrency] = useState<"INR" | "USD">("INR");
+  const [currency, setCurrency] = useState<"INR" | "USD">(initialCurrency);
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
-
-  React.useEffect(() => {
-    try {
-      const isIndia = Intl.DateTimeFormat().resolvedOptions().timeZone === "Asia/Kolkata";
-      if (!isIndia) {
-        setCurrency("USD");
-      }
-    } catch {}
-  }, []);
 
   const loadRazorpayScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -265,7 +258,7 @@ export default function BillingUpgradeCard({
             <ul className="space-y-2.5 mb-6 text-xs text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Max 5 Active Monitors</span>
+                <span>Max 2 Active Monitors</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>

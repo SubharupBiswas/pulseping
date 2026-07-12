@@ -42,7 +42,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
       period: "forever",
       description: "Essential status checking parameters for personal services.",
       features: [
-        "Max 5 Active Monitors",
+        "Max 2 Active Monitors",
         "Standard Uptime Monitoring (HTTP GET only)",
         "30-Day Historical Data Retention Guard",
         "Basic Email Alerts",
