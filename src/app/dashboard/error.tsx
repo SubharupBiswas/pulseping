@@ -14,7 +14,7 @@ export default function DashboardError({ error, reset }: Props) {
   }, [error]);
 
   return (
-    <div className="min-h-[400px] flex items-center justify-center p-6 bg-zinc-50 dark:bg-zinc-950/20 rounded-xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+    <div className="w-full min-w-full col-span-full mx-auto flex flex-col items-center justify-center py-12 px-4 min-h-[400px] bg-zinc-50 dark:bg-zinc-950/20 rounded-xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
       <div className="max-w-md w-full text-center space-y-6">
         <div className="w-12 h-12 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto border border-rose-500/25">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

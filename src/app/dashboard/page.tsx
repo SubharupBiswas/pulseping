@@ -28,12 +28,40 @@ export default async function DashboardPage() {
   // Ensure user record exists
   let userRecord = await db.user.findUnique({
     where: { id: userId },
-    include: { alertChannels: true } as any,
+    select: {
+      id: true,
+      plan: true,
+      alertThreshold: true,
+      emailNotificationsEnabled: true,
+      telegramNotificationsEnabled: true,
+      alertChannels: {
+        select: {
+          id: true,
+          providerType: true,
+          destinationUrl: true,
+          userFriendlyName: true,
+        }
+      }
+    } as any,
   });
   if (!userRecord) {
     userRecord = await db.user.create({
       data: { id: userId, email: userId, plan: "FREE" },
-      include: { alertChannels: true } as any,
+      select: {
+        id: true,
+        plan: true,
+        alertThreshold: true,
+        emailNotificationsEnabled: true,
+        telegramNotificationsEnabled: true,
+        alertChannels: {
+          select: {
+            id: true,
+            providerType: true,
+            destinationUrl: true,
+            userFriendlyName: true,
+          }
+        }
+      } as any,
     });
   }
 
@@ -44,18 +72,37 @@ export default async function DashboardPage() {
   // Fetch monitors with full log history for charts and filters
   const monitors = await db.monitor.findMany({
     where: { userId },
-    include: {
+    select: {
+      id: true,
+      url: true,
+      isActive: true,
+      frequency: true,
+      alertEmail: true,
+      telegramChatId: true,
+      webhookUrl: true,
+      alertOnFailure: true,
+      alertChannels: {
+        select: {
+          id: true,
+          providerType: true,
+          destinationUrl: true,
+          userFriendlyName: true,
+        }
+      },
       logs: {
         orderBy: { checkedAt: "desc" },
         // 90 days of checks at max frequency (every 30s) ≈ 259,200 entries; cap at 500 for safety
         take: 500,
-      },
-      alertChannels: true,
+        select: {
+          id: true,
+          statusCode: true,
+          latency: true,
+          checkedAt: true,
+        }
+      }
     } as any,
     orderBy: { id: "desc" },
-  });
-
-  const plan = userRecord.plan;
+  });  const plan = (userRecord as any).plan as string;
   const isPremium = plan === "PRO" || plan === "BUSINESS";
 
   // Serialize dates to ISO strings for the client
@@ -96,7 +143,7 @@ export default async function DashboardPage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[440px] bg-gradient-to-tr from-emerald-500/10 via-indigo-500/5 to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/75 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
+      <header className="sticky top-0 z-50 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/75 dark:bg-zinc-955 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
 
           <Link href="/" className="flex items-center gap-2.5 group shrink-0" aria-label="PulsePing Home">
@@ -125,7 +172,7 @@ export default async function DashboardPage() {
 
         {/* Page title */}
         <div className="mb-8">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-100">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-955 dark:text-zinc-100">
             Overview
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
@@ -157,19 +204,19 @@ export default async function DashboardPage() {
             </Link>
           </div>
         ) : (
-          <BillingUpgradeCard userId={userId} currentPlan={plan} currency={defaultCurrency} />
+          <BillingUpgradeCard userId={userId} currentPlan={plan as any} currency={defaultCurrency} />
         )}
 
         {/* Interactive Dashboard Shell */}
         <DashboardShell
-          monitors={serializedMonitors}
+          monitors={serializedMonitors as any}
           userId={userId}
           plan={plan}
           isPremium={isPremium}
           alertThreshold={(userRecord as any).alertThreshold ?? 3}
           emailNotificationsEnabled={(userRecord as any).emailNotificationsEnabled !== false}
           telegramNotificationsEnabled={Boolean((userRecord as any).telegramNotificationsEnabled)}
-          alertChannels={serializedAlertChannels}
+          alertChannels={serializedAlertChannels as any}
         />
       </main>
 

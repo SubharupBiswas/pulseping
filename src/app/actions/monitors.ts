@@ -244,12 +244,33 @@ export async function getLatestTelemetry(userId: string) {
 
     const monitors = await db.monitor.findMany({
       where: { userId },
-      include: {
+      select: {
+        id: true,
+        url: true,
+        isActive: true,
+        frequency: true,
+        alertEmail: true,
+        telegramChatId: true,
+        webhookUrl: true,
+        alertOnFailure: true,
+        alertChannels: {
+          select: {
+            id: true,
+            providerType: true,
+            destinationUrl: true,
+            userFriendlyName: true,
+          }
+        },
         logs: {
           orderBy: { checkedAt: "desc" },
           take: 500,
-        },
-        alertChannels: true,
+          select: {
+            id: true,
+            statusCode: true,
+            latency: true,
+            checkedAt: true,
+          }
+        }
       } as any,
       orderBy: { id: "desc" },
     });

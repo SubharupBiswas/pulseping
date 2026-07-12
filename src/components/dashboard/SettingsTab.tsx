@@ -111,6 +111,36 @@ export default function SettingsTab({
     });
   };
 
+  const getProviderConfig = (provider: string) => {
+    switch (provider) {
+      case "DISCORD":
+        return {
+          label: "Discord Webhook URL",
+          placeholder: "https://discord.com/api/webhooks/...",
+          type: "url",
+        };
+      case "SLACK":
+        return {
+          label: "Slack Webhook URL",
+          placeholder: "https://hooks.slack.com/services/...",
+          type: "url",
+        };
+      case "EMAIL":
+        return {
+          label: "Destination Email Address (No API required)",
+          placeholder: "alerts@yourcompany.com",
+          type: "email",
+        };
+      case "WEBHOOK":
+      default:
+        return {
+          label: "Custom Endpoint URL",
+          placeholder: "https://api.yourdomain.com/v1/alerts",
+          type: "url",
+        };
+    }
+  };
+
   // Local state for per-monitor inputs
   const [monitorInputs, setMonitorInputs] = useState<
     Record<string, { email: string; telegram: string; webhook: string }>
@@ -254,7 +284,7 @@ export default function SettingsTab({
         {/* Add Channel Form */}
         <form onSubmit={handleAddChannel} className="border-t border-zinc-100 dark:border-zinc-800 pt-5 space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Connect New Channel</h4>
-          <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-3">
             <div className="space-y-1">
               <label htmlFor="provider-select" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Provider</label>
               <select
@@ -262,26 +292,28 @@ export default function SettingsTab({
                 value={newProvider}
                 onChange={(e) => setNewProvider(e.target.value)}
                 disabled={isPending}
-                className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-medium block"
               >
-                <option value="DISCORD">Discord</option>
-                <option value="SLACK">Slack</option>
-                <option value="EMAIL">Email</option>
-                <option value="WEBHOOK">Webhook</option>
+                <option value="DISCORD" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Discord</option>
+                <option value="SLACK" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Slack</option>
+                <option value="EMAIL" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Email</option>
+                <option value="WEBHOOK" className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">Webhook</option>
               </select>
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="channel-url" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Destination URL</label>
+              <label htmlFor="channel-url" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                {getProviderConfig(newProvider).label}
+              </label>
               <input
                 id="channel-url"
-                type="url"
+                type={getProviderConfig(newProvider).type}
                 value={newUrl}
                 onChange={(e) => setNewUrl(e.target.value)}
-                placeholder="https://discord.com/api/webhooks/..."
+                placeholder={getProviderConfig(newProvider).placeholder}
                 required
                 disabled={isPending}
-                className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-medium block font-mono"
               />
             </div>
           </div>
@@ -296,7 +328,7 @@ export default function SettingsTab({
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="e.g. Production Alerts"
                 disabled={isPending}
-                className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-medium block"
               />
             </div>
 
@@ -344,7 +376,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="alerts@yourdomain.com"
-                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-emerald-500/40 font-medium text-sm rounded-lg block w-full p-2.5"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition"
                       />
                     </div>
 
@@ -362,7 +394,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="https://discord.com/api/webhooks/..."
-                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-emerald-500/40 font-medium text-sm rounded-lg block w-full p-2.5 font-mono"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-mono"
                       />
                     </div>
 
@@ -380,7 +412,7 @@ export default function SettingsTab({
                           }))
                         }
                         placeholder="-1001234567890"
-                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition font-medium w-full p-2.5 block"
+                        className="text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 rounded-xl text-sm w-full p-2.5 outline-none transition font-mono"
                       />
                     </div>
                   </div>
