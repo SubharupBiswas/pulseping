@@ -25,6 +25,7 @@ type Monitor = {
   telegramChatId: string | null;
   alertOnFailure: boolean;
   logs: Log[];
+  alertChannels: AlertChannel[];
 };
 
 type AlertChannel = {
@@ -153,10 +154,10 @@ export default function DashboardShell({
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.18, ease: "easeOut" }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
         >
           {activeTab === "streams" && (
             <section aria-label="Active Monitoring Channels">

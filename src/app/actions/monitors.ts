@@ -181,3 +181,54 @@ export async function createHeartbeat(
     return { success: false, error: error.message || "Failed to create heartbeat" };
   }
 }
+
+export async function toggleMonitorAlertChannel(
+  monitorId: string,
+  channelId: string,
+  enabled: boolean
+) {
+  try {
+    const session = await auth();
+    if (!session.userId) throw new Error("Unauthorized.");
+
+    const monitor = await db.monitor.findUnique({
+      where: { id: monitorId },
+    });
+    if (!monitor || monitor.userId !== session.userId) {
+      throw new Error("Access denied. Monitor not found.");
+    }
+
+    const channel = await (db as any).alertChannel.findUnique({
+      where: { id: channelId },
+    });
+    if (!channel || channel.userId !== session.userId) {
+      throw new Error("Access denied. Alert channel not found.");
+    }
+
+    if (enabled) {
+      await db.monitor.update({
+        where: { id: monitorId },
+        data: {
+          alertChannels: {
+            connect: { id: channelId },
+          },
+        } as any,
+      });
+    } else {
+      await db.monitor.update({
+        where: { id: monitorId },
+        data: {
+          alertChannels: {
+            disconnect: { id: channelId },
+          },
+        } as any,
+      });
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error: any) {
+    console.error("FAILED_TO_TOGGLE_MONITOR_ALERT_CHANNEL:", error);
+    return { success: false, error: error.message || "Failed to toggle alert channel link" };
+  }
+}

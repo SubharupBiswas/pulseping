@@ -50,7 +50,8 @@ export default async function DashboardPage() {
         // 90 days of checks at max frequency (every 30s) ≈ 259,200 entries; cap at 500 for safety
         take: 500,
       },
-    },
+      alertChannels: true,
+    } as any,
     orderBy: { id: "desc" },
   });
 
@@ -66,6 +67,12 @@ export default async function DashboardPage() {
     alertEmail: m.alertEmail ?? null,
     telegramChatId: m.telegramChatId ?? null,
     alertOnFailure: m.alertOnFailure,
+    alertChannels: (m.alertChannels || []).map((ch: any) => ({
+      id: ch.id,
+      providerType: ch.providerType,
+      destinationUrl: ch.destinationUrl,
+      userFriendlyName: ch.userFriendlyName ?? null,
+    })),
     logs: m.logs.map((l: any) => ({
       id: l.id,
       statusCode: l.statusCode,

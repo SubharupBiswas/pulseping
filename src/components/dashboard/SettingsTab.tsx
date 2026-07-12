@@ -1,26 +1,28 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { updateMonitorAlert } from "@/app/actions/monitors";
 import {
   updateUserAlertThreshold,
   updateUserNotificationSettings,
   addAlertChannel,
   deleteAlertChannel,
 } from "@/app/actions/billing";
-
-type Monitor = {
-  id: string;
-  url: string;
-  alertEmail: string | null;
-  telegramChatId: string | null;
-};
+import { toggleMonitorAlertChannel } from "@/app/actions/monitors";
 
 type AlertChannel = {
   id: string;
   providerType: string;
   destinationUrl: string;
   userFriendlyName: string | null;
+};
+
+type Monitor = {
+  id: string;
+  url: string;
+  alertEmail: string | null;
+  telegramChatId: string | null;
+  alertOnFailure: boolean;
+  alertChannels: AlertChannel[];
 };
 
 type Props = {
@@ -69,8 +71,6 @@ export default function SettingsTab({
   const [newUrl, setNewUrl] = useState("");
   const [newName, setNewName] = useState("");
 
-  const [saving, setSaving] = useState<string | null>(null);
-  const [saved, setSaved] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleThresholdChange = (val: number) => {
@@ -107,23 +107,14 @@ export default function SettingsTab({
     });
   };
 
-  const [monitorSettings, setMonitorSettings] = useState<
-    Record<string, { email: string; telegram: string }>
-  >(
-    Object.fromEntries(
-      monitors.map((m) => [m.id, { email: m.alertEmail ?? "", telegram: m.telegramChatId ?? "" }])
-    )
-  );
-
-  const handleSaveMonitor = (monitorId: string) => {
-    const s = monitorSettings[monitorId];
-    setSaving(monitorId);
+  const handleToggleChannel = (monitorId: string, channelId: string, enabled: boolean) => {
     startTransition(async () => {
-      await updateMonitorAlert(monitorId, s.email || null, s.telegram || null);
-      setSaving(null);
-      setSaved(monitorId);
-      setTimeout(() => setSaved(null), 2000);
+      await toggleMonitorAlertChannel(monitorId, channelId, enabled);
     });
+  };
+
+  const isLinked = (monitor: Monitor, channelId: string) => {
+    return (monitor.alertChannels || []).some((ch) => ch.id === channelId);
   };
 
   return (
@@ -193,7 +184,7 @@ export default function SettingsTab({
 
         {/* Existing channels list */}
         {alertChannels.length === 0 ? (
-          <p className="text-xs text-zinc-400 dark:text-zinc-600 italic mb-6">No integration channels connected yet.</p>
+          <p className="text-xs text-zinc-400 dark:text-zinc-650 italic mb-6">No integration channels connected yet.</p>
         ) : (
           <div className="space-y-3 mb-6">
             {alertChannels.map((channel) => (
@@ -234,7 +225,7 @@ export default function SettingsTab({
 
         {/* Add Channel Form */}
         <form onSubmit={handleAddChannel} className="border-t border-zinc-100 dark:border-zinc-800 pt-5 space-y-4">
-          <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Connect New Channel</h4>
+          <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-505 dark:text-zinc-400">Connect New Channel</h4>
           <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3">
             <div className="space-y-1">
               <label htmlFor="provider-select" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Provider</label>
@@ -243,7 +234,7 @@ export default function SettingsTab({
                 value={newProvider}
                 onChange={(e) => setNewProvider(e.target.value)}
                 disabled={isPending}
-                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
               >
                 <option value="DISCORD">Discord</option>
                 <option value="SLACK">Slack</option>
@@ -262,7 +253,7 @@ export default function SettingsTab({
                 placeholder="https://discord.com/api/webhooks/..."
                 required
                 disabled={isPending}
-                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-650 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-650 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
               />
             </div>
           </div>
@@ -277,14 +268,14 @@ export default function SettingsTab({
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="e.g. Production Alerts"
                 disabled={isPending}
-                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
               />
             </div>
 
             <button
               type="submit"
               disabled={isPending || !newUrl.trim()}
-              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-100 dark:disabled:bg-zinc-900 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:cursor-not-allowed font-semibold text-xs rounded-lg transition shadow-md flex items-center gap-1.5"
+              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-955 disabled:bg-zinc-100 dark:disabled:bg-zinc-900 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:cursor-not-allowed font-semibold text-xs rounded-lg transition shadow-md flex items-center gap-1.5"
             >
               {isPending ? "Connecting..." : "Add Channel"}
             </button>
@@ -300,7 +291,6 @@ export default function SettingsTab({
           </h3>
           <div className="space-y-3">
             {monitors.map((monitor) => {
-              const settings = monitorSettings[monitor.id];
               return (
                 <div
                   key={monitor.id}
@@ -309,59 +299,45 @@ export default function SettingsTab({
                   <p className="font-mono text-xs font-semibold text-zinc-600 dark:text-zinc-400 truncate mb-3">
                     {monitor.url}
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                        Alert Email
-                      </label>
-                      <input
-                        type="email"
-                        value={settings?.email ?? ""}
-                        onChange={(e) =>
-                          setMonitorSettings((prev) => ({
-                            ...prev,
-                            [monitor.id]: { ...prev[monitor.id], email: e.target.value },
-                          }))
-                        }
-                        placeholder="alerts@yourdomain.com"
-                        className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition"
-                      />
+
+                  {/* Channel multiselect grid */}
+                  {alertChannels.length === 0 ? (
+                    <p className="text-xs text-zinc-400 dark:text-zinc-500 italic">
+                      No global alert channels configured. Add integration channels above.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                      {alertChannels.map((channel) => {
+                        const active = isLinked(monitor, channel.id);
+                        return (
+                          <label
+                            key={channel.id}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all cursor-pointer select-none ${
+                              active
+                                ? "bg-emerald-500/5 dark:bg-emerald-500/[0.02] border-emerald-500/30 text-emerald-700 dark:text-emerald-400"
+                                : "bg-zinc-50/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700"
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={active}
+                              disabled={isPending}
+                              onChange={(e) => handleToggleChannel(monitor.id, channel.id, e.target.checked)}
+                              className="w-3.5 h-3.5 rounded text-emerald-500 border-zinc-300 focus:ring-emerald-500/40 dark:bg-zinc-950 dark:border-zinc-800"
+                            />
+                            <div className="min-w-0 flex-1 truncate">
+                              <span className="text-[9px] font-bold uppercase tracking-wider bg-zinc-200 dark:bg-zinc-800 px-1 rounded mr-1">
+                                {channel.providerType}
+                              </span>
+                              <span className="text-xs font-semibold">
+                                {channel.userFriendlyName || channel.destinationUrl}
+                              </span>
+                            </div>
+                          </label>
+                        );
+                      })}
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                        Telegram Chat ID
-                      </label>
-                      <input
-                        type="text"
-                        value={settings?.telegram ?? ""}
-                        onChange={(e) =>
-                          setMonitorSettings((prev) => ({
-                            ...prev,
-                            [monitor.id]: { ...prev[monitor.id], telegram: e.target.value },
-                          }))
-                        }
-                        placeholder="-1001234567890"
-                        className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-end gap-3">
-                    {saved === monitor.id && (
-                      <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono">
-                        ✓ Saved
-                      </span>
-                    )}
-                    <button
-                      onClick={() => handleSaveMonitor(monitor.id)}
-                      disabled={saving === monitor.id}
-                      className="text-xs font-semibold px-3 py-1.5 rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-white transition disabled:opacity-60 flex items-center gap-1.5"
-                    >
-                      {saving === monitor.id && (
-                        <span className="w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
-                      )}
-                      Save
-                    </button>
-                  </div>
+                  )}
                 </div>
               );
             })}

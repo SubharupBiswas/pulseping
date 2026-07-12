@@ -41,6 +41,7 @@ model Monitor {
   user             User               @relation(fields: [userId], references: [id])
   logs             PingLog[]
   statusPageLinks  StatusPageMonitor[]
+  alertChannels    AlertChannel[]
 }
 
 model PingLog {
@@ -97,4 +98,5 @@ model AlertChannel {
   destinationUrl   String
   userFriendlyName String?
   createdAt        DateTime @default(now())
+  monitors         Monitor[]
 }
