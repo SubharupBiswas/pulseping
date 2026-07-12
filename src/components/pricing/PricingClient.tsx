@@ -44,7 +44,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
       features: [
         "Max 2 Active Monitors",
         "Standard Uptime Monitoring (HTTP GET only)",
-        "30-Day Historical Data Retention Guard",
+        "7-Day Historical Data Retention Guard",
         "Basic Email Alerts",
       ],
       cta: "Get Started for Free",

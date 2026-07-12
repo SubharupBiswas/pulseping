@@ -66,6 +66,7 @@ export default async function DashboardPage() {
     frequency: m.frequency,
     alertEmail: m.alertEmail ?? null,
     telegramChatId: m.telegramChatId ?? null,
+    webhookUrl: m.webhookUrl ?? null,
     alertOnFailure: m.alertOnFailure,
     alertChannels: (m.alertChannels || []).map((ch: any) => ({
       id: ch.id,

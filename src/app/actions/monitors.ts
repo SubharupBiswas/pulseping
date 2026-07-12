@@ -127,6 +127,7 @@ export async function updateMonitorAlert(
   monitorId: string,
   alertEmail: string | null,
   telegramChatId: string | null,
+  webhookUrl: string | null = null,
   alertOnFailure: boolean = true
 ) {
   try {
@@ -143,6 +144,7 @@ export async function updateMonitorAlert(
       data: {
         alertEmail: alertEmail || null,
         telegramChatId: telegramChatId || null,
+        webhookUrl: webhookUrl || null,
         alertOnFailure,
       } as any,
     });
@@ -230,5 +232,55 @@ export async function toggleMonitorAlertChannel(
   } catch (error: any) {
     console.error("FAILED_TO_TOGGLE_MONITOR_ALERT_CHANNEL:", error);
     return { success: false, error: error.message || "Failed to toggle alert channel link" };
+  }
+}
+
+export async function getLatestTelemetry(userId: string) {
+  try {
+    const session = await auth();
+    if (!session.userId || session.userId !== userId) {
+      throw new Error("Unauthorized.");
+    }
+
+    const monitors = await db.monitor.findMany({
+      where: { userId },
+      include: {
+        logs: {
+          orderBy: { checkedAt: "desc" },
+          take: 500,
+        },
+        alertChannels: true,
+      } as any,
+      orderBy: { id: "desc" },
+    });
+
+    return {
+      success: true,
+      monitors: monitors.map((m: any) => ({
+        id: m.id,
+        url: m.url,
+        isActive: m.isActive,
+        frequency: m.frequency,
+        alertEmail: m.alertEmail ?? null,
+        telegramChatId: m.telegramChatId ?? null,
+        webhookUrl: m.webhookUrl ?? null,
+        alertOnFailure: m.alertOnFailure,
+        alertChannels: (m.alertChannels || []).map((ch: any) => ({
+          id: ch.id,
+          providerType: ch.providerType,
+          destinationUrl: ch.destinationUrl,
+          userFriendlyName: ch.userFriendlyName ?? null,
+        })),
+        logs: m.logs.map((l: any) => ({
+          id: l.id,
+          statusCode: l.statusCode,
+          latency: l.latency,
+          checkedAt: l.checkedAt instanceof Date ? l.checkedAt.toISOString() : l.checkedAt,
+        })),
+      })),
+    };
+  } catch (err: any) {
+    console.error("FAILED_TO_GET_LATEST_TELEMETRY:", err);
+    return { success: false, error: err.message || "Failed to fetch fresh telemetry" };
   }
 }

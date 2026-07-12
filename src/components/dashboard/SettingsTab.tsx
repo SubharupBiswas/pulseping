@@ -7,7 +7,8 @@ import {
   addAlertChannel,
   deleteAlertChannel,
 } from "@/app/actions/billing";
-import { toggleMonitorAlertChannel } from "@/app/actions/monitors";
+import { updateMonitorAlert } from "@/app/actions/monitors";
+import { motion } from "framer-motion";
 
 type AlertChannel = {
   id: string;
@@ -21,6 +22,7 @@ type Monitor = {
   url: string;
   alertEmail: string | null;
   telegramChatId: string | null;
+  webhookUrl: string | null;
   alertOnFailure: boolean;
   alertChannels: AlertChannel[];
 };
@@ -71,6 +73,8 @@ export default function SettingsTab({
   const [newUrl, setNewUrl] = useState("");
   const [newName, setNewName] = useState("");
 
+  const [saving, setSaving] = useState<string | null>(null);
+  const [saved, setSaved] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleThresholdChange = (val: number) => {
@@ -107,14 +111,36 @@ export default function SettingsTab({
     });
   };
 
-  const handleToggleChannel = (monitorId: string, channelId: string, enabled: boolean) => {
-    startTransition(async () => {
-      await toggleMonitorAlertChannel(monitorId, channelId, enabled);
-    });
-  };
+  // Local state for per-monitor inputs
+  const [monitorInputs, setMonitorInputs] = useState<
+    Record<string, { email: string; telegram: string; webhook: string }>
+  >(
+    Object.fromEntries(
+      monitors.map((m) => [
+        m.id,
+        {
+          email: m.alertEmail ?? "",
+          telegram: m.telegramChatId ?? "",
+          webhook: m.webhookUrl ?? "",
+        },
+      ])
+    )
+  );
 
-  const isLinked = (monitor: Monitor, channelId: string) => {
-    return (monitor.alertChannels || []).some((ch) => ch.id === channelId);
+  const handleSaveMonitor = (monitorId: string) => {
+    const vals = monitorInputs[monitorId];
+    setSaving(monitorId);
+    startTransition(async () => {
+      await updateMonitorAlert(
+        monitorId,
+        vals.email.trim() || null,
+        vals.telegram.trim() || null,
+        vals.webhook.trim() || null
+      );
+      setSaving(null);
+      setSaved(monitorId);
+      setTimeout(() => setSaved(null), 2000);
+    });
   };
 
   return (
@@ -159,13 +185,15 @@ export default function SettingsTab({
                 {threshold}×
               </span>
             </div>
-            <input
+            <motion.input
               type="range"
               min={1}
               max={10}
               value={threshold}
               onChange={(e) => handleThresholdChange(Number(e.target.value))}
-              className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full appearance-none accent-emerald-500"
+              layout={false}
+              key="global-threshold-slider-input"
+              className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-855 rounded-full appearance-none accent-emerald-500"
             />
             <div className="flex justify-between text-xs text-zinc-400 dark:text-zinc-650 mt-1">
               <span>1 (immediate)</span>
@@ -234,7 +262,7 @@ export default function SettingsTab({
                 value={newProvider}
                 onChange={(e) => setNewProvider(e.target.value)}
                 disabled={isPending}
-                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
               >
                 <option value="DISCORD">Discord</option>
                 <option value="SLACK">Slack</option>
@@ -253,7 +281,7 @@ export default function SettingsTab({
                 placeholder="https://discord.com/api/webhooks/..."
                 required
                 disabled={isPending}
-                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-650 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
               />
             </div>
           </div>
@@ -268,7 +296,7 @@ export default function SettingsTab({
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="e.g. Production Alerts"
                 disabled={isPending}
-                className="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
               />
             </div>
 
@@ -291,6 +319,7 @@ export default function SettingsTab({
           </h3>
           <div className="space-y-4">
             {monitors.map((monitor) => {
+              const vals = monitorInputs[monitor.id] || { email: "", telegram: "", webhook: "" };
               return (
                 <div
                   key={monitor.id}
@@ -300,44 +329,79 @@ export default function SettingsTab({
                     {monitor.url}
                   </p>
 
-                  {/* Channel multiselect grid */}
-                  {alertChannels.length === 0 ? (
-                    <p className="text-xs text-zinc-500 dark:text-zinc-450 italic">
-                      No global alert channels configured. Add integration channels above.
-                    </p>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                      {alertChannels.map((channel) => {
-                        const active = isLinked(monitor, channel.id);
-                        return (
-                          <label
-                            key={channel.id}
-                            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg border transition-all cursor-pointer select-none ${
-                              active
-                                ? "bg-emerald-500/5 dark:bg-emerald-500/[0.02] border-emerald-500/30 text-emerald-700 dark:text-emerald-400"
-                                : "bg-zinc-50/50 dark:bg-zinc-950/20 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700"
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={active}
-                              disabled={isPending}
-                              onChange={(e) => handleToggleChannel(monitor.id, channel.id, e.target.checked)}
-                              className="w-4 h-4 rounded text-emerald-500 border-zinc-300 focus:ring-emerald-500/40 dark:bg-zinc-950 dark:border-zinc-800"
-                            />
-                            <div className="min-w-0 flex-1 truncate">
-                              <span className="text-[9px] font-bold uppercase tracking-wider bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 px-1 rounded mr-1">
-                                {channel.providerType}
-                              </span>
-                              <span className="text-xs font-semibold">
-                                {channel.userFriendlyName || channel.destinationUrl}
-                              </span>
-                            </div>
-                          </label>
-                        );
-                      })}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                        Alert Email
+                      </label>
+                      <input
+                        type="email"
+                        value={vals.email}
+                        onChange={(e) =>
+                          setMonitorInputs((prev) => ({
+                            ...prev,
+                            [monitor.id]: { ...prev[monitor.id], email: e.target.value },
+                          }))
+                        }
+                        placeholder="alerts@yourdomain.com"
+                        className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                      />
                     </div>
-                  )}
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                        Webhook URL
+                      </label>
+                      <input
+                        type="url"
+                        value={vals.webhook}
+                        onChange={(e) =>
+                          setMonitorInputs((prev) => ({
+                            ...prev,
+                            [monitor.id]: { ...prev[monitor.id], webhook: e.target.value },
+                          }))
+                        }
+                        placeholder="https://discord.com/api/webhooks/..."
+                        className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                        Telegram Chat ID
+                      </label>
+                      <input
+                        type="text"
+                        value={vals.telegram}
+                        onChange={(e) =>
+                          setMonitorInputs((prev) => ({
+                            ...prev,
+                            [monitor.id]: { ...prev[monitor.id], telegram: e.target.value },
+                          }))
+                        }
+                        placeholder="-1001234567890"
+                        className="w-full px-3 py-1.5 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-955 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    {saved === monitor.id && (
+                      <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono">
+                        ✓ Saved
+                      </span>
+                    )}
+                    <button
+                      onClick={() => handleSaveMonitor(monitor.id)}
+                      disabled={saving === monitor.id}
+                      className="text-xs font-semibold px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-955 hover:bg-zinc-800 dark:hover:bg-white transition disabled:opacity-60 flex items-center gap-1.5"
+                    >
+                      {saving === monitor.id && (
+                        <span className="w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
+                      )}
+                      Save
+                    </button>
+                  </div>
                 </div>
               );
             })}

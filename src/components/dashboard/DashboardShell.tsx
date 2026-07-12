@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import PillTabNav from "./PillTabNav";
 import BentoMetrics from "./BentoMetrics";
@@ -8,6 +8,7 @@ import MonitorCard from "./MonitorCard";
 import IncidentsTab from "./IncidentsTab";
 import SettingsTab from "./SettingsTab";
 import AddMonitorForm from "@/components/AddMonitorForm";
+import { getLatestTelemetry } from "@/app/actions/monitors";
 
 type Log = {
   id: string;
@@ -23,6 +24,7 @@ type Monitor = {
   frequency: number;
   alertEmail: string | null;
   telegramChatId: string | null;
+  webhookUrl: string | null;
   alertOnFailure: boolean;
   logs: Log[];
   alertChannels: AlertChannel[];
@@ -76,19 +78,40 @@ export default function DashboardShell({
   const [logSearch, setLogSearch] = useState("");
   const [logExpanded, setLogExpanded] = useState(false);
 
+  const [monitorsState, setMonitorsState] = useState<Monitor[]>(monitors);
+
+  useEffect(() => {
+    setMonitorsState(monitors);
+  }, [monitors]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await getLatestTelemetry(userId);
+        if (res && res.success && res.monitors) {
+          setMonitorsState(res.monitors as Monitor[]);
+        }
+      } catch (err) {
+        console.error("Error polling telemetry metrics:", err);
+      }
+    }, 15000); // Poll every 15 seconds
+
+    return () => clearInterval(interval);
+  }, [userId]);
+
   // ── Aggregate metrics ──────────────────────────────────────────
-  const totalMonitors = monitors.length;
-  const activeIncidents = monitors.filter((m) => {
+  const totalMonitors = monitorsState.length;
+  const activeIncidents = monitorsState.filter((m) => {
     const last = m.logs[0];
     return last && (last.statusCode >= 500 || last.statusCode === 0);
   }).length;
 
-  const allLatencies = monitors.flatMap((m) => m.logs.map((l) => l.latency)).filter(Boolean);
+  const allLatencies = monitorsState.flatMap((m) => m.logs.map((l) => l.latency)).filter(Boolean);
   const avgLatency = allLatencies.length > 0
     ? Math.round(allLatencies.reduce((a, b) => a + b, 0) / allLatencies.length)
     : null;
 
-  const allLogs = monitors.flatMap((m) => m.logs);
+  const allLogs = monitorsState.flatMap((m) => m.logs);
   const uptimePercent =
     allLogs.length > 0
       ? Math.round(
@@ -97,7 +120,7 @@ export default function DashboardShell({
       : null;
 
   // ── Status quick-filter ────────────────────────────────────────
-  const filteredMonitors = monitors.filter((m) => {
+  const filteredMonitors = monitorsState.filter((m) => {
     if (statusFilter === "PAUSED") return !m.isActive;
     if (statusFilter === "UP") {
       if (!m.isActive) return false;
@@ -114,7 +137,7 @@ export default function DashboardShell({
 
   // ── System Diagnostics Log ─────────────────────────────────────
   type LogEntry = Log & { monitorUrl: string; monitorId: string };
-  const systemLogs: LogEntry[] = monitors
+  const systemLogs: LogEntry[] = monitorsState
     .flatMap((m) => m.logs.map((l) => ({ ...l, monitorUrl: m.url, monitorId: m.id })))
     .sort((a, b) => new Date(b.checkedAt).getTime() - new Date(a.checkedAt).getTime());
 
@@ -161,7 +184,7 @@ export default function DashboardShell({
         >
           {activeTab === "streams" && (
             <section aria-label="Active Monitoring Channels">
-              {monitors.length === 0 ? (
+              {monitorsState.length === 0 ? (
                 <div className="bg-white dark:bg-zinc-900/5 border border-dashed border-zinc-200 dark:border-zinc-900/80 rounded-xl p-12 text-center shadow-sm">
                   <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/50 flex items-center justify-center mx-auto mb-4">
                     <span className="text-zinc-400 dark:text-zinc-600 text-sm">⬡</span>
@@ -180,7 +203,7 @@ export default function DashboardShell({
                     </span>
                     {STATUS_FILTERS.map((f) => {
                       const isActive = statusFilter === f.id;
-                      const countForFilter = monitors.filter((m) => {
+                      const countForFilter = monitorsState.filter((m) => {
                         if (f.id === "PAUSED") return !m.isActive;
                         if (f.id === "UP") {
                           if (!m.isActive) return false;
@@ -354,14 +377,14 @@ export default function DashboardShell({
 
           {activeTab === "incidents" && (
             <section aria-label="Incident Stream">
-              <IncidentsTab monitors={monitors} />
+              <IncidentsTab monitors={monitorsState} />
             </section>
           )}
 
           {activeTab === "settings" && (
             <section aria-label="Notification Settings">
               <SettingsTab
-                monitors={monitors}
+                monitors={monitorsState}
                 userId={userId}
                 initialThreshold={alertThreshold}
                 emailNotificationsEnabled={emailNotificationsEnabled}

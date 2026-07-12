@@ -41,6 +41,7 @@ export default function EditMonitorSheet({ monitorId, url, alertEmail, telegramC
         monitorId,
         email.trim() || null,
         telegram.trim() || null,
+        null,
         alertOnFailure
       );
       if (result.success) {

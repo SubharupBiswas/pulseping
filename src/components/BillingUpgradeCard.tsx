@@ -266,7 +266,7 @@ export default function BillingUpgradeCard({
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>30-Day Historical Data Retention Guard</span>
+                <span>7-Day Historical Data Retention Guard</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
