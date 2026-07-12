@@ -91,8 +91,8 @@ export default async function DashboardPage() {
       },
       logs: {
         orderBy: { checkedAt: "desc" },
-        // 90 days of checks at max frequency (every 30s) ≈ 259,200 entries; cap at 500 for safety
-        take: 500,
+        // 90 days of checks at max frequency (every 30s) ≈ 259,200 entries; cap at 100 for safety
+        take: 100,
         select: {
           id: true,
           statusCode: true,
@@ -143,7 +143,7 @@ export default async function DashboardPage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[440px] bg-gradient-to-tr from-emerald-500/10 via-indigo-500/5 to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-zinc-900 dark:bg-zinc-950/40 border-b border-zinc-200 dark:border-zinc-850 backdrop-blur-xl transition-colors duration-250">
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/40 border-b border-zinc-200 dark:border-zinc-850 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
 
           <Link href="/" className="flex items-center gap-2.5 group shrink-0" aria-label="PulsePing Home">

@@ -3,10 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import PillTabNav from "./PillTabNav";
-import BentoMetrics from "./BentoMetrics";
-import MonitorCard from "./MonitorCard";
-import IncidentsTab from "./IncidentsTab";
-import SettingsTab from "./SettingsTab";
+import dynamic from "next/dynamic";
+
+const BentoMetrics = dynamic(() => import("./BentoMetrics"), { ssr: false });
+const MonitorCard = dynamic(() => import("./MonitorCard"), { ssr: false });
+const IncidentsTab = dynamic(() => import("./IncidentsTab"), { ssr: false });
+const SettingsTab = dynamic(() => import("./SettingsTab"), { ssr: false });
+const LatencyChart = dynamic(() => import("./LatencyChart"), { ssr: false });
+
 import AddMonitorForm from "@/components/AddMonitorForm";
 import { getLatestTelemetry } from "@/app/actions/monitors";
 

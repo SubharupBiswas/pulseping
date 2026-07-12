@@ -235,7 +235,7 @@ export default function SettingsTab({
                   Trigger alert after this many consecutive failures.
                 </p>
               </div>
-              <span className="text-sm font-bold font-mono text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-855 px-3 py-1 rounded-lg">
+              <span className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-bold shadow-sm transition-colors">
                 {threshold}×
               </span>
             </div>
