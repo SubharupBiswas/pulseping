@@ -8,34 +8,79 @@ generator client {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  plan      String    @default("FREE") // FREE, HOBBY, DEVELOPER
-  monitors  Monitor[]
+  id          String       @id @default(uuid())
+  email       String       @unique
+  plan        String       @default("FREE") // FREE, HOBBY, DEVELOPER
+  monitors    Monitor[]
+  heartbeats  Heartbeat[]
+  statusPages StatusPage[]
 }
 
 model Monitor {
-  id             String    @id @default(uuid())
-  url            String
-  webhookUrl     String?   // Optional field to store Discord/Slack target endpoints
-  discordWebhook String?
-  slackWebhook   String?
-  telegramChatId String?
-  alertEmail     String?
-  alertOnFailure Boolean   @default(true)
-  frequency      Int       @default(10)
-  isActive       Boolean   @default(true)
-  lastChecked    DateTime?
-  userId         String
-  user           User      @relation(fields: [userId], references: [id])
-  logs           PingLog[]
+  id               String             @id @default(uuid())
+  url              String
+  webhookUrl       String?            // Optional field to store Discord/Slack target endpoints
+  discordWebhook   String?
+  slackWebhook     String?
+  telegramChatId   String?
+  alertEmail       String?
+  alertOnFailure   Boolean            @default(true)
+  frequency        Int                @default(10)
+  isActive         Boolean            @default(true)
+  lastChecked      DateTime?
+  // Advanced Telemetry (Pillar 1)
+  httpMethod       String             @default("GET")
+  customHeaders    Json?
+  expectedBodyText String?
+  sslExpiresAt     DateTime?
+  userId           String
+  user             User               @relation(fields: [userId], references: [id])
+  logs             PingLog[]
+  statusPageLinks  StatusPageMonitor[]
 }
 
 model PingLog {
-  id         String   @id @default(uuid())
-  statusCode Int
-  latency    Int      // in milliseconds
-  checkedAt  DateTime @default(now())
-  monitorId  String
-  monitor    Monitor  @relation(fields: [monitorId], references: [id])
+  id           String   @id @default(uuid())
+  statusCode   Int
+  latency      Int      // in milliseconds
+  errorBody    String?  // First 500 chars of error response body (Pillar 4)
+  aiDiagnostic String?  // AI-generated root-cause summary (Pillar 4)
+  checkedAt    DateTime @default(now())
+  monitorId    String
+  monitor      Monitor  @relation(fields: [monitorId], references: [id])
+}
+
+// Pillar 2: Inverse Heartbeat & Cron Job Tracking
+model Heartbeat {
+  id                  String    @id @default(uuid())
+  token               String    @unique @default(uuid())
+  name                String
+  frequencySeconds    Int       @default(3600) // Expected ping interval in seconds
+  gracePeriodSeconds  Int       @default(300)  // Extra window before flagging as missed
+  lastPingedAt        DateTime?
+  isActive            Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id])
+}
+
+// Pillar 3: Public Status Pages
+model StatusPage {
+  id        String             @id @default(uuid())
+  slug      String             @unique
+  title     String
+  isPublic  Boolean            @default(true)
+  createdAt DateTime           @default(now())
+  userId    String
+  user      User               @relation(fields: [userId], references: [id])
+  monitors  StatusPageMonitor[]
+}
+
+model StatusPageMonitor {
+  statusPageId String
+  monitorId    String
+  statusPage   StatusPage @relation(fields: [statusPageId], references: [id], onDelete: Cascade)
+  monitor      Monitor    @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  @@id([statusPageId, monitorId])
 }

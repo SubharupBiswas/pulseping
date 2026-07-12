@@ -10,7 +10,10 @@ export async function createMonitor(
   webhookUrl?: string,
   alertEmail?: string | null,
   telegramChatId?: string | null,
-  alertOnFailure: boolean = true
+  alertOnFailure: boolean = true,
+  httpMethod: string = "GET",
+  customHeaders?: Record<string, string> | null,
+  expectedBodyText?: string | null
 ) {
   try {
     const session = await auth();
@@ -62,6 +65,9 @@ export async function createMonitor(
         alertEmail: alertEmail || null,
         telegramChatId: telegramChatId || null,
         alertOnFailure,
+        httpMethod: httpMethod || "GET",
+        customHeaders: customHeaders ?? null,
+        expectedBodyText: expectedBodyText || null,
       } as any,
     });
 
@@ -146,5 +152,32 @@ export async function updateMonitorAlert(
   } catch (error: any) {
     console.error("FAILED_TO_UPDATE_MONITOR_ALERT:", error);
     return { success: false, error: error.message || "Failed to update alert settings" };
+  }
+}
+
+export async function createHeartbeat(
+  name: string,
+  frequencySeconds: number = 3600,
+  gracePeriodSeconds: number = 300
+) {
+  try {
+    const session = await auth();
+    if (!session.userId) throw new Error("Unauthorized.");
+
+    const heartbeat = await (db as any).heartbeat.create({
+      data: {
+        name: name.trim(),
+        frequencySeconds,
+        gracePeriodSeconds,
+        userId: session.userId,
+        isActive: true,
+      },
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true, heartbeat };
+  } catch (error: any) {
+    console.error("FAILED_TO_CREATE_HEARTBEAT:", error);
+    return { success: false, error: error.message || "Failed to create heartbeat" };
   }
 }

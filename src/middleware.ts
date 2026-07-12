@@ -9,7 +9,8 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/status(.*)",
-  "/api/cron/ping"
+  "/api/cron/ping",
+  "/api/heartbeat/(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -21,9 +22,9 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // 1. Intercept all routes except Next.js internals, static assets, and the public cron endpoint
-    "/((?!_next|api/cron/ping|[^?]*\\.(?:html|css|js|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // 2. Explicitly target our specific active transaction API endpoints to satisfy Next.js route validation constraints
+    // 1. Intercept all routes except Next.js internals, static assets, and public API endpoints
+    "/((?!_next|api/cron/ping|api/heartbeat|[^?]*\\.(?:html|css|js|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // 2. Explicitly target our specific active transaction API endpoints
     "/api/create-order",
     "/api/verify-payment",
     // 3. Intercept all trpc routes safely

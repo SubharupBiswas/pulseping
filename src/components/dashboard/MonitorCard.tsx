@@ -20,6 +20,8 @@ type Log = {
   statusCode: number;
   latency: number;
   checkedAt: string;
+  aiDiagnostic?: string | null;
+  errorBody?: string | null;
 };
 
 type Monitor = {
@@ -30,6 +32,8 @@ type Monitor = {
   alertEmail: string | null;
   telegramChatId: string | null;
   alertOnFailure: boolean;
+  httpMethod?: string | null;
+  sslExpiresAt?: string | null;
   logs: Log[];
 };
 
@@ -107,13 +111,27 @@ export default function MonitorCard({ monitor }: Props) {
                     Paused
                   </span>
                 )}
-                {/* SSL badge — N/A on edge runtime */}
-                <span
-                  className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-600"
-                  title="SSL expiry not available in edge runtime"
-                >
-                  SSL N/A
-                </span>
+                {/* SSL expiry badge */}
+                {monitor.sslExpiresAt ? (() => {
+                  const expiresAt = new Date(monitor.sslExpiresAt);
+                  const daysLeft = Math.floor((expiresAt.getTime() - Date.now()) / 86400000);
+                  const isWarning = daysLeft <= 30;
+                  const isExpired = daysLeft < 0;
+                  return (
+                    <span
+                      className={`text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded border ${
+                        isExpired
+                          ? "border-rose-500/40 bg-rose-500/10 text-rose-400"
+                          : isWarning
+                          ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                          : "border-emerald-500/30 bg-emerald-500/8 text-emerald-500"
+                      }`}
+                      title={`SSL certificate expires ${expiresAt.toLocaleDateString()}`}
+                    >
+                      {isExpired ? "SSL EXPIRED" : `SSL ${daysLeft}d`}
+                    </span>
+                  );
+                })() : null}
               </div>
 
               {/* Meta row */}
@@ -246,6 +264,17 @@ export default function MonitorCard({ monitor }: Props) {
               <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800/60 pt-4">
                 {/* Latency chart */}
                 <LatencyChart logs={monitor.logs} />
+
+                {/* AI Root-Cause Diagnostic */}
+                {lastLog?.aiDiagnostic && (
+                  <div className="mt-3 flex items-start gap-2.5 bg-violet-500/5 border border-violet-500/15 rounded-lg px-3 py-2.5">
+                    <span className="text-violet-400 text-xs mt-0.5 shrink-0">✦</span>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400/70 mb-0.5">AI Diagnosis</p>
+                      <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-relaxed">{lastLog.aiDiagnostic}</p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Action row */}
                 <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/60">

@@ -67,3 +67,5 @@ next-env.d.ts
 # deployment provider state
 .vercel
 /src/generated/prisma
+
+*.code-workspace
