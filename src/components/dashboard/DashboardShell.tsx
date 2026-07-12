@@ -30,6 +30,12 @@ type Monitor = {
   telegramChatId: string | null;
   webhookUrl: string | null;
   alertOnFailure: boolean;
+  method: string;
+  headers: string | null;
+  body: string | null;
+  keywordCheck: string | null;
+  sslTrack: boolean;
+  isHeartbeat: boolean;
   logs: Log[];
   alertChannels: AlertChannel[];
 };

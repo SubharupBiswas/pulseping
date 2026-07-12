@@ -81,6 +81,12 @@ export default async function DashboardPage() {
       telegramChatId: true,
       webhookUrl: true,
       alertOnFailure: true,
+      method: true,
+      headers: true,
+      body: true,
+      keywordCheck: true,
+      sslTrack: true,
+      isHeartbeat: true,
       alertChannels: {
         select: {
           id: true,
@@ -115,6 +121,12 @@ export default async function DashboardPage() {
     telegramChatId: m.telegramChatId ?? null,
     webhookUrl: m.webhookUrl ?? null,
     alertOnFailure: m.alertOnFailure,
+    method: m.method ?? "GET",
+    headers: m.headers ?? null,
+    body: m.body ?? null,
+    keywordCheck: m.keywordCheck ?? null,
+    sslTrack: m.sslTrack ?? false,
+    isHeartbeat: m.isHeartbeat ?? false,
     alertChannels: (m.alertChannels || []).map((ch: any) => ({
       id: ch.id,
       providerType: ch.providerType,

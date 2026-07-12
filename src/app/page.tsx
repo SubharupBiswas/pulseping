@@ -11,9 +11,9 @@ export default function LandingPage() {
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-200 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
 
       {/* === Ambient glow blobs === */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[480px] bg-gradient-to-tr from-emerald-500/10 via-indigo-500/5 to-transparent blur-3xl pointer-events-none z-0" />
-      <div className="absolute top-[340px] right-[-8%] w-[420px] h-[420px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/5 to-transparent blur-3xl pointer-events-none z-0 rounded-full" />
-      <div className="absolute top-[200px] left-[-6%] w-[320px] h-[320px] bg-gradient-to-tr from-emerald-500/10 to-transparent blur-3xl pointer-events-none z-0 rounded-full" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[480px] bg-gradient-to-tr from-emerald-500/10 via-indigo-500/5 to-transparent blur-3xl pointer-events-none z-0 transform-gpu will-change-transform" />
+      <div className="absolute top-[340px] right-[-8%] w-[420px] h-[420px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/5 to-transparent blur-3xl pointer-events-none z-0 rounded-full transform-gpu will-change-transform" />
+      <div className="absolute top-[200px] left-[-6%] w-[320px] h-[320px] bg-gradient-to-tr from-emerald-500/10 to-transparent blur-3xl pointer-events-none z-0 rounded-full transform-gpu will-change-transform" />
 
       {/* === Relative layout wrapper === */}
       <div className="relative z-10 flex flex-col min-h-screen">

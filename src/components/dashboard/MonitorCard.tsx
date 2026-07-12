@@ -34,6 +34,12 @@ type Monitor = {
   alertOnFailure: boolean;
   httpMethod?: string | null;
   sslExpiresAt?: string | null;
+  method: string;
+  headers: string | null;
+  body: string | null;
+  keywordCheck: string | null;
+  sslTrack: boolean;
+  isHeartbeat: boolean;
   logs: Log[];
 };
 
@@ -320,6 +326,12 @@ export default function MonitorCard({ monitor }: Props) {
           alertEmail={monitor.alertEmail}
           telegramChatId={monitor.telegramChatId}
           alertOnFailure={monitor.alertOnFailure}
+          method={monitor.method}
+          headers={monitor.headers}
+          body={monitor.body}
+          keywordCheck={monitor.keywordCheck}
+          sslTrack={monitor.sslTrack}
+          isHeartbeat={monitor.isHeartbeat}
           open={editOpen}
           onClose={() => setEditOpen(false)}
         />

@@ -37,6 +37,15 @@ model Monitor {
   customHeaders    Json?
   expectedBodyText String?
   sslExpiresAt     DateTime?
+  
+  // Expanded Advanced monitoring configurations
+  method           String             @default("GET")
+  headers          String?
+  body             String?
+  keywordCheck     String?
+  sslTrack         Boolean            @default(false)
+  isHeartbeat      Boolean            @default(false)
+
   userId           String
   user             User               @relation(fields: [userId], references: [id])
   logs             PingLog[]

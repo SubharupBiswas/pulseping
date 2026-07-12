@@ -128,7 +128,13 @@ export async function updateMonitorAlert(
   alertEmail: string | null,
   telegramChatId: string | null,
   webhookUrl: string | null = null,
-  alertOnFailure: boolean = true
+  alertOnFailure: boolean = true,
+  method: string = "GET",
+  headers: string | null = null,
+  body: string | null = null,
+  keywordCheck: string | null = null,
+  sslTrack: boolean = false,
+  isHeartbeat: boolean = false
 ) {
   try {
     const session = await auth();
@@ -146,6 +152,12 @@ export async function updateMonitorAlert(
         telegramChatId: telegramChatId || null,
         webhookUrl: webhookUrl || null,
         alertOnFailure,
+        method: method || "GET",
+        headers: headers || null,
+        body: body || null,
+        keywordCheck: keywordCheck || null,
+        sslTrack,
+        isHeartbeat,
       } as any,
     });
 
@@ -253,6 +265,12 @@ export async function getLatestTelemetry(userId: string) {
         telegramChatId: true,
         webhookUrl: true,
         alertOnFailure: true,
+        method: true,
+        headers: true,
+        body: true,
+        keywordCheck: true,
+        sslTrack: true,
+        isHeartbeat: true,
         alertChannels: {
           select: {
             id: true,
@@ -286,6 +304,12 @@ export async function getLatestTelemetry(userId: string) {
         telegramChatId: m.telegramChatId ?? null,
         webhookUrl: m.webhookUrl ?? null,
         alertOnFailure: m.alertOnFailure,
+        method: m.method ?? "GET",
+        headers: m.headers ?? null,
+        body: m.body ?? null,
+        keywordCheck: m.keywordCheck ?? null,
+        sslTrack: m.sslTrack ?? false,
+        isHeartbeat: m.isHeartbeat ?? false,
         alertChannels: (m.alertChannels || []).map((ch: any) => ({
           id: ch.id,
           providerType: ch.providerType,
