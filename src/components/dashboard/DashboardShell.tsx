@@ -337,7 +337,7 @@ export default function DashboardShell({
                               return (
                                 <div
                                   key={`${log.monitorId}-${log.id}`}
-                                  className="grid grid-cols-[1fr_auto_auto_auto] gap-0 px-4 py-2.5 hover:bg-zinc-50/80 dark:hover:bg-zinc-800/20 transition-colors"
+                                  className="grid grid-cols-[1fr_auto_auto_auto] gap-0 px-4 py-2.5 hover:bg-sky-50/80 dark:hover:bg-zinc-800/20 transition-colors"
                                 >
                                   <p className="font-mono text-xs text-zinc-700 dark:text-zinc-300 truncate pr-4 self-center">
                                     {log.monitorUrl}

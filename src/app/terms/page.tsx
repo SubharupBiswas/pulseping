@@ -63,7 +63,7 @@ const sections = [
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-white text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
+    <div className="min-h-screen bg-sky-50 text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
 
       {/* Ambient glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-zinc-650/[0.03] to-transparent blur-[100px] pointer-events-none z-0 dark:opacity-100 opacity-20" />
@@ -77,7 +77,7 @@ export default function TermsPage() {
         {/* Page Header */}
         <div className="mb-12 pb-8 border-b border-zinc-200 dark:border-zinc-900/60">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-xs font-bold tracking-widest uppercase text-zinc-500 dark:text-zinc-650 border border-zinc-200 dark:border-zinc-800 px-2 py-0.5 rounded-full bg-zinc-50 dark:bg-transparent">Legal</span>
+            <span className="text-xs font-bold tracking-widest uppercase text-zinc-500 dark:text-zinc-650 border border-zinc-200 dark:border-zinc-800 px-2 py-0.5 rounded-full bg-sky-50/60 dark:bg-transparent">Legal</span>
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 mb-3">Terms of Service</h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
@@ -108,7 +108,7 @@ export default function TermsPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 bg-zinc-50/50 dark:bg-transparent transition-colors duration-250">
+      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 bg-sky-50/60 dark:bg-transparent transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <span className="text-xs text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
           <div className="flex items-center gap-5">

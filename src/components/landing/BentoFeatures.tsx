@@ -57,7 +57,7 @@ function GlowCard({ children, className = "" }: GlowCardProps) {
     <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      className={`bento-card group relative bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl shadow-sm backdrop-blur-md hover:border-zinc-300/80 dark:hover:border-zinc-700/60 hover:shadow-md transition-all duration-300 ${className}`}
+      className={`bento-card group relative bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl shadow-sm backdrop-blur-md hover:border-zinc-300/80 dark:hover:border-zinc-700/60 hover:shadow-md transition-all duration-300 ${className}`}
       style={{ "--mouse-x": "50%", "--mouse-y": "50%" } as React.CSSProperties}
     >
       {/* hover.dev border glow overlay */}

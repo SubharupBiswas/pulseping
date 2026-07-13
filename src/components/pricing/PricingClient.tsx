@@ -106,7 +106,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
+    <div className="min-h-screen bg-sky-50 text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
       {/* Ambient Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[480px] bg-gradient-to-tr from-emerald-500/[0.03] via-indigo-500/[0.015] to-transparent blur-3xl pointer-events-none z-0" />
 
@@ -140,7 +140,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
 
         {/* Currency selector */}
         <div className="flex items-center justify-center mb-12">
-          <div className="relative inline-flex p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800">
+          <div className="relative inline-flex p-1 rounded-xl bg-sky-100/40 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800">
             {(["INR", "USD"] as const).map((cur) => (
               <button
                 key={cur}
@@ -184,7 +184,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
                 className={`flex flex-col justify-between rounded-2xl p-6 relative ${
                   plan.popular
                     ? "bg-zinc-50/50 dark:bg-zinc-900/40 border-2 border-emerald-500/60 popular-glow"
-                    : "bg-white dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800 shadow-sm"
+                    : "bg-sky-50/60 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800 shadow-sm"
                 }`}
                 whileHover={{ scale: plan.popular ? 1.015 : 1.01, transition: { type: "spring", stiffness: 300, damping: 22 } }}
               >
@@ -252,7 +252,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
             {faqItems.map((faq) => (
               <div
                 key={faq.question}
-                className="border border-zinc-200 dark:border-zinc-900/60 rounded-xl px-5 py-4 bg-zinc-50/20 dark:bg-transparent transition-colors hover:border-zinc-300 dark:hover:border-zinc-800"
+                className="border border-zinc-200 dark:border-zinc-900/60 rounded-xl px-5 py-4 bg-sky-50/30 dark:bg-transparent transition-colors hover:border-zinc-300 dark:hover:border-zinc-800"
               >
                 <h3 className="text-sm font-semibold text-zinc-950 dark:text-zinc-100 tracking-tight">{faq.question}</h3>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mt-1.5">{faq.answer}</p>
@@ -263,7 +263,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white/75 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
+      <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-sky-50/80 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
           <span className="text-sm text-zinc-500 dark:text-zinc-600">PulsePing © 2026</span>
           <div className="flex items-center gap-4">

@@ -11,7 +11,7 @@ import HoldToDelete from "./HoldToDelete";
 const LatencyChart = dynamic(() => import("./LatencyChart"), {
   ssr: false,
   loading: () => (
-    <div className="h-32 rounded-lg bg-zinc-100 dark:bg-zinc-800/40 animate-pulse" />
+    <div className="h-32 rounded-lg bg-sky-100/40 dark:bg-zinc-800/40 animate-pulse" />
   ),
 });
 
@@ -83,7 +83,7 @@ export default function MonitorCard({ monitor, isPremium }: Props) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -8, scale: 0.97 }}
         transition={{ type: "spring", stiffness: 260, damping: 22 }}
-        className={`bg-white dark:bg-zinc-900/50 border rounded-xl shadow-sm backdrop-blur-md transition-colors duration-200 group ${
+        className={`bg-white/90 dark:bg-zinc-900/50 border rounded-xl shadow-sm backdrop-blur-md transition-colors duration-200 group ${
           optimisticActive
             ? "border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700/60"
             : "border-zinc-200/40 dark:border-zinc-800/40 opacity-70"
@@ -114,7 +114,7 @@ export default function MonitorCard({ monitor, isPremium }: Props) {
                   {monitor.url}
                 </p>
                 {!optimisticActive && (
-                  <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500">
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-sky-100/30 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500">
                     Paused
                   </span>
                 )}
@@ -300,7 +300,7 @@ export default function MonitorCard({ monitor, isPremium }: Props) {
                   {/* Edit */}
                   <button
                     onClick={(e) => { e.stopPropagation(); setEditOpen(true); }}
-                    className="btn-shimmer flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    className="btn-shimmer flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-sky-50/60 dark:bg-zinc-900/40 hover:bg-sky-100/40 dark:hover:bg-zinc-800 transition-colors"
                   >
                     ✎ Edit
                   </button>

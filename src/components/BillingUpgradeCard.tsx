@@ -57,13 +57,20 @@ export default function BillingUpgradeCard({
 
     startTransition(async () => {
       try {
-        const orderRes = await fetch("/api/create-order", {
+        // Use the canonical Razorpay order endpoint
+        const orderRes = await fetch("/api/razorpay/order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ planId: planId, currency: currency }),
+          body: JSON.stringify({ planId, currency }),
         });
 
-        let orderData: any;
+        let orderData: {
+          success: boolean;
+          order_id?: string;
+          amount?: number;
+          currency?: string;
+          error?: string;
+        };
         try {
           orderData = await orderRes.json();
         } catch {
@@ -79,9 +86,19 @@ export default function BillingUpgradeCard({
           return;
         }
 
+        // Guard: ensure order_id was returned before opening checkout
+        if (!orderData.order_id || !orderData.amount) {
+          setFeedback({ type: "error", message: "Invalid order response — missing required fields." });
+          return;
+        }
+
+        // NEXT_PUBLIC_ vars are inlined at build time and safe to read client-side
         const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-        if (!razorpayKey) {
-          setFeedback({ type: "error", message: "Razorpay public key is not configured." });
+        if (!razorpayKey || razorpayKey.trim() === "") {
+          setFeedback({
+            type: "error",
+            message: "Razorpay public key is not configured. Contact support.",
+          });
           return;
         }
 
@@ -92,11 +109,12 @@ export default function BillingUpgradeCard({
 
         const checkoutOptions = {
           key: razorpayKey,
-          amount: orderData.amount,
-          currency: orderData.currency,
-          name: "PulsePing",
+          // Razorpay expects exact integer paise value as returned from order API
+          amount:   orderData.amount   as number,
+          currency: orderData.currency as string,
+          name:     "PulsePing",
           description: `Upgrade to ${plan} — ${billingPeriod} subscription`,
-          order_id: orderData.order_id,
+          order_id: orderData.order_id as string,
           prefill: {
             contact: "9876543210",
             email: "test.premium@pulseping.io",
@@ -175,7 +193,7 @@ export default function BillingUpgradeCard({
   if (currentPlan === "PRO" || currentPlan === "BUSINESS") return null;
 
   return (
-    <section className="relative z-10 bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-6 sm:p-8 mb-8 shadow-sm backdrop-blur-md transition-colors" aria-labelledby="billing-title">
+    <section className="relative z-10 bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-6 sm:p-8 mb-8 shadow-sm backdrop-blur-md transition-colors" aria-labelledby="billing-title">
       
       {/* Title Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -187,7 +205,7 @@ export default function BillingUpgradeCard({
         {/* Controls Stack (Billing Period & Currency Selectors) */}
         <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
           {/* Currency Toggle switch */}
-          <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-850">
+          <div className="flex items-center gap-1.5 bg-sky-100/40 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-850">
             <button
               onClick={() => setCurrency("INR")}
               className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] ${
@@ -211,7 +229,7 @@ export default function BillingUpgradeCard({
           </div>
 
           {/* Monthly / Yearly Toggle */}
-          <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-850">
+          <div className="flex items-center gap-1.5 bg-sky-100/40 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-850">
             <button
               onClick={() => setBillingPeriod("monthly")}
               className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.01] ${
@@ -241,7 +259,7 @@ export default function BillingUpgradeCard({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Tier: FREE */}
-        <div className="bg-zinc-50/50 dark:bg-zinc-950/20 border border-zinc-200 dark:border-zinc-900 rounded-xl p-5 flex flex-col justify-between transition hover:border-zinc-300 dark:hover:border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.01)]">
+        <div className="bg-sky-50/50 dark:bg-zinc-950/20 border border-zinc-200 dark:border-zinc-900 rounded-xl p-5 flex flex-col justify-between transition hover:border-zinc-300 dark:hover:border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.01)]">
           <div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-bold tracking-widest uppercase text-zinc-500 dark:text-zinc-600">Free Tier</span>
@@ -283,7 +301,7 @@ export default function BillingUpgradeCard({
         </div>
 
         {/* Tier: PRO */}
-        <div className="bg-zinc-50/50 dark:bg-zinc-950/20 border border-zinc-200 dark:border-zinc-900 rounded-xl p-5 flex flex-col justify-between transition hover:border-zinc-300 dark:hover:border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.01)] relative overflow-hidden">
+        <div className="bg-sky-50/50 dark:bg-zinc-950/20 border border-zinc-200 dark:border-zinc-900 rounded-xl p-5 flex flex-col justify-between transition hover:border-zinc-300 dark:hover:border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.01)] relative overflow-hidden">
           <div className="absolute top-0 right-0 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] uppercase tracking-widest font-bold px-3 py-1 rounded-bl-lg border-l border-b border-emerald-500/10">Popular</div>
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -346,7 +364,7 @@ export default function BillingUpgradeCard({
         </div>
 
         {/* Tier: BUSINESS */}
-        <div className="bg-zinc-50/50 dark:bg-zinc-950/20 border border-zinc-200 dark:border-zinc-900 rounded-xl p-5 flex flex-col justify-between transition hover:border-zinc-300 dark:hover:border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.01)]">
+        <div className="bg-sky-50/50 dark:bg-zinc-950/20 border border-zinc-200 dark:border-zinc-900 rounded-xl p-5 flex flex-col justify-between transition hover:border-zinc-300 dark:hover:border-zinc-800/80 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.01)]">
           <div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-bold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">Business Tier</span>
@@ -420,7 +438,7 @@ export default function BillingUpgradeCard({
             ? "text-emerald-600 dark:text-emerald-450 bg-emerald-500/[0.04] border-emerald-500/15"
             : feedback.type === "error"
             ? "text-rose-600 dark:text-rose-400 bg-rose-500/[0.04] border-rose-500/15"
-            : "text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
+            : "text-zinc-600 dark:text-zinc-400 bg-sky-100/30 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800"
         }`} role="status">
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
             feedback.type === "success" ? "bg-emerald-500" : feedback.type === "error" ? "bg-rose-500" : "bg-zinc-450"

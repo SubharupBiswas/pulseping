@@ -143,7 +143,7 @@ export default function EditMonitorSheet({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-sky-100/30 dark:hover:bg-zinc-900 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
             aria-label="Close"
           >
             ✕
@@ -372,7 +372,7 @@ export default function EditMonitorSheet({
           <button
             onClick={onClose}
             disabled={isPending}
-            className="flex-1 px-4 py-2 text-sm font-semibold text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900 transition disabled:opacity-50"
+            className="flex-1 px-4 py-2 text-sm font-semibold text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 rounded-lg hover:bg-sky-50/80 dark:hover:bg-zinc-900 transition disabled:opacity-50"
           >
             Cancel
           </button>

@@ -55,13 +55,13 @@ export default async function BillingPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
+    <div className="min-h-screen bg-sky-50/60 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
 
       {/* Ambient Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[320px] bg-gradient-to-tr from-indigo-500/5 via-emerald-500/5 to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/40 border-b border-zinc-200 dark:border-zinc-850 backdrop-blur-xl transition-colors duration-250">
+      <header className="sticky top-0 z-50 bg-sky-50/80 dark:bg-zinc-950/40 border-b border-zinc-200 dark:border-zinc-850 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
 
           {/* Brand Logo Link */}
@@ -75,7 +75,7 @@ export default async function BillingPage() {
             <ThemeToggle />
             <span className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm transition-colors ${isPremium
                 ? "bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                : "bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-850"
+                : "bg-sky-100/40 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-850"
               }`}>
               {plan} Tier
             </span>
@@ -114,7 +114,7 @@ export default async function BillingPage() {
         </div>
 
         {/* Current Subscription Grid */}
-        <section className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 mb-8 shadow-sm backdrop-blur-md transition-colors">
+        <section className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 mb-8 shadow-sm backdrop-blur-md transition-colors">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">Subscription Summary</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-b border-zinc-200 dark:border-zinc-800/60 pb-5 mb-5">
@@ -151,7 +151,7 @@ export default async function BillingPage() {
               >
                 <button
                   type="submit"
-                  className="text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 text-zinc-900 dark:bg-zinc-800/60 dark:hover:bg-zinc-800 dark:text-zinc-200 border border-zinc-300/30 dark:border-zinc-700/50 px-3.5 py-2 rounded-lg transition duration-150 shadow-sm cursor-pointer shrink-0"
+                  className="text-xs font-semibold bg-sky-100/40 hover:bg-sky-100/70 text-zinc-900 dark:bg-zinc-800/60 dark:hover:bg-zinc-800 dark:text-zinc-200 border border-zinc-300/30 dark:border-zinc-700/50 px-3.5 py-2 rounded-lg transition duration-150 shadow-sm cursor-pointer shrink-0"
                 >
                   Cancel Subscription
                 </button>
@@ -164,11 +164,11 @@ export default async function BillingPage() {
         <BillingUpgradeCard userId={userId} currentPlan={plan} currency={defaultCurrency} />
 
         {/* Invoice History */}
-        <section className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm backdrop-blur-md transition-colors">
+        <section className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm backdrop-blur-md transition-colors">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">Payment Invoices</h3>
 
           {invoices.length === 0 ? (
-            <div className="border border-dashed border-zinc-200 dark:border-zinc-800/80 rounded-xl p-8 text-center bg-zinc-50/20 dark:bg-transparent">
+            <div className="border border-dashed border-zinc-200 dark:border-zinc-800/80 rounded-xl p-8 text-center bg-sky-50/30 dark:bg-transparent">
               <p className="text-zinc-500 dark:text-zinc-400 text-sm font-mono">No invoices found</p>
               <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Upgrade your operational subscription tier to generate billing statements.</p>
             </div>
@@ -186,7 +186,7 @@ export default async function BillingPage() {
                 </thead>
                 <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/40 text-zinc-800 dark:text-zinc-300">
                   {invoices.map((inv: any) => (
-                    <tr key={inv.id} className="hover:bg-zinc-50/30 dark:hover:bg-zinc-900/10 transition duration-100">
+                    <tr key={inv.id} className="hover:bg-sky-50/50 dark:hover:bg-zinc-900/10 transition duration-100">
                       <td className="py-3 font-mono font-semibold">{inv.id}</td>
                       <td className="py-3">{inv.date}</td>
                       <td className="py-3 font-semibold">{inv.amount}</td>
@@ -214,7 +214,7 @@ export default async function BillingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 mt-16 bg-white/75 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
+      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 mt-16 bg-sky-50/80 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
           <span className="text-sm text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
           <div className="flex items-center gap-4">

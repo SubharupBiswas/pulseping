@@ -37,7 +37,7 @@ function BentoCard({ children, className = "", colSpan = "", rowSpan = "", index
       ref={cardRef}
       onMouseMove={handleMouseMove}
       style={{ "--mouse-x": "50%", "--mouse-y": "50%" } as React.CSSProperties}
-      className={`bento-card group bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl shadow-sm backdrop-blur-md transition-all duration-200 hover:border-zinc-300 dark:hover:border-zinc-700/70 hover:shadow-md ${colSpan} ${rowSpan} ${className}`}
+      className={`bento-card group bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl shadow-sm backdrop-blur-md transition-all duration-200 hover:border-zinc-300 dark:hover:border-zinc-700/70 hover:shadow-md ${colSpan} ${rowSpan} ${className}`}
     >
       {/* hover.dev border-glow overlay */}
       <div className="bento-card-border" aria-hidden="true" />
@@ -174,7 +174,7 @@ export default function BentoMetrics({
             {uptimePercent !== null ? `${uptimePercent}%` : "—"}
           </span>
           {uptimePercent !== null && (
-            <div className="flex-1 h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+            <div className="flex-1 h-1.5 bg-sky-100/40 dark:bg-zinc-800 rounded-full overflow-hidden">
               <motion.div
                 className={`h-full rounded-full ${
                   uptimePercent >= 99

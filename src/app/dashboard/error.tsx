@@ -14,7 +14,7 @@ export default function DashboardError({ error, reset }: Props) {
   }, [error]);
 
   return (
-    <div className="w-full min-w-full col-span-full mx-auto flex flex-col items-center justify-center py-12 px-4 min-h-[400px] bg-zinc-50 dark:bg-zinc-950/20 rounded-xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+    <div className="w-full min-w-full col-span-full mx-auto flex flex-col items-center justify-center py-12 px-4 min-h-[400px] bg-sky-50/60 dark:bg-zinc-950/20 rounded-xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
       <div className="max-w-md w-full text-center space-y-6">
         <div className="w-12 h-12 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto border border-rose-500/25">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@ export default function DashboardError({ error, reset }: Props) {
         </div>
 
         {error.message && (
-          <div className="p-3 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-left">
+          <div className="p-3 bg-sky-100/30 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-left">
             <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">
               Error Message
             </p>
@@ -51,7 +51,7 @@ export default function DashboardError({ error, reset }: Props) {
           </button>
           <a
             href="/dashboard"
-            className="px-4 py-2 border border-zinc-200 dark:border-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-400 text-xs font-semibold rounded-lg transition"
+            className="px-4 py-2 border border-zinc-200 dark:border-zinc-850 hover:bg-sky-100/40 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-400 text-xs font-semibold rounded-lg transition"
           >
             Go to Streams
           </a>

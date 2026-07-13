@@ -13,7 +13,7 @@ const inter = Inter({
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: light)", color: "#f0f9ff" },
     { media: "(prefers-color-scheme: dark)", color: "#030303" },
   ],
   width: "device-width",
@@ -133,7 +133,7 @@ export default function RootLayout({
             }}
           />
         </head>
-        <body className={`${inter.variable} min-h-full flex flex-col overflow-x-hidden transition-colors duration-250 bg-white text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased`}>
+        <body className={`${inter.variable} min-h-full flex flex-col overflow-x-hidden transition-colors duration-250 bg-sky-50 text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased`}>
           {children}
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-DKG16R7DV4"} />
         </body>

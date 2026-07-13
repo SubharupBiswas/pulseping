@@ -21,7 +21,7 @@ export default function PillTabNav({ tabs, active, onChange }: Props) {
   return (
     <LayoutGroup id="dashboard-nav-group">
       <div
-        className="relative flex items-center gap-0.5 bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 w-fit"
+        className="relative flex items-center gap-0.5 bg-sky-100/40 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 w-fit"
         role="tablist"
         aria-label="Dashboard navigation"
       >

@@ -116,7 +116,7 @@ export default function StatusPage() {
   );
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
+    <div className="min-h-screen bg-sky-50 text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
 
       {/* Ambient glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[320px] bg-gradient-to-b from-emerald-500/[0.035] to-transparent blur-[110px] pointer-events-none z-0 dark:opacity-100 opacity-20" />
@@ -179,11 +179,11 @@ export default function StatusPage() {
           {systemComponents.map((category) => (
             <div key={category.category}>
               <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-3">{category.category}</h2>
-              <div className="border border-zinc-200 dark:border-zinc-900/80 rounded-xl overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] bg-zinc-50/20 dark:bg-transparent transition-colors">
+              <div className="border border-zinc-200 dark:border-zinc-900/80 rounded-xl overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] bg-sky-50/40 dark:bg-transparent transition-colors">
                 {category.services.map((service, idx) => (
                   <div
                     key={service.name}
-                    className={`flex items-center justify-between px-5 py-3.5 bg-white dark:bg-zinc-900/10 hover:bg-zinc-50 dark:hover:bg-zinc-900/20 transition duration-150 ${
+                    className={`flex items-center justify-between px-5 py-3.5 bg-sky-50/80 dark:bg-zinc-900/10 hover:bg-sky-100/40 dark:hover:bg-zinc-900/20 transition duration-150 ${
                       idx < category.services.length - 1 ? "border-b border-zinc-200 dark:border-zinc-900/60" : ""
                     }`}
                   >
@@ -210,7 +210,7 @@ export default function StatusPage() {
           <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-4">Recent Incidents</h2>
 
           {recentIncidents.length === 0 ? (
-            <div className="border border-dashed border-zinc-200 dark:border-zinc-900/80 rounded-xl p-8 text-center bg-zinc-50/20 dark:bg-transparent">
+            <div className="border border-dashed border-zinc-200 dark:border-zinc-900/80 rounded-xl p-8 text-center bg-sky-50/30 dark:bg-transparent">
               <p className="text-zinc-500 dark:text-zinc-600 text-sm">No incidents recorded in the past 90 days.</p>
             </div>
           ) : (
@@ -218,7 +218,7 @@ export default function StatusPage() {
               {recentIncidents.map((incident) => (
                 <div
                   key={incident.title}
-                  className="bg-zinc-50/50 dark:bg-zinc-900/10 border border-zinc-200 dark:border-zinc-900/80 rounded-xl p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] transition-colors"
+                  className="bg-sky-50/50 dark:bg-zinc-900/10 border border-zinc-200 dark:border-zinc-900/80 rounded-xl p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="min-w-0">
@@ -237,7 +237,7 @@ export default function StatusPage() {
         </div>
 
         {/* Subscribe note */}
-        <div className="mt-10 border border-zinc-200 dark:border-zinc-900/60 rounded-xl px-5 py-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] bg-zinc-50/20 dark:bg-transparent transition-colors">
+        <div className="mt-10 border border-zinc-200 dark:border-zinc-900/60 rounded-xl px-5 py-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] bg-sky-50/30 dark:bg-transparent transition-colors">
           <p className="text-sm text-zinc-500 dark:text-zinc-650">
             Subscribe to status notifications at{" "}
             <a href="mailto:support@subnetmask.tech" className="text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition duration-150">
@@ -253,7 +253,7 @@ export default function StatusPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 bg-zinc-50/50 dark:bg-transparent transition-colors duration-250">
+      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 bg-sky-50/60 dark:bg-transparent transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <span className="text-sm text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
           <div className="flex items-center gap-5">

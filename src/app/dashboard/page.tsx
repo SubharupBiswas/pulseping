@@ -149,13 +149,13 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-hidden transition-colors duration-250">
+    <div className="min-h-screen bg-sky-50/60 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-hidden transition-colors duration-250">
 
       {/* Ambient Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[440px] bg-gradient-to-tr from-emerald-500/10 via-indigo-500/5 to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/40 border-b border-zinc-200 dark:border-zinc-850 backdrop-blur-xl transition-colors duration-250">
+      <header className="sticky top-0 z-50 bg-sky-50/80 dark:bg-zinc-950/40 border-b border-zinc-200 dark:border-zinc-850 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
 
           <Link href="/" className="flex items-center gap-2.5 group shrink-0" aria-label="PulsePing Home">
@@ -169,7 +169,7 @@ export default async function DashboardPage() {
               className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm transition-colors ${
                 isPremium
                   ? "bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                  : "bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800"
+                  : "bg-sky-100/40 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800"
               }`}
             >
               {plan} Tier
@@ -194,7 +194,7 @@ export default async function DashboardPage() {
 
         {/* Plan banner */}
         {isPremium ? (
-          <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm backdrop-blur-md transition-colors">
+          <div className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm backdrop-blur-md transition-colors">
             <div className="flex items-start sm:items-center gap-3">
               <span className="text-emerald-500 text-2xl shrink-0 mt-0.5 sm:mt-0">⚡</span>
               <div>
@@ -233,7 +233,7 @@ export default async function DashboardPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 mt-16 bg-white/75 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
+      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 mt-16 bg-sky-50/80 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
           <span className="text-sm text-zinc-500 dark:text-zinc-600">PulsePing © 2026</span>
           <div className="flex items-center gap-4">
