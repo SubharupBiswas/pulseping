@@ -1,13 +1,13 @@
 import { ImageResponse } from "next/og";
 
 // Image metadata
-export const size = {
+const size = {
   width: 32,
   height: 32,
 };
-export const contentType = "image/png";
+const contentType = "image/png";
 
-export function GET() {
+export async function GET() {
   return new ImageResponse(
     (
       <div
