@@ -290,7 +290,7 @@ export default function DashboardShell({
                         </div>
                         <button
                           onClick={() => setLogExpanded((x) => !x)}
-                          className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                          className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors whitespace-nowrap flex items-center gap-1.5"
                         >
                           {logExpanded ? "Show less ↑" : "Show all ↓"}
                         </button>
@@ -371,7 +371,7 @@ export default function DashboardShell({
                             </span>
                             <button
                               onClick={() => setLogExpanded((x) => !x)}
-                              className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                              className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors whitespace-nowrap flex items-center gap-1.5"
                             >
                               {logExpanded ? "Collapse ↑" : `Show all ${filteredSystemLogs.length} ↓`}
                             </button>

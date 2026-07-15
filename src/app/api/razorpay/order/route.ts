@@ -80,10 +80,15 @@ export async function POST(req: NextRequest) {
     const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
+    console.log(`[ORDER_ROUTE] process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID: ${keyId ? `present (length: ${keyId.length})` : 'missing/undefined'}, process.env.RAZORPAY_KEY_SECRET: ${keySecret ? `present (length: ${keySecret.length})` : 'missing/undefined'}`);
+
     if (!keyId || !keySecret) {
       console.error("[ORDER_ROUTE] Missing Razorpay credentials — check env vars");
       return NextResponse.json(
-        { success: false, error: "Payment gateway configuration error" },
+        {
+          success: false,
+          error: "Razorpay payment gateway credentials are not configured on the server. Please define NEXT_PUBLIC_RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in your environment variables."
+        },
         { status: 500 }
       );
     }

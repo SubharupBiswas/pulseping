@@ -71,9 +71,6 @@ export default function AddMonitorForm({ userId }: { userId: string }) {
           <h3 id="form-title" className="text-sm font-semibold text-zinc-900 dark:text-zinc-300 uppercase tracking-widest">Provision Target Stream</h3>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">Register an HTTPS endpoint for automated uptime polling.</p>
         </div>
-        <div className="w-6 h-6 rounded-md bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center shadow-sm" aria-hidden="true">
-          <span className="text-zinc-500 dark:text-zinc-400 text-sm font-bold">+</span>
-        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

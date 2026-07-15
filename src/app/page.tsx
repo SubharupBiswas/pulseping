@@ -35,7 +35,7 @@ export default function LandingPage() {
             {/* Operational Status Micro-Badge */}
             <div className="relative z-10 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800/60 bg-sky-50/80 dark:bg-zinc-900/25 backdrop-blur-sm mb-8 shadow-sm transition-colors animate-fade-up">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.55)]" />
-              <span className="text-xs font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">
+              <span className="text-xs font-semibold tracking-wider text-zinc-600 dark:text-zinc-400 uppercase">
                 All Systems Operational
               </span>
             </div>
@@ -61,7 +61,7 @@ export default function LandingPage() {
             </h1>
 
             {/* Supporting Description */}
-            <p className="relative z-10 text-zinc-500 dark:text-zinc-400 text-base sm:text-lg max-w-lg mx-auto leading-relaxed mb-10 animate-fade-up [animation-delay:0.5s] opacity-0 [animation-fill-mode:forwards]">
+            <p className="relative z-10 text-zinc-600 dark:text-zinc-400 text-base sm:text-lg max-w-lg mx-auto leading-relaxed mb-10 animate-fade-up [animation-delay:0.5s] opacity-0 [animation-fill-mode:forwards]">
               Zero-configuration endpoint tracking. Deploy serverless monitoring pipelines that log response telemetry and dispatch rich Discord embeds the instant a monitored domain degrades.
             </p>
 
@@ -94,7 +94,7 @@ export default function LandingPage() {
               {["10-min polling cycles", "Discord webhook alerts", "Tiered resource controls", "PostgreSQL log persistence"].map((feat) => (
                 <span
                   key={feat}
-                  className="text-xs text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 rounded-full font-semibold tracking-wide bg-sky-50/70 dark:bg-zinc-900/30"
+                  className="text-xs text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 rounded-full font-semibold tracking-wide bg-sky-50/70 dark:bg-zinc-900/30"
                 >
                   {feat}
                 </span>
@@ -117,7 +117,7 @@ export default function LandingPage() {
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-400/70 dark:bg-zinc-800" />
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/70 dark:bg-zinc-800" />
                   </div>
-                  <span className="font-mono text-xs text-zinc-400 dark:text-zinc-600 tracking-tight select-none">
+                  <span className="font-mono text-xs text-zinc-600 dark:text-zinc-600 tracking-tight select-none">
                     pulseping.subnetmask.tech/console
                   </span>
                   <div className="w-12" />
@@ -131,9 +131,9 @@ export default function LandingPage() {
                     { label: "Incidents (7d)", value: "0", sub: "no degradation" }
                   ].map((stat) => (
                     <div key={stat.label} className="bg-sky-50/80 dark:bg-zinc-900/50 px-5 py-4">
-                      <span className="text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold block mb-1">{stat.label}</span>
+                      <span className="text-xs uppercase tracking-widest text-zinc-600 dark:text-zinc-500 font-bold block mb-1">{stat.label}</span>
                       <span className={`text-xl font-semibold tracking-tight ${stat.emerald ? "text-emerald-500 dark:text-emerald-400" : "text-zinc-900 dark:text-zinc-100"}`}>{stat.value}</span>
-                      <span className="text-xs text-zinc-400 dark:text-zinc-600 ml-1.5">{stat.sub}</span>
+                      <span className="text-xs text-zinc-600 dark:text-zinc-600 ml-1.5">{stat.sub}</span>
                     </div>
                   ))}
                 </div>
@@ -180,15 +180,17 @@ export default function LandingPage() {
               <div className="w-4 h-4 rounded-md bg-zinc-800 flex items-center justify-center">
                 <div className="w-1 h-1 rounded-full bg-zinc-400" />
               </div>
-              <span className="text-sm text-zinc-500 dark:text-zinc-400 font-semibold">PulsePing</span>
-              <span className="text-sm text-zinc-400 dark:text-zinc-600 font-mono">© 2026</span>
+              <span className="text-sm text-zinc-600 dark:text-zinc-400 font-semibold">PulsePing</span>
+              <span className="text-sm text-zinc-650 dark:text-zinc-600 font-mono">© 2026</span>
             </div>
-            <div className="flex items-center gap-5">
-              <Link href="/pricing" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
-              <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
-              <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
-              <Link href="/status" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
-              <a href="https://github.com/SubharupBiswas/pulseping" target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">GitHub</a>
+            <div className="flex items-center gap-5 flex-wrap justify-center">
+              <Link href="/pricing" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
+              <Link href="/terms" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
+              <Link href="/privacy" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
+              <Link href="/cancellation-refund" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Refund Policy</Link>
+              <Link href="/contact" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Contact</Link>
+              <Link href="/status" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Status</Link>
+              <a href="https://github.com/SubharupBiswas/pulseping" target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">GitHub</a>
             </div>
           </div>
         </footer>

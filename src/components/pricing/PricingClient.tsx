@@ -266,11 +266,13 @@ export default function PricingClient({ defaultCurrency }: Props) {
       <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-sky-50/80 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
           <span className="text-sm text-zinc-500 dark:text-zinc-600">PulsePing © 2026</span>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <Link href="/pricing" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
-            <Link href="/status" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
             <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
             <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
+            <Link href="/cancellation-refund" className="text-sm text-zinc-500 hover:text-zinc-955 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Refund Policy</Link>
+            <Link href="/contact" className="text-sm text-zinc-500 hover:text-zinc-955 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Contact</Link>
+            <Link href="/status" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
           </div>
         </div>
       </footer>

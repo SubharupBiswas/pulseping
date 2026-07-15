@@ -236,10 +236,12 @@ export default async function DashboardPage() {
       <footer className="border-t border-zinc-200 dark:border-zinc-900/40 mt-16 bg-sky-50/80 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
           <span className="text-sm text-zinc-500 dark:text-zinc-600">PulsePing © 2026</span>
-          <div className="flex items-center gap-4">
-            <Link href="/status" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition">System Status</Link>
+          <div className="flex items-center gap-4 flex-wrap">
             <Link href="/terms"  className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition">Terms</Link>
             <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition">Privacy</Link>
+            <Link href="/cancellation-refund" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition">Refund Policy</Link>
+            <Link href="/contact" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition">Contact</Link>
+            <Link href="/status" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition">System Status</Link>
           </div>
         </div>
       </footer>

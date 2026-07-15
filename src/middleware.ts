@@ -6,6 +6,8 @@ const isPublicRoute = createRouteMatcher([
   "/pricing", 
   "/privacy", 
   "/terms",
+  "/contact",
+  "/cancellation-refund",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/status(.*)",
@@ -13,6 +15,8 @@ const isPublicRoute = createRouteMatcher([
   "/api/heartbeat/(.*)",
   // Razorpay webhook — server-to-server, no auth header
   "/api/webhooks/razorpay",
+  "/favicon.ico",
+  "/icon",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -25,7 +29,7 @@ export default clerkMiddleware(async (auth, req) => {
 export const config = {
   matcher: [
     // 1. Intercept all routes except Next.js internals, static assets, and public API endpoints
-    "/((?!_next|api/cron/ping|api/heartbeat|api/webhooks|[^?]*\\.(?:html|css|js|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/((?!_next|favicon\\.ico|icon|api/cron/ping|api/heartbeat|api/webhooks|[^?]*\\.(?:html|css|js|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // 2. Explicitly target our specific active transaction API endpoints
     "/api/create-order",
     "/api/razorpay/order",

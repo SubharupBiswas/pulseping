@@ -31,6 +31,7 @@ type Monitor = {
   frequency: number;
   alertEmail: string | null;
   telegramChatId: string | null;
+  webhookUrl: string | null;
   alertOnFailure: boolean;
   httpMethod?: string | null;
   sslExpiresAt?: string | null;
@@ -268,7 +269,7 @@ export default function MonitorCard({ monitor, isPremium }: Props) {
               transition={{ type: "spring", stiffness: 260, damping: 22 }}
               className="overflow-hidden"
             >
-              <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800/60 pt-4">
+              <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800/60 pt-4 w-full min-w-0 overflow-hidden">
                 {/* Latency chart */}
                 <LatencyChart logs={monitor.logs} />
 
@@ -326,6 +327,7 @@ export default function MonitorCard({ monitor, isPremium }: Props) {
           url={monitor.url}
           alertEmail={monitor.alertEmail}
           telegramChatId={monitor.telegramChatId}
+          webhookUrl={monitor.webhookUrl}
           alertOnFailure={monitor.alertOnFailure}
           method={monitor.method}
           headers={monitor.headers}

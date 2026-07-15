@@ -80,9 +80,7 @@ export const metadata: Metadata = {
     creator: "@pulseping",
   },
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: "/favicon.ico",
   },
 };
 

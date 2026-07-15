@@ -79,3 +79,6 @@ node_modules/
 scratchpad/
 tests/
 *.test.tsx
+
+# local temporary configuration isolates
+/tmp-home/

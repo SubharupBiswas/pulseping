@@ -61,6 +61,10 @@ export default function LatencyChart({ logs }: Props) {
     .sort((a, b) => new Date(a.checkedAt).getTime() - new Date(b.checkedAt).getTime())
     .map((l) => ({ time: l.checkedAt, latency: l.latency, ok: l.statusCode >= 200 && l.statusCode < 500 }));
 
+  if (!chartData || chartData.length === 0) {
+    return <div className="h-24 flex items-center justify-center text-xs text-zinc-500">Recalculating analytics timeline...</div>;
+  }
+
   return (
     <div className="mt-4">
       {/* Time filter pill row */}
@@ -90,7 +94,7 @@ export default function LatencyChart({ logs }: Props) {
           No data for this period
         </div>
       ) : (
-        <div className="h-28 chart-animate">
+        <div className="h-28 chart-animate w-full min-w-0 overflow-hidden">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 4, right: 0, left: -24, bottom: 0 }}>
               <defs>
@@ -125,6 +129,7 @@ export default function LatencyChart({ logs }: Props) {
                 activeDot={{ r: 4, fill: "#10b981", strokeWidth: 0 }}
                 animationDuration={800}
                 animationEasing="ease-out"
+                connectNulls
               />
             </AreaChart>
           </ResponsiveContainer>
