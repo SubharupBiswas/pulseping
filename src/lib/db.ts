@@ -31,8 +31,9 @@ export const prisma = new Proxy({} as PrismaClient, {
           );
         }
 
-        const adapter = new PrismaNeon({ connectionString: url } as any);
-        const client = new PrismaClient({ adapter } as any);
+        const pool = new Pool({ connectionString: url });
+        const adapter = new PrismaNeon(pool as any);
+        const client = new PrismaClient({ adapter });
 
         cachedPrisma = client;
         if (process.env.NODE_ENV !== "production") {
