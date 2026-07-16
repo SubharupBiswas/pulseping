@@ -2,14 +2,11 @@ import React from "react";
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
+const inter = {
+  variable: "font-sans",
+};
 
 export const viewport: Viewport = {
   themeColor: [
@@ -93,6 +90,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className="h-full antialiased" suppressHydrationWarning style={{ colorScheme: "dark light" }}>
         <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
           <script
             dangerouslySetInnerHTML={{
               __html: `
