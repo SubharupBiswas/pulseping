@@ -10,4 +10,13 @@ config.default = {
   minify: true,
 };
 
+config.functions = {
+  dashboard: {
+    runtime: "edge",
+    minify: true,
+    routes: ["dashboard", "dashboard/billing"] as any,
+    patterns: ["dashboard*"],
+  },
+};
+
 export default config;
