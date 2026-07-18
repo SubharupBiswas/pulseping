@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   // Externalize Prisma client bundles to prevent Turbopack/Webpack compilation conflicts
   serverExternalPackages: ["@prisma/client", ".prisma/client"],
 
