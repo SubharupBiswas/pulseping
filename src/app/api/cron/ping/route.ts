@@ -57,11 +57,11 @@ async function checkMonitor(monitor: any) {
   let errorBody: string | null = null;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
 
   // Build custom headers from JSON field
   const builtHeaders: Record<string, string> = {
-    "User-Agent": "PulsePing-Edge-Telemetry-Engine/1.0",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   };
   if (monitor.customHeaders && typeof monitor.customHeaders === "object") {
     for (const [k, v] of Object.entries(monitor.customHeaders)) {

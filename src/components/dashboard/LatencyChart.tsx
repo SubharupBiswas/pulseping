@@ -31,8 +31,8 @@ function filterLogs(logs: LogEntry[], filter: TimeFilter): LogEntry[] {
   return logs.filter((l) => new Date(l.checkedAt).getTime() >= cutoff);
 }
 
-function formatTick(iso: string, filter: TimeFilter) {
-  const d = new Date(iso);
+function formatTick(epoch: number, filter: TimeFilter) {
+  const d = new Date(epoch);
   if (filter === "24h") {
     return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
   }
@@ -51,17 +51,35 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 type Props = {
   logs: LogEntry[];
+  isPremium?: boolean;
 };
 
-export default function LatencyChart({ logs }: Props) {
+export default function LatencyChart({ logs, isPremium }: Props) {
   const [filter, setFilter] = useState<TimeFilter>("24h");
 
   const filtered = filterLogs(logs, filter);
   const chartData = [...filtered]
-    .sort((a, b) => new Date(a.checkedAt).getTime() - new Date(b.checkedAt).getTime())
-    .map((l) => ({ time: l.checkedAt, latency: l.latency, ok: l.statusCode >= 200 && l.statusCode < 500 }));
+    .map((l) => {
+      const latVal = typeof l.latency === "string" ? l.latency : String(l.latency);
+      const cleanedLatency = parseFloat(latVal.replace(/[^\d.]/g, "")) || 0;
+      const epoch = new Date(l.checkedAt).getTime();
+      return {
+        timestamp: epoch,
+        latency: cleanedLatency,
+        ok: l.statusCode >= 200 && l.statusCode < 500,
+      };
+    })
+    .sort((a, b) => a.timestamp - b.timestamp);
 
   if (!chartData || chartData.length === 0) {
+    if (!isPremium) {
+      return (
+        <div className="h-28 flex flex-col items-center justify-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-500 text-xs gap-1 py-4">
+          <p className="font-semibold text-zinc-700 dark:text-zinc-300">Upgrade to a premium plan to view detailed timeline history</p>
+          <p className="text-[10px] text-zinc-400 dark:text-zinc-500">Free accounts do not record operational latency timelines.</p>
+        </div>
+      );
+    }
     return <div className="h-24 flex items-center justify-center text-xs text-zinc-500">Recalculating analytics timeline...</div>;
   }
 
@@ -89,9 +107,10 @@ export default function LatencyChart({ logs }: Props) {
         </div>
       </div>
 
-      {chartData.length === 0 ? (
-        <div className="h-28 flex items-center justify-center text-zinc-400 dark:text-zinc-600 text-xs font-mono">
-          No data for this period
+      {chartData.length <= 1 ? (
+        <div className="h-28 flex flex-col items-center justify-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-450 dark:text-zinc-550 text-xs font-mono">
+          <span>No telemetry timeline data for this period</span>
+          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">(Requires at least 2 check logs)</span>
         </div>
       ) : (
         <div className="h-28 chart-animate w-full min-w-0 overflow-hidden">
@@ -105,14 +124,17 @@ export default function LatencyChart({ logs }: Props) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(113,113,122,0.12)" />
               <XAxis
-                dataKey="time"
-                tickFormatter={(v: string) => formatTick(v, filter)}
+                dataKey="timestamp"
+                type="number"
+                domain={['dataMin', 'dataMax']}
+                tickFormatter={(v: number) => formatTick(v, filter)}
                 tick={{ fontSize: 10, fill: "#71717a" }}
                 tickLine={false}
                 axisLine={false}
                 interval="preserveStartEnd"
               />
               <YAxis
+                type="number"
                 tick={{ fontSize: 10, fill: "#71717a" }}
                 tickLine={false}
                 axisLine={false}

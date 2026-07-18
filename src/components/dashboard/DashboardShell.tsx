@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import PillTabNav from "./PillTabNav";
 import dynamic from "next/dynamic";
 
@@ -83,6 +85,7 @@ export default function DashboardShell({
   telegramNotificationsEnabled,
   alertChannels,
 }: Props) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("streams");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [logSearch, setLogSearch] = useState("");
@@ -97,6 +100,7 @@ export default function DashboardShell({
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
+        router.refresh();
         const res = await getLatestTelemetry(userId);
         if (res && res.success && res.monitors) {
           setMonitorsState(res.monitors as Monitor[]);
@@ -107,7 +111,7 @@ export default function DashboardShell({
     }, 15000); // Poll every 15 seconds
 
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [userId, router]);
 
   // ── Aggregate metrics ──────────────────────────────────────────
   const totalMonitors = monitorsState.length;
@@ -159,6 +163,28 @@ export default function DashboardShell({
 
   return (
     <div>
+      {/* Limits Exceeded Warning Banner */}
+      {plan === "FREE" && totalMonitors > 2 && (
+        <div className="mb-6 p-4 rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-sm transition-all">
+          <div className="flex items-start gap-3">
+            <span className="text-lg mt-0.5 shrink-0">⚠️</span>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider">Plan Limits Exceeded</p>
+              <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
+                Your account is currently on the <strong>Free Plan</strong>, which supports a maximum of <strong>2 active monitors</strong>. 
+                You have <strong>{totalMonitors}</strong> monitors. Standard monitoring has paused for some streams.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/dashboard/billing"
+            className="text-xs font-bold px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white shadow transition-colors shrink-0 text-center"
+          >
+            Upgrade Tier
+          </Link>
+        </div>
+      )}
+
       {/* Bento metrics grid */}
       <BentoMetrics
         totalMonitors={totalMonitors}
@@ -268,7 +294,7 @@ export default function DashboardShell({
                     ) : (
                       <div className="space-y-3">
                         {filteredMonitors.map((monitor) => (
-                          <MonitorCard key={monitor.id} monitor={monitor} isPremium={isPremium} />
+                          <MonitorCard key={monitor.id} monitor={monitor} isPremium={isPremium} plan={plan} />
                         ))}
                       </div>
                     )}

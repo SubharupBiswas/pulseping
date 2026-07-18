@@ -47,9 +47,10 @@ type Monitor = {
 type Props = {
   monitor: Monitor;
   isPremium: boolean;
+  plan: string;
 };
 
-export default function MonitorCard({ monitor, isPremium }: Props) {
+export default function MonitorCard({ monitor, isPremium, plan }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [, startTransition] = useTransition();
@@ -271,7 +272,7 @@ export default function MonitorCard({ monitor, isPremium }: Props) {
             >
               <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800/60 pt-4 w-full min-w-0 overflow-hidden">
                 {/* Latency chart */}
-                <LatencyChart logs={monitor.logs} />
+                <LatencyChart logs={monitor.logs} isPremium={isPremium} />
 
                 {/* AI Root-Cause Diagnostic */}
                 {lastLog?.aiDiagnostic && (
@@ -311,7 +312,9 @@ export default function MonitorCard({ monitor, isPremium }: Props) {
 
                   {/* Frequency badge */}
                   <span className="ml-auto text-xs text-zinc-400 dark:text-zinc-600 font-mono">
-                    every {monitor.frequency}m
+                    {plan === "BUSINESS" || monitor.frequency === 30
+                      ? "every 30s"
+                      : `every ${monitor.frequency}m`}
                   </span>
                 </div>
               </div>

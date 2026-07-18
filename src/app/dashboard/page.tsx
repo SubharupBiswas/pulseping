@@ -108,7 +108,7 @@ export default async function DashboardPage() {
       }
     } as any,
     orderBy: { id: "desc" },
-  });  const plan = (userRecord as any).plan as string;
+  });  const plan = (userRecord as any)?.plan || "FREE";
   const isPremium = plan === "PRO" || plan === "BUSINESS";
 
   // Serialize dates to ISO strings for the client
@@ -183,14 +183,34 @@ export default async function DashboardPage() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative z-10">
 
         {/* Page title */}
-        <div className="mb-8">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-100">
-            Overview
-          </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
-            Real-time endpoint monitoring pipelines and telemetry logs.
-          </p>
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-100">
+              Overview
+            </h1>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
+              Real-time endpoint monitoring pipelines and telemetry logs.
+            </p>
+          </div>
         </div>
+
+        {/* Premium Navigation Row */}
+        {plan !== "FREE" && (
+          <div className="flex items-center gap-4 mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-3 flex-wrap">
+            <Link href="/dashboard" className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              Overview
+            </Link>
+            <Link href="/dashboard/ai-diagnostics" className="text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition">
+              AI Diagnostics
+            </Link>
+            <Link href="/dashboard/status-pages" className="text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition">
+              Status Pages
+            </Link>
+            <Link href="/dashboard/advanced-settings" className="text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition">
+              Advanced Settings
+            </Link>
+          </div>
+        )}
 
         {/* Plan banner */}
         {isPremium ? (

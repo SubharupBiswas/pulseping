@@ -9,6 +9,7 @@ import { UserButton } from "@clerk/nextjs";
 import { upgradeUserPlan } from "@/app/actions/billing";
 import PulsePingLogo from "@/components/PulsePingLogo";
 import BillingUpgradeCard from "@/components/BillingUpgradeCard";
+import CancelSubscriptionButton from "@/components/dashboard/CancelSubscriptionButton";
 
 export const dynamic = "force-dynamic";
 
@@ -143,19 +144,12 @@ export default async function BillingPage() {
             </div>
 
             {isPremium && (
-              <form
-                action={async () => {
+              <CancelSubscriptionButton
+                onCancel={async () => {
                   "use server";
                   await upgradeUserPlan(userId, "FREE");
                 }}
-              >
-                <button
-                  type="submit"
-                  className="text-xs font-semibold bg-sky-100/40 hover:bg-sky-100/70 text-zinc-900 dark:bg-zinc-800/60 dark:hover:bg-zinc-800 dark:text-zinc-200 border border-zinc-300/30 dark:border-zinc-700/50 px-3.5 py-2 rounded-lg transition duration-150 shadow-sm cursor-pointer shrink-0"
-                >
-                  Cancel Subscription
-                </button>
-              </form>
+              />
             )}
           </div>
         </section>
