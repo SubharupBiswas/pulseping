@@ -1,5 +1,15 @@
-# dependencies
+# Environment & Secrets (Strictly Excluded)
+.env
+.env.local
+.env.production
+.env.development
+.env.staging
+.env.test
+.env*.local
+
+# Dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -8,35 +18,26 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing & coverage
-/coverage
-
-# Next.js build & cache outputs
+# Next.js Build & Cache Outputs
 /.next/
+.next/
 /out/
+/build
 
-# Local package manager caches & runtime logs
-.npm-cache/
-_logs/
-_npx/
-
-# serverless & wrangler build frameworks
+# Cloudflare & OpenNext Build Outputs
 /.open-next/
+.open-next/
 /.wrangler/
 .wrangler/
 
-# production output
-/build
+# Package Manager & Local Runtime Caches
+.npm-cache/
+/tmp-home/
+_logs/
+_npx/
+scratchpad/
 
-# environment files (strictly secret)
-.env
-.env.local
-.env.production
-.env.development
-.env.test
-.env*.local
-
-# development logs & script scratchpads
+# Logs & Error Artifacts
 *.log
 task-*.log
 npm-debug.log*
@@ -44,14 +45,19 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# OS artifacts (Mac / Windows metadata)
+# TypeScript & Build Caches
+*.tsbuildinfo
+next-env.d.ts
+/coverage
+
+# Operating System Metadata
 .DS_Store
 Thumbs.db
 *.pem
 .Spotlight-V100
 .Trashes
 
-# IDE configurations
+# IDE & Editor Configurations
 .vscode/
 .idea/
 *.suo
@@ -59,26 +65,9 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
-
-# typescript & next-env
-*.tsbuildinfo
-next-env.d.ts
-
-# deployment provider state
-.vercel
-/src/generated/prisma
 *.code-workspace
+.vercel
 
-# Build Caches and Environments
-.next/
-.open-next/
-.wrangler/
-.npm-cache/
-node_modules/
-.env.local
-scratchpad/
+# Testing & Scratch Utilities
 tests/
 *.test.tsx
-
-# local temporary configuration isolates
-/tmp-home/

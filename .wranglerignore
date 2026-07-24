@@ -4,7 +4,9 @@
 .wrangler/
 .npm-cache/
 node_modules/
+.env
 .env.local
+.env.production
 scratchpad/
 tests/
 *.test.tsx

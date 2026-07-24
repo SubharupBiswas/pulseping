@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { loadEnv, db } from "../src/lib/db";
 import { generateIncidentDiagnostic } from "../src/lib/ai";
 import { Resend } from "resend";
