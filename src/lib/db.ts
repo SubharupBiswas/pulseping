@@ -1,6 +1,45 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { Pool } from "@neondatabase/serverless";
+import fs from "fs";
+import path from "path";
+
+/**
+ * Explicitly load environment variables prior to client/pool instantiation.
+ * Checks process.cwd() for .env.local and .env files, populating process.env if DATABASE_URL is not set.
+ */
+export function loadEnv() {
+  if (typeof window !== "undefined") return;
+
+  if (!process.env.DATABASE_URL) {
+    const envFiles = [".env.local", ".env"];
+    for (const file of envFiles) {
+      const fullPath = path.resolve(process.cwd(), file);
+      if (fs.existsSync(fullPath)) {
+        try {
+          if (typeof (process as any).loadEnvFile === "function") {
+            (process as any).loadEnvFile(fullPath);
+          } else {
+            const content = fs.readFileSync(fullPath, "utf-8");
+            for (const line of content.split("\n")) {
+              const trimmed = line.trim();
+              if (trimmed && !trimmed.startsWith("#") && trimmed.includes("=")) {
+                const [key, ...valParts] = trimmed.split("=");
+                const val = valParts.join("=").replace(/^["']|["']$/g, "").trim();
+                const k = key.trim();
+                if (k && !process.env[k]) {
+                  process.env[k] = val;
+                }
+              }
+            }
+          }
+        } catch {
+          // Ignore env file read errors
+        }
+      }
+    }
+  }
+}
 
 declare global {
   var prisma: PrismaClient | undefined;
@@ -15,6 +54,9 @@ export const prisma = new Proxy({} as PrismaClient, {
     }
 
     if (!cachedPrisma) {
+      // Always ensure environment variables are loaded before checking or initializing connections
+      loadEnv();
+
       if (process.env.NODE_ENV !== "production" && globalThis.prisma) {
         cachedPrisma = globalThis.prisma as any;
       } else {
@@ -27,7 +69,8 @@ export const prisma = new Proxy({} as PrismaClient, {
           !(url.startsWith("postgres://") || url.startsWith("postgresql://"))
         ) {
           throw new Error(
-            `Lazy Connection Error: DATABASE_URL runtime environment variable is invalid, uninitialized, or missing its protocol prefix! Received: "${url}"`
+            `Database Client Initialization Error: Required environment variable DATABASE_URL is missing, uninitialized, or missing its PostgreSQL connection string prefix ("postgresql://" or "postgres://"). ` +
+            `Ensure DATABASE_URL is configured in your environment or .env file prior to initializing database connections. Received: "${url}"`
           );
         }
 

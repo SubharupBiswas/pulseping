@@ -9,6 +9,7 @@
     "preview": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare preview",
     "deploy": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare deploy",
     "start": "next start",
+    "worker": "npx tsx scripts/worker.ts",
     "lint": "eslint",
     "cloudflare-deploy": "node scripts/cloudflare-build.js"
   },

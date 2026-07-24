@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
+import { getOrCreateUser } from "@/lib/user";
+
 export async function createMonitor(
   url: string,
   userId: string,
@@ -21,15 +23,9 @@ export async function createMonitor(
       throw new Error("Access denied. Authentication signature mismatch.");
     }
 
-    let userRecord = await db.user.findUnique({ where: { id: userId } });
-    if (!userRecord) {
-      userRecord = await db.user.create({
-        data: { id: userId, email: userId, plan: "FREE" }
-      });
-    }
-
+    const userRecord = await getOrCreateUser(userId);
+    const plan = userRecord?.plan || "FREE";
     const currentCount = await db.monitor.count({ where: { userId } });
-    const plan = userRecord.plan;
 
     if (plan === "FREE" && currentCount >= 2) {
       throw new Error("Free Tier monitor limit reached (max 2 endpoints). Upgrade to Pro or Business to expand capacity.");

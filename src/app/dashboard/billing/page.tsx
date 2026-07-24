@@ -11,6 +11,8 @@ import PulsePingLogo from "@/components/PulsePingLogo";
 import BillingUpgradeCard from "@/components/BillingUpgradeCard";
 import CancelSubscriptionButton from "@/components/dashboard/CancelSubscriptionButton";
 
+import { getOrCreateUser } from "@/lib/user";
+
 export const dynamic = "force-dynamic";
 
 export default async function BillingPage() {
@@ -20,12 +22,7 @@ export default async function BillingPage() {
     redirect("/sign-in");
   }
 
-  let userRecord = await db.user.findUnique({ where: { id: userId } });
-  if (!userRecord) {
-    userRecord = await db.user.create({
-      data: { id: userId, email: userId, plan: "FREE" },
-    });
-  }
+  const userRecord = await getOrCreateUser(userId);
 
   const headersList = await headers();
   const country = headersList.get("cf-ipcountry") || headersList.get("x-vercel-ip-country") || "US";
@@ -121,7 +118,7 @@ export default async function BillingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-b border-zinc-200 dark:border-zinc-800/60 pb-5 mb-5">
             <div>
               <p className="text-xs text-zinc-450 dark:text-zinc-500 uppercase tracking-widest font-bold">Active Tier</p>
-              <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mt-1">{plan} Plan</p>
+              <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mt-1">{String(plan)} Plan</p>
             </div>
             <div>
               <p className="text-xs text-zinc-450 dark:text-zinc-500 uppercase tracking-widest font-bold">Billing Cycle</p>
@@ -155,7 +152,7 @@ export default async function BillingPage() {
         </section>
 
         {/* Upgrade Billing Options */}
-        <BillingUpgradeCard userId={userId} currentPlan={plan} currency={defaultCurrency} />
+        <BillingUpgradeCard userId={userId} currentPlan={plan as any} currency={defaultCurrency} />
 
         {/* Invoice History */}
         <section className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm backdrop-blur-md transition-colors">

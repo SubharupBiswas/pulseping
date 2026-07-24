@@ -8,6 +8,8 @@ import ThemeToggle from "@/components/ThemeToggle";
 import PulsePingLogo from "@/components/PulsePingLogo";
 import DashboardUserButton from "@/components/DashboardUserButton";
 
+import { getOrCreateUser } from "@/lib/user";
+
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -22,11 +24,8 @@ export default async function StatusPagesPage() {
     redirect("/sign-in");
   }
 
-  // Force database sync of plan tier
-  const userRecord = await db.user.findUnique({
-    where: { id: userId },
-    select: { plan: true },
-  });
+  // Force database sync of plan tier with fallback creation
+  const userRecord = await getOrCreateUser(userId);
 
   const plan = userRecord?.plan || "FREE";
   if (plan === "FREE") {
@@ -61,7 +60,7 @@ export default async function StatusPagesPage() {
           <div className="flex items-center gap-x-4 md:gap-x-6">
             <ThemeToggle />
             <span className="text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
-              {plan} Tier
+              {String(plan)} Tier
             </span>
             <DashboardUserButton />
           </div>

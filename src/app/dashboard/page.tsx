@@ -11,6 +11,8 @@ import DashboardUserButton from "@/components/DashboardUserButton";
 import BillingUpgradeCard from "@/components/BillingUpgradeCard";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 
+import { getOrCreateUser } from "@/lib/user";
+
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -25,45 +27,8 @@ export default async function DashboardPage() {
     redirect("/sign-in");
   }
 
-  // Ensure user record exists
-  let userRecord = await db.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      plan: true,
-      alertThreshold: true,
-      emailNotificationsEnabled: true,
-      telegramNotificationsEnabled: true,
-      alertChannels: {
-        select: {
-          id: true,
-          providerType: true,
-          destinationUrl: true,
-          userFriendlyName: true,
-        }
-      }
-    } as any,
-  });
-  if (!userRecord) {
-    userRecord = await db.user.create({
-      data: { id: userId, email: userId, plan: "FREE" },
-      select: {
-        id: true,
-        plan: true,
-        alertThreshold: true,
-        emailNotificationsEnabled: true,
-        telegramNotificationsEnabled: true,
-        alertChannels: {
-          select: {
-            id: true,
-            providerType: true,
-            destinationUrl: true,
-            userFriendlyName: true,
-          }
-        }
-      } as any,
-    });
-  }
+  // Ensure user record exists with dynamic auth provider sync
+  const userRecord = await getOrCreateUser(userId);
 
   const headersList = await headers();
   const country = headersList.get("cf-ipcountry") || headersList.get("x-vercel-ip-country") || "US";
