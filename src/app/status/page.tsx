@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 import type { Metadata } from "next";
 
@@ -7,12 +8,12 @@ export const metadata: Metadata = {
   title: "System Status",
   description: "Live operational status of PulsePing's monitoring infrastructure, API gateways, cron executors, and database nodes.",
   alternates: {
-    canonical: "https://pulseping.subnetmask.tech/status",
+    canonical: "https://pulseping.subharup.com/status",
   },
   openGraph: {
     title: "System Status | PulsePing",
     description: "Live operational status of PulsePing's monitoring infrastructure, API gateways, cron executors, and database nodes.",
-    url: "https://pulseping.subnetmask.tech/status",
+    url: "https://pulseping.subharup.com/status",
   },
 };
 
@@ -240,8 +241,8 @@ export default function StatusPage() {
         <div className="mt-10 border border-zinc-200 dark:border-zinc-900/60 rounded-xl px-5 py-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] bg-sky-50/30 dark:bg-transparent transition-colors">
           <p className="text-sm text-zinc-500 dark:text-zinc-650">
             Subscribe to status notifications at{" "}
-            <a href="mailto:support@subnetmask.tech" className="text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition duration-150">
-              support@subnetmask.tech
+            <a href="mailto:support@subharup.com" className="text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition duration-150">
+              support@subharup.com
             </a>{" "}
             or follow our{" "}
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition duration-150">
@@ -253,19 +254,7 @@ export default function StatusPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 bg-sky-50/60 dark:bg-transparent transition-colors duration-250">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="text-sm text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
-          <div className="flex items-center gap-5 flex-wrap justify-center">
-            <Link href="/pricing" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
-            <Link href="/terms" className="text-sm text-zinc-500 hover:text-zinc-955 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
-            <Link href="/privacy" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
-            <Link href="/cancellation-refund" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Refund Policy</Link>
-            <Link href="/contact" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Contact</Link>
-            <Link href="/status" className="text-sm text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

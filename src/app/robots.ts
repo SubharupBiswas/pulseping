@@ -15,6 +15,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://pulseping.subnetmask.tech/sitemap.xml",
+    sitemap: "https://pulseping.subharup.com/sitemap.xml",
   };
 }

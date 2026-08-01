@@ -1,12 +1,13 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+// Mandatory edge runtime declaration for @opennextjs/cloudflare
 export const runtime = "experimental-edge";
 
 const isPublicRoute = createRouteMatcher([
-  "/", 
-  "/pricing", 
-  "/privacy", 
+  "/",
+  "/pricing",
+  "/privacy",
   "/terms",
   "/contact",
   "/cancellation-refund",
@@ -32,7 +33,7 @@ export const config = {
   matcher: [
     // 1. Intercept all routes except Next.js internals, static assets, and public API endpoints
     "/((?!_next|favicon\\.ico|icon|api/cron/ping|api/heartbeat|api/webhooks|[^?]*\\.(?:html|css|js|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // 2. Explicitly target our specific active transaction API endpoints
+    // 2. Explicitly target active transaction API endpoints
     "/api/create-order",
     "/api/razorpay/order",
     "/api/verify-payment",

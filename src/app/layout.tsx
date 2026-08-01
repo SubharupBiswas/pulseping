@@ -35,9 +35,9 @@ export const metadata: Metadata = {
     "server health check"
   ],
   authors: [{ name: "PulsePing Team" }],
-  metadataBase: new URL("https://pulseping.subnetmask.tech"),
+  metadataBase: new URL("https://pulseping.subharup.com"),
   alternates: {
-    canonical: "https://pulseping.subnetmask.tech",
+    canonical: "https://pulseping.subharup.com",
   },
   robots: {
     index: true,
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "PulsePing | Developer-First Uptime Monitoring",
     description: "PulsePing is a developer-first uptime monitoring platform. Track API endpoints, configure Discord webhooks, and analyze response latency with Neon & Prisma.",
-    url: "https://pulseping.subnetmask.tech",
+    url: "https://pulseping.subharup.com",
     siteName: "PulsePing",
     type: "website",
     locale: "en_US",
@@ -117,7 +117,7 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "WebApplication",
                 "name": "PulsePing",
-                "url": "https://pulseping.subnetmask.tech",
+                "url": "https://pulseping.subharup.com",
                 "description": "Developer-first uptime monitoring platform with Discord alerts and Neon database logs.",
                 "applicationCategory": "DeveloperApplication",
                 "operatingSystem": "All",

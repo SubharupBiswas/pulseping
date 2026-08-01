@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <a href="https://pulseping.subnetmask.tech"><b>Live Console Deployment →</b></a>
+  <a href="https://pulseping.subharup.com"><b>Live Console Deployment →</b></a>
 </p>
 
 ---
@@ -35,7 +35,7 @@ When an endpoint failure state is detected (unhealthy HTTP status codes $< 200$,
 * **Discord Webhook Channel:** Dispatches rich markdown embed cards containing target URLs, HTTP resolution states, latency markers, and timestamps.
 * **Slack Integration:** Posts clean, block-structured Slack JSON payloads to user-configured channel webhooks.
 * **Telegram Bot Channel:** Sends text alert telemetry strings via the Telegram Bot API to defined chat IDs.
-* **Resend Email Dispatcher:** Automatically sends responsive, dark-themed HTML/CSS email reports from `alerts@pulseping.subnetmask.tech` using the serverless-ready `resend` client library.
+* **Resend Email Dispatcher:** Automatically sends responsive, dark-themed HTML/CSS email reports from `alerts@pulseping.subharup.com` using the serverless-ready `resend` client library.
 
 ---
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "Privacy Policy | PulsePing",
@@ -71,7 +72,7 @@ const sections = [
   },
   {
     title: "12. Contact Information",
-    body: `For questions about this policy or database practices, contact support at support@subnetmask.tech.`,
+    body: `For questions about this policy or database practices, contact support at support@subharup.com.`,
   },
 ];
 
@@ -121,26 +122,15 @@ export default function PrivacyPage() {
         <div className="border-t border-zinc-200 dark:border-zinc-900/60 mt-12 pt-8">
           <p className="text-xs text-zinc-500 dark:text-zinc-700">
             Questions about your database files or data logs? Contact us at{" "}
-            <a href="mailto:support@subnetmask.tech" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150">
-              support@subnetmask.tech
+            <a href="mailto:support@subharup.com" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150">
+              support@subharup.com
             </a>
           </p>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 bg-sky-50/60 dark:bg-transparent transition-colors duration-250">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="text-xs text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
-          <div className="flex items-center gap-5 flex-wrap justify-center">
-            <Link href="/terms" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
-            <Link href="/privacy" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
-            <Link href="/cancellation-refund" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Refund Policy</Link>
-            <Link href="/contact" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Contact</Link>
-            <Link href="/status" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

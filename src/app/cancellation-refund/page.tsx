@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "Cancellation & Refund Policy | PulsePing",
@@ -60,24 +61,15 @@ export default function CancellationRefundPage() {
         <div className="border-t border-zinc-200 dark:border-zinc-900/60 mt-12 pt-8">
           <p className="text-xs text-zinc-500 dark:text-zinc-700">
             For further inquiries regarding transaction statements or invoicing, contact support at{" "}
-            <a href="mailto:support@subnetmask.tech" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150">
-              support@subnetmask.tech
+            <a href="mailto:support@subharup.com" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition duration-150">
+              support@subharup.com
             </a>
           </p>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 bg-sky-50/60 dark:bg-transparent transition-colors duration-250">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="text-xs text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
-          <div className="flex items-center gap-5">
-            <Link href="/terms" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
-            <Link href="/privacy" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
-            <Link href="/status" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

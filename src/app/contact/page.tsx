@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "Customer Support & Contact | PulsePing",
@@ -36,14 +37,14 @@ export default function ContactPage() {
         <div className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-6 shadow-sm backdrop-blur-md transition-colors space-y-6">
           <div>
             <h2 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mb-1">Operational Business Name</h2>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">PulsePing (operated under Subnetmask Tech)</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">PulsePing (Subharup Biswas)</p>
           </div>
 
           <div>
             <h2 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mb-1">Primary Support Email</h2>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              <a href="mailto:support@subnetmask.tech" className="text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 font-mono font-semibold">
-                support@subnetmask.tech
+              <a href="mailto:support@subharup.com" className="text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 font-mono font-semibold">
+                support@subharup.com
               </a>
             </p>
           </div>
@@ -69,16 +70,7 @@ export default function ContactPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-900/40 bg-sky-50/60 dark:bg-transparent transition-colors duration-250">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span className="text-xs text-zinc-500 dark:text-zinc-650">PulsePing © 2026</span>
-          <div className="flex items-center gap-5">
-            <Link href="/terms" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
-            <Link href="/privacy" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
-            <Link href="/status" className="text-xs text-zinc-500 hover:text-zinc-950 dark:text-zinc-500 dark:hover:text-zinc-300 transition duration-150">Status</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

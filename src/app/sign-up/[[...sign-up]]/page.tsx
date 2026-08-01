@@ -6,6 +6,7 @@ import { dark } from "@clerk/themes";
 import Link from "next/link";
 import Script from "next/script";
 import PulsePingLogo from "@/components/PulsePingLogo";
+import Footer from "@/components/Footer";
 
 export default function SignUpPage() {
   const [mounted, setMounted] = useState(false);
@@ -80,28 +81,7 @@ export default function SignUpPage() {
       </div>
 
       {/* Footer */}
-      <footer className="absolute bottom-0 left-0 right-0 z-10 border-t border-neutral-800/60 py-5">
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-center gap-6">
-          <Link
-            href="/terms"
-            className="text-sm text-neutral-500 hover:text-neutral-300 transition duration-150"
-          >
-            Terms
-          </Link>
-          <Link
-            href="/privacy"
-            className="text-sm text-neutral-500 hover:text-neutral-300 transition duration-150"
-          >
-            Privacy
-          </Link>
-          <Link
-            href="/status"
-            className="text-sm text-neutral-500 hover:text-neutral-300 transition duration-150"
-          >
-            Status
-          </Link>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

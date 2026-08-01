@@ -4,12 +4,12 @@ export const metadata: Metadata = {
   title: "Pricing",
   description: "Predictable, developer-first pricing plans for PulsePing uptime monitoring. Choose from Free, Pro, and Business tiers to satisfy your endpoint monitoring SLA targets.",
   alternates: {
-    canonical: "https://pulseping.subnetmask.tech/pricing",
+    canonical: "https://pulseping.subharup.com/pricing",
   },
   openGraph: {
     title: "Pricing | PulsePing",
     description: "Predictable, developer-first pricing plans for PulsePing uptime monitoring. Choose from Free, Pro, and Business tiers.",
-    url: "https://pulseping.subnetmask.tech/pricing",
+    url: "https://pulseping.subharup.com/pricing",
   },
 };
 

@@ -5,6 +5,7 @@ import DotGridHero from "@/components/landing/DotGridHero";
 import MagnetCTA from "@/components/landing/MagnetCTA";
 import BentoFeatures from "@/components/landing/BentoFeatures";
 import HeroText from "@/components/landing/HeroText";
+import Footer from "@/components/Footer";
 
 export default function LandingPage() {
   return (
@@ -62,7 +63,7 @@ export default function LandingPage() {
 
             {/* Supporting Description */}
             <p className="relative z-10 text-zinc-600 dark:text-zinc-400 text-base sm:text-lg max-w-lg mx-auto leading-relaxed mb-10 animate-fade-up [animation-delay:0.5s] opacity-0 [animation-fill-mode:forwards]">
-              Zero-configuration endpoint tracking. Deploy serverless monitoring pipelines that log response telemetry and dispatch rich Discord embeds the instant a monitored domain degrades.
+              Zero-configuration endpoint tracking. Deploy serverless monitoring pipelines that log response telemetry and dispatch rich Discord, Telegram, and Email alerts the instant a domain degrades.
             </p>
 
             {/* Magnetic CTA buttons — client island */}
@@ -91,7 +92,7 @@ export default function LandingPage() {
 
             {/* Feature Pills */}
             <div className="relative z-10 flex flex-wrap items-center justify-center gap-2 md:gap-3 px-4 mt-10 animate-fade-up [animation-delay:0.8s] opacity-0 [animation-fill-mode:forwards]">
-              {["10-min polling cycles", "Discord webhook alerts", "Tiered resource controls", "PostgreSQL log persistence"].map((feat) => (
+              {["10-min polling cycles", "Discord & Telegram alerts", "Resend Email dispatch", "PostgreSQL log persistence"].map((feat) => (
                 <span
                   key={feat}
                   className="text-xs text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 rounded-full font-semibold tracking-wide bg-sky-50/70 dark:bg-zinc-900/30"
@@ -118,7 +119,7 @@ export default function LandingPage() {
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/70 dark:bg-zinc-800" />
                   </div>
                   <span className="font-mono text-xs text-zinc-600 dark:text-zinc-600 tracking-tight select-none">
-                    pulseping.subnetmask.tech/console
+                    pulseping.subharup.com/console
                   </span>
                   <div className="w-12" />
                 </div>
@@ -174,26 +175,7 @@ export default function LandingPage() {
         </main>
 
         {/* ── Footer ── */}
-        <footer className="border-t border-zinc-200 dark:border-zinc-800 mt-auto bg-sky-50/80 dark:bg-zinc-950/60 backdrop-blur-xl transition-colors duration-250">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-md bg-zinc-800 flex items-center justify-center">
-                <div className="w-1 h-1 rounded-full bg-zinc-400" />
-              </div>
-              <span className="text-sm text-zinc-600 dark:text-zinc-400 font-semibold">PulsePing</span>
-              <span className="text-sm text-zinc-650 dark:text-zinc-600 font-mono">© 2026</span>
-            </div>
-            <div className="flex items-center gap-5 flex-wrap justify-center">
-              <Link href="/pricing" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Pricing</Link>
-              <Link href="/terms" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Terms</Link>
-              <Link href="/privacy" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Privacy</Link>
-              <Link href="/cancellation-refund" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Refund Policy</Link>
-              <Link href="/contact" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Contact</Link>
-              <Link href="/status" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">Status</Link>
-              <a href="https://github.com/SubharupBiswas/pulseping" target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-600 hover:text-zinc-950 dark:text-zinc-505 dark:hover:text-zinc-300 transition duration-150">GitHub</a>
-            </div>
-          </div>
-        </footer>
+        <Footer />
 
       </div>
     </div>

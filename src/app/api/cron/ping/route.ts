@@ -261,7 +261,7 @@ async function checkMonitor(monitor: any) {
               </div></body></html>`;
 
               await resend.emails.send({
-                from: "PulsePing Alerts <alerts@pulseping.subnetmask.tech>",
+                from: "PulsePing Alerts <alerts@subharup.com>",
                 to: dest,
                 subject: `[PulsePing] Target Offline: ${monitor.url}`,
                 html: htmlContent,
@@ -373,7 +373,7 @@ async function checkMonitor(monitor: any) {
 
         alertPromises.push(
           resend.emails.send({
-            from: "PulsePing Alerts <alerts@pulseping.subnetmask.tech>",
+            from: "PulsePing Alerts <alerts@subharup.com>",
             to: monitor.alertEmail,
             subject: `[PulsePing] Target Offline: ${monitor.url}`,
             html: htmlContent,
@@ -414,7 +414,7 @@ async function runHeartbeatWatchdog() {
           try {
             const resend = new Resend(process.env.RESEND_API_KEY);
             await resend.emails.send({
-              from: "PulsePing Alerts <alerts@pulseping.subnetmask.tech>",
+              from: "PulsePing Alerts <alerts@subharup.com>",
               to: hb.user.email,
               subject: `[PulsePing] Heartbeat Missed: ${hb.name}`,
               html: `<p>Your heartbeat monitor <strong>${hb.name}</strong> has not checked in for ${Math.round(elapsedSec)} seconds (expected every ${hb.frequencySeconds}s + ${hb.gracePeriodSeconds}s grace).</p>`,

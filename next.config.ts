@@ -3,6 +3,7 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  productionBrowserSourceMaps: false,
   serverExternalPackages: [
     "@prisma/client",
     ".prisma/client",
@@ -15,6 +16,8 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       "lucide-react",
       "@clerk/nextjs",
+      "@trpc/server",
+      "@trpc/client",
       "recharts",
       "framer-motion",
     ],
@@ -30,6 +33,9 @@ const nextConfig: NextConfig = {
 
   // Webpack configurations with explicit path alias resolution
   webpack: (config, { dev, isServer }) => {
+    if (isServer) {
+      config.devtool = false; // Prevents embedding inline source maps into server bundles
+    }
     if (!dev && isServer) {
       config.optimization = {
         ...config.optimization,
