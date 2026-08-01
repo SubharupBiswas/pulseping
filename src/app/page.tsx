@@ -46,15 +46,15 @@ export default function LandingPage() {
               id="hero-title"
               className="relative z-10 text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-zinc-950 dark:text-zinc-50 max-w-3xl mx-auto leading-tight mb-6"
             >
-              <span className="block">
-                <HeroText text="Uptime monitoring" delay={0.1} />
+              <span className="block text-emerald-600 dark:text-emerald-400 text-base sm:text-xl font-bold tracking-widest uppercase mb-3">
+                PulsePing Platform
               </span>
               <span className="block">
-                <HeroText text="built for" delay={0.2} />
+                <HeroText text="Uptime monitoring & incident alerting" delay={0.1} />
               </span>
-              <span className="block bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent mt-1">
                 <HeroText
-                  text="production teams."
+                  text="built for production teams."
                   delay={0.3}
                   className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent"
                 />
@@ -62,8 +62,8 @@ export default function LandingPage() {
             </h1>
 
             {/* Supporting Description */}
-            <p className="relative z-10 text-zinc-600 dark:text-zinc-400 text-base sm:text-lg max-w-lg mx-auto leading-relaxed mb-10 animate-fade-up [animation-delay:0.5s] opacity-0 [animation-fill-mode:forwards]">
-              Zero-configuration endpoint tracking. Deploy serverless monitoring pipelines that log response telemetry and dispatch rich Discord, Telegram, and Email alerts the instant a domain degrades.
+            <p className="relative z-10 text-zinc-600 dark:text-zinc-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-10 animate-fade-up [animation-delay:0.5s] opacity-0 [animation-fill-mode:forwards]">
+              PulsePing is an automated uptime monitoring and incident alerting platform. Track target API endpoints, log response telemetry, and dispatch real-time alerts via Discord, Telegram, and Email the instant a domain degrades.
             </p>
 
             {/* Magnetic CTA buttons — client island */}
