@@ -7,10 +7,8 @@ import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 
-// Bind ws to neonConfig for Node.js server environments
-if (typeof window === "undefined") {
-  neonConfig.webSocketConstructor = ws;
-}
+// Bind WebSocket constructor to neonConfig (native WebSocket in Edge/Workers, ws module in Node)
+neonConfig.webSocketConstructor = typeof globalThis.WebSocket !== "undefined" ? globalThis.WebSocket : ws;
 
 export function ensureEnvLoaded() {
   if (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== "") {
@@ -71,9 +69,7 @@ function getPrismaClient(): PrismaClient {
   const adapter = new PrismaNeon({ connectionString });
   const client = new PrismaClient({ adapter });
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = client;
-  }
+  globalForPrisma.prisma = client;
 
   return client;
 }
