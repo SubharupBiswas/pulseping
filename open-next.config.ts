@@ -1,6 +1,6 @@
 import type { OpenNextConfig } from '@opennextjs/cloudflare';
 
-const config: OpenNextConfig = {
+const config = {
   default: {
     override: {
       wrapper: 'cloudflare-node',
@@ -23,6 +23,9 @@ const config: OpenNextConfig = {
       queue: 'dummy',
     },
   },
-};
+  dangerous: {
+    enableDynamicImport: true,
+  },
+} as unknown as OpenNextConfig;
 
 export default config;
