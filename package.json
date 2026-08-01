@@ -11,7 +11,7 @@
     "start": "next start",
     "worker": "npx tsx scripts/worker.ts",
     "lint": "eslint",
-    "cloudflare-deploy": "node scripts/cloudflare-build.js"
+    "cloudflare-deploy": "npm install -g wrangler@latest && node scripts/cloudflare-build.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.6.4",
