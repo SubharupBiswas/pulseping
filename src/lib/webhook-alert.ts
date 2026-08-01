@@ -1,4 +1,6 @@
 import { db } from "@/lib/db";
+import { dispatchAlerts } from "@/lib/alerts/dispatcher";
+import { AlertChannelConfig } from "@/types/alert";
 
 export async function analyzeAndAlertFailure(guard: any, log: any) {
   let aiDiagnosis = "Unable to analyze error stack trace.";
@@ -39,27 +41,40 @@ export async function analyzeAndAlertFailure(guard: any, log: any) {
     }
   }
 
+  const incidentPayload = {
+    guardName: guard.name,
+    targetUrl: guard.targetUrl,
+    responseStatus: log.responseStatus,
+    executionTimeMs: log.executionTimeMs,
+    errorMessage: log.errorMessage,
+    aiDiagnosis: aiDiagnosis,
+    logId: log.id,
+  };
+
+  const configuredChannels: AlertChannelConfig[] = [];
+
   if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID) {
-    const message = `🚨 <b>PulsePing Webhook Failure Alert</b>
-
-<b>Guard:</b> ${guard.name}
-<b>Target:</b> <code>${guard.targetUrl}</code>
-<b>Status:</b> ${log.responseStatus}
-<b>Latency:</b> ${log.executionTimeMs}ms
-
-🤖 <b>AI Diagnosis:</b>
-<i>${aiDiagnosis}</i>
-
-💡 Log ID: <code>${log.id}</code>`;
-
-    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: process.env.TELEGRAM_CHAT_ID,
-        text: message,
-        parse_mode: "HTML",
-      }),
+    configuredChannels.push({
+      providerType: "TELEGRAM",
+      destinationUrl: process.env.TELEGRAM_CHAT_ID,
     });
+  }
+
+  if (process.env.DISCORD_WEBHOOK_URL) {
+    configuredChannels.push({
+      providerType: "DISCORD",
+      destinationUrl: process.env.DISCORD_WEBHOOK_URL,
+    });
+  }
+
+  if (process.env.SLACK_WEBHOOK_URL) {
+    configuredChannels.push({
+      providerType: "SLACK",
+      destinationUrl: process.env.SLACK_WEBHOOK_URL,
+    });
+  }
+
+  if (configuredChannels.length > 0) {
+    await dispatchAlerts(incidentPayload, configuredChannels);
   }
 }

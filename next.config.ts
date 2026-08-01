@@ -3,7 +3,6 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  // Externalize binary & WebSocket native packages to prevent Webpack bundling corruption (b.mask is not a function)
   serverExternalPackages: [
     "@prisma/client",
     ".prisma/client",
@@ -11,6 +10,15 @@ const nextConfig: NextConfig = {
     "@neondatabase/serverless",
     "ws",
   ],
+
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "@clerk/nextjs",
+      "recharts",
+      "framer-motion",
+    ],
+  },
 
   // Trim down deployment package size by omitting heavy source maps
   outputFileTracingExcludes: {

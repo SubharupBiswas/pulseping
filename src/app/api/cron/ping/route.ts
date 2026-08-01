@@ -430,8 +430,8 @@ async function runHeartbeatWatchdog() {
   }
 }
 
-// ── Main GET Handler ──────────────────────────────────────────────────────────
-export async function GET(req: NextRequest) {
+// ── Main Handler ──────────────────────────────────────────────────────────────
+async function handleCronRequest(req: NextRequest) {
   if (!process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Configuration Error: CRON_SECRET is not defined." }, { status: 500 });
   }
@@ -466,30 +466,10 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // === NON-BLOCKING SLEEP: 25 Seconds ===
-    await new Promise((resolve) => setTimeout(resolve, 25000));
-
-    // === WAVE 2: 30-Second Mark (Business tier only) ===
-    const businessMonitors = await db.monitor.findMany({ where: { isActive: true, frequency: 30 } });
-    const now2 = new Date();
-    const wave2Monitors = businessMonitors.filter((monitor: any) => {
-      if (!monitor.lastChecked) return true;
-      return now2.getTime() - new Date(monitor.lastChecked).getTime() >= 24000;
-    });
-
-    if (wave2Monitors.length > 0) {
-      const wave2Settled = await Promise.allSettled(wave2Monitors.map((m) => checkMonitor(m)));
-      wave2Settled.forEach((r) => {
-        if (r.status === "fulfilled") allProcessedResults.push(r.value);
-        else allProcessedResults.push({ error: r.reason });
-      });
-    }
-
     // === HEARTBEAT WATCHDOG ===
     await runHeartbeatWatchdog();
 
     // === PRUNE HISTORICAL LOGS (> 30 days old) ===
-    // Run asynchronously without blocking or delaying primary cycles
     (async () => {
       try {
         const thirtyDaysAgo = new Date();
@@ -506,9 +486,23 @@ export async function GET(req: NextRequest) {
       }
     })();
 
-    return NextResponse.json({ success: true, processed: allProcessedResults.length, data: allProcessedResults });
+    return NextResponse.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      activeMonitorsChecked: wave1Monitors.length,
+      processed: allProcessedResults.length,
+      data: allProcessedResults,
+    });
   } catch (error: any) {
     console.error("CRON_ENGINE_ERROR:", error);
     return NextResponse.json({ success: false, error: "Internal crash", details: error?.message || String(error) }, { status: 500 });
   }
+}
+
+export async function GET(req: NextRequest) {
+  return handleCronRequest(req);
+}
+
+export async function POST(req: NextRequest) {
+  return handleCronRequest(req);
 }
