@@ -16,10 +16,14 @@ const isPublicRoute = createRouteMatcher([
   "/status(.*)",
   "/api/cron/ping",
   "/api/heartbeat/(.*)",
+  "/api/health",
+  "/api/relay(.*)",
   // Razorpay webhook — server-to-server, no auth header
-  "/api/webhooks/razorpay",
+  "/api/webhooks(.*)",
   "/favicon.ico",
   "/icon",
+  "/sitemap.xml",
+  "/robots.txt",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

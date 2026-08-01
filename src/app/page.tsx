@@ -37,7 +37,7 @@ export default function LandingPage() {
             <div className="relative z-10 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800/60 bg-sky-50/80 dark:bg-zinc-900/25 backdrop-blur-sm mb-8 shadow-sm transition-colors animate-fade-up">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.55)]" />
               <span className="text-xs font-semibold tracking-wider text-zinc-600 dark:text-zinc-400 uppercase">
-                All Systems Operational
+                PulsePing Monitoring • All Systems Operational
               </span>
             </div>
 
