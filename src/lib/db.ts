@@ -7,8 +7,10 @@ import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 
-// Bind WebSocket constructor to neonConfig (native WebSocket in Edge/Workers, ws module in Node)
-neonConfig.webSocketConstructor = typeof globalThis.WebSocket !== "undefined" ? globalThis.WebSocket : ws;
+// Bind ws to neonConfig only when native WebSocket is missing (Node environment)
+if (typeof globalThis.WebSocket === "undefined") {
+  neonConfig.webSocketConstructor = ws;
+}
 
 export function ensureEnvLoaded() {
   if (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== "") {
@@ -42,13 +44,11 @@ export function ensureEnvLoaded() {
   }
 }
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-function getPrismaClient(): PrismaClient {
-  if (globalForPrisma.prisma) {
-    return globalForPrisma.prisma;
-  }
-
+function createPrismaClient(): PrismaClient {
   ensureEnvLoaded();
   const connectionString = process.env.DATABASE_URL;
 
@@ -61,27 +61,19 @@ function getPrismaClient(): PrismaClient {
   ) {
     console.error("❌ CRITICAL: DATABASE_URL is missing or invalid in process.env, .env.local, or .env");
     throw new Error(
-      `Database Client Initialization Error: Required environment variable DATABASE_URL is missing, uninitialized, or invalid. ` +
-      `Ensure DATABASE_URL is configured with a valid postgresql:// connection string. Received: "${connectionString}"`
+      `Database Client Initialization Error: Required environment variable DATABASE_URL is missing or invalid.`
     );
   }
 
   const adapter = new PrismaNeon({ connectionString });
-  const client = new PrismaClient({ adapter });
-
-  globalForPrisma.prisma = client;
-
-  return client;
+  return new PrismaClient({ adapter });
 }
 
-// Lazy Proxy: Defer PrismaClient & Pool creation until the first DB query
-export const db = new Proxy({} as PrismaClient, {
-  get(_target, prop: keyof PrismaClient) {
-    const client = getPrismaClient();
-    const value = client[prop];
-    return typeof value === "function" ? (value as Function).bind(client) : value;
-  },
-});
+export const db = globalForPrisma.prisma ?? createPrismaClient();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = db;
+}
 
 export const prisma = db;
 export const loadEnv = ensureEnvLoaded;
