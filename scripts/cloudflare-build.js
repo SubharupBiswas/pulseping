@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const esbuild = require('esbuild');
 
 console.log('📦 Starting full-stack edge compilation sequence...');
 
@@ -118,4 +119,44 @@ function flattenAssets(dir) {
 
 flattenAssets(assetsDir);
 console.log('✨ Output tree flattened. All symlinks successfully converted to raw assets.');
-console.log('\n🚀 Build assets unified. Handing over to Cloudflare Pages pipeline!');
+
+// 7. Post-build esbuild minification to keep _worker.js strictly < 3 MiB
+if (fs.existsSync(targetWorkerPath)) {
+  console.log('⚡ Minifying .open-next/assets/_worker.js with esbuild...');
+  esbuild.buildSync({
+    entryPoints: [targetWorkerPath],
+    outfile: targetWorkerPath,
+    allowOverwrite: true,
+    minify: true,
+    target: 'es2022',
+    format: 'esm',
+  });
+  const stats = fs.statSync(targetWorkerPath);
+  console.log(`✅ Compressed _worker.js final size: ${(stats.size / 1024 / 1024).toFixed(2)} MB`);
+}
+
+// 8. Total Bundle Size Analysis & Breakdown Logger
+if (fs.existsSync(assetsDir)) {
+  const getDirSize = (dir) => {
+    let size = 0;
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+      const filePath = path.join(dir, file);
+      const stats = fs.statSync(filePath);
+      size += stats.isDirectory() ? getDirSize(filePath) : stats.size;
+    }
+    return size;
+  };
+  const totalMB = (getDirSize(assetsDir) / 1024 / 1024).toFixed(2);
+  console.log(`\n📊 ===========================================`);
+  console.log(`📦 Total Live Cloudflare Bundle Size: ${totalMB} MB`);
+  
+  const workerPath = path.join(assetsDir, '_worker.js');
+  if (fs.existsSync(workerPath)) {
+    const workerMB = (fs.statSync(workerPath).size / 1024 / 1024).toFixed(2);
+    console.log(`⚡ _worker.js Function Size: ${workerMB} MB`);
+  }
+  console.log(`===========================================\n`);
+}
+
+console.log('🚀 Build assets unified. Handing over to Cloudflare Pages pipeline!');
