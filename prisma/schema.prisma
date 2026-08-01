@@ -3,8 +3,9 @@ datasource db {
 }
 
 generator client {
-  provider      = "prisma-client-js"
-  compilerBuild = "small"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+  compilerBuild   = "small"
 }
 
 model User {
@@ -118,4 +119,29 @@ model AlertChannel {
   userFriendlyName String?
   createdAt        DateTime @default(now())
   monitors         Monitor[]
+}
+
+model WebhookGuard {
+  id         String       @id @default(cuid())
+  userId     String
+  name       String
+  targetUrl  String
+  secretHMAC String?
+  timeoutMs  Int          @default(4500)
+  createdAt  DateTime     @default(now())
+  logs       WebhookLog[]
+}
+
+model WebhookLog {
+  id              String       @id @default(cuid())
+  guardId         String
+  guard           WebhookGuard @relation(fields: [guardId], references: [id], onDelete: Cascade)
+  requestHeaders  Json
+  rawBody         Json
+  responseStatus  Int
+  executionTimeMs Int
+  errorMessage    String?
+  aiDiagnosis     String?
+  isFailure       Boolean      @default(false)
+  createdAt       DateTime     @default(now())
 }

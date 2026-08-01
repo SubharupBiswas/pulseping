@@ -1,7 +1,7 @@
 name = "pulseping"
-pages_build_output_dir = ".open-next/assets"
-compatibility_date = "2024-11-01"
+compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".open-next/assets"
 
 [vars]
-WRANGLER_VERSION = "4.110.0"
+NEXT_PUBLIC_APP_URL = "https://pulseping.subharup.com"
