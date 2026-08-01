@@ -7,8 +7,10 @@ import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 
-// Bind ws to neonConfig only when native WebSocket is missing (Node environment)
-if (typeof globalThis.WebSocket === "undefined") {
+// On Cloudflare Workers / Edge runtime, set webSocketConstructor to undefined to use HTTP fetch mode (eliminates WebSocket CPU overhead)
+if (typeof globalThis.WebSocket !== "undefined") {
+  neonConfig.webSocketConstructor = undefined;
+} else {
   neonConfig.webSocketConstructor = ws;
 }
 

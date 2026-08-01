@@ -277,7 +277,7 @@ export async function getLatestTelemetry(userId: string) {
         },
         logs: {
           orderBy: { checkedAt: "desc" },
-          take: 100,
+          take: 30,
           select: {
             id: true,
             statusCode: true,

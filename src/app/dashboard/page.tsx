@@ -64,8 +64,7 @@ export default async function DashboardPage() {
       },
       logs: {
         orderBy: { checkedAt: "desc" },
-        // 90 days of checks at max frequency (every 30s) ≈ 259,200 entries; cap at 100 for safety
-        take: 100,
+        take: 30,
         select: {
           id: true,
           statusCode: true,

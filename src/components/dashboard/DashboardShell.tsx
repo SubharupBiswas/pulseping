@@ -100,7 +100,6 @@ export default function DashboardShell({
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        router.refresh();
         const res = await getLatestTelemetry(userId);
         if (res && res.success && res.monitors) {
           setMonitorsState(res.monitors as Monitor[]);
@@ -108,10 +107,10 @@ export default function DashboardShell({
       } catch (err) {
         console.error("Error polling telemetry metrics:", err);
       }
-    }, 15000); // Poll every 15 seconds
+    }, 45000); // Poll every 45s to minimize Cloudflare Worker CPU execution
 
     return () => clearInterval(interval);
-  }, [userId, router]);
+  }, [userId]);
 
   // ── Aggregate metrics ──────────────────────────────────────────
   const totalMonitors = monitorsState.length;
