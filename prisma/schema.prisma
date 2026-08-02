@@ -3,102 +3,114 @@ datasource db {
 }
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-  compilerBuild   = "small"
+  provider      = "prisma-client-js"
+  compilerBuild = "small"
 }
 
 model User {
-  id                           String         @id @default(uuid())
-  email                        String         @unique
-  plan                         String         @default("FREE") // FREE, HOBBY, DEVELOPER
-  alertThreshold               Int            @default(3)
-  emailNotificationsEnabled    Boolean        @default(true)
-  telegramNotificationsEnabled Boolean        @default(false)
-  monitors                     Monitor[]
-  heartbeats                   Heartbeat[]
-  statusPages                  StatusPage[]
-  alertChannels                AlertChannel[]
-  invoices                     Invoice[]
+  id                        String         @id @default(uuid())
+  email                     String         @unique
+  plan                      String         @default("FREE") // FREE, HOBBY, DEVELOPER
+  alertThreshold            Int            @default(3)
+  emailNotificationsEnabled Boolean        @default(true)
+  telegramNotificationsEnabled Boolean     @default(false)
+  monitors                  Monitor[]
+  heartbeats                Heartbeat[]
+  statusPages               StatusPage[]
+  alertChannels             AlertChannel[]
+  invoices                  Invoice[]
 }
 
 model Invoice {
-  id        String   @id @default(uuid())
-  userId    String
-  date      DateTime @default(now())
-  amount    String
-  status    String
-  user      User     @relation(fields: [userId], references: [id])
+  id     String   @id @default(uuid())
+  userId String
+  date   DateTime @default(now())
+  amount String
+  status String
+  user   User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model Monitor {
-  id               String             @id @default(uuid())
+  id               String              @id @default(uuid())
   url              String
-  webhookUrl       String?            // Optional field to store Discord/Slack target endpoints
+  webhookUrl       String? // Optional field to store Discord/Slack target endpoints
   discordWebhook   String?
   slackWebhook     String?
   telegramChatId   String?
   alertEmail       String?
-  alertOnFailure   Boolean            @default(true)
-  frequency        Int                @default(10)
-  isActive         Boolean            @default(true)
+  alertOnFailure   Boolean             @default(true)
+  frequency        Int                 @default(10)
+  isActive         Boolean             @default(true)
   lastChecked      DateTime?
   // Advanced Telemetry (Pillar 1)
-  httpMethod       String             @default("GET")
+  httpMethod       String              @default("GET")
   customHeaders    Json?
   expectedBodyText String?
   sslExpiresAt     DateTime?
-  
+
   // Expanded Advanced monitoring configurations
-  method           String             @default("GET")
+  method           String              @default("GET")
   headers          String?
   body             String?
   keywordCheck     String?
-  sslTrack         Boolean            @default(false)
-  isHeartbeat      Boolean            @default(false)
+  sslTrack         Boolean             @default(false)
+  isHeartbeat      Boolean             @default(false)
 
-  userId           String
-  user             User               @relation(fields: [userId], references: [id])
-  logs             PingLog[]
-  statusPageLinks  StatusPageMonitor[]
-  alertChannels    AlertChannel[]
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+  logs            PingLog[]
+  statusPageLinks StatusPageMonitor[]
+  alertChannels   AlertChannel[]
+
+  // 🟢 Performance Indexes
+  @@index([userId])
+  @@index([userId, isActive])
 }
 
 model PingLog {
   id           String   @id @default(uuid())
   statusCode   Int
-  latency      Int      // in milliseconds
-  errorBody    String?  // First 500 chars of error response body (Pillar 4)
-  aiDiagnostic String?  // AI-generated root-cause summary (Pillar 4)
+  latency      Int // in milliseconds
+  errorBody    String? // First 500 chars of error response body (Pillar 4)
+  aiDiagnostic String? // AI-generated root-cause summary (Pillar 4)
   checkedAt    DateTime @default(now())
   monitorId    String
   monitor      Monitor  @relation(fields: [monitorId], references: [id])
+
+  // 🟢 Critical Index for Telemetry Graphs
+  @@index([monitorId, checkedAt])
 }
 
 // Pillar 2: Inverse Heartbeat & Cron Job Tracking
 model Heartbeat {
-  id                  String    @id @default(uuid())
-  token               String    @unique @default(uuid())
-  name                String
-  frequencySeconds    Int       @default(3600) // Expected ping interval in seconds
-  gracePeriodSeconds  Int       @default(300)  // Extra window before flagging as missed
-  lastPingedAt        DateTime?
-  isActive            Boolean   @default(true)
-  createdAt           DateTime  @default(now())
-  userId              String
-  user                User      @relation(fields: [userId], references: [id])
+  id                 String    @id @default(uuid())
+  token              String    @unique @default(uuid())
+  name               String
+  frequencySeconds   Int       @default(3600) // Expected ping interval in seconds
+  gracePeriodSeconds Int       @default(300) // Extra window before flagging as missed
+  lastPingedAt       DateTime?
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 // Pillar 3: Public Status Pages
 model StatusPage {
-  id        String             @id @default(uuid())
-  slug      String             @unique
+  id        String              @id @default(uuid())
+  slug      String              @unique
   title     String
-  isPublic  Boolean            @default(true)
-  createdAt DateTime           @default(now())
+  isPublic  Boolean             @default(true)
+  createdAt DateTime            @default(now())
   userId    String
-  user      User               @relation(fields: [userId], references: [id])
+  user      User                @relation(fields: [userId], references: [id])
   monitors  StatusPageMonitor[]
+
+  @@index([userId])
 }
 
 model StatusPageMonitor {
@@ -111,14 +123,16 @@ model StatusPageMonitor {
 }
 
 model AlertChannel {
-  id               String   @id @default(uuid())
+  id               String    @id @default(uuid())
   userId           String
-  user             User     @relation(fields: [userId], references: [id])
-  providerType     String   // e.g. DISCORD, SLACK, WEBHOOK
+  user             User      @relation(fields: [userId], references: [id])
+  providerType     String // e.g. DISCORD, SLACK, WEBHOOK
   destinationUrl   String
   userFriendlyName String?
-  createdAt        DateTime @default(now())
+  createdAt        DateTime  @default(now())
   monitors         Monitor[]
+
+  @@index([userId])
 }
 
 model WebhookGuard {
@@ -130,6 +144,8 @@ model WebhookGuard {
   timeoutMs  Int          @default(4500)
   createdAt  DateTime     @default(now())
   logs       WebhookLog[]
+
+  @@index([userId])
 }
 
 model WebhookLog {
@@ -144,4 +160,7 @@ model WebhookLog {
   aiDiagnosis     String?
   isFailure       Boolean      @default(false)
   createdAt       DateTime     @default(now())
+
+  // 🟢 Index for Webhook Diagnostic Logs
+  @@index([guardId, createdAt])
 }

@@ -18,10 +18,10 @@ const isPublicRoute = createRouteMatcher([
   "/api/heartbeat/(.*)",
   "/api/health",
   "/api/relay(.*)",
-  // Razorpay webhook — server-to-server, no auth header
   "/api/webhooks(.*)",
   "/favicon.ico",
-  "/icon",
+  "/icon.svg",
+  "/logo.svg",
   "/sitemap.xml",
   "/robots.txt",
 ]);
@@ -35,13 +35,11 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // 1. Intercept all routes except Next.js internals, static assets, and public API endpoints
-    "/((?!_next|favicon\\.ico|icon|api/cron/ping|api/heartbeat|api/webhooks|[^?]*\\.(?:html|css|js|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // 2. Explicitly target active transaction API endpoints
-    "/api/create-order",
-    "/api/razorpay/order",
-    "/api/verify-payment",
-    // 3. Intercept all trpc routes safely
-    "/trpc(.*)",
+    /*
+     * 1. Exclude static assets, _next internal bundles, public icons, images, and static XML files.
+     * 2. Always run middleware on API and TRPC endpoints to inject Clerk auth headers.
+     */
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|json|webmanifest|png|jpg|jpeg|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|xml)).*)",
+    "/(api|trpc)(.*)",
   ],
 };

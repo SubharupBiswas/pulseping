@@ -29,6 +29,7 @@
     "react-dom": "19.2.8",
     "recharts": "^3.10.1",
     "resend": "^6.18.1",
+    "swr": "^2.4.2",
     "ws": "^8.21.1"
   },
   "devDependencies": {
@@ -48,5 +49,19 @@
   },
   "overrides": {
     "glob": "^13.0.6"
+  },
+  "allowScripts": {
+    "@clerk/shared@4.25.10": true,
+    "@clerk/shared@3.47.8": true,
+    "esbuild@0.25.4": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.1": true,
+    "@prisma/engines@7.9.1": true,
+    "fsevents@2.3.3": true,
+    "sharp@0.35.2": true,
+    "sharp@0.34.5": true,
+    "prisma@7.9.1": true,
+    "unrs-resolver@1.12.2": true,
+    "workerd@1.20260730.1": true
   }
 }

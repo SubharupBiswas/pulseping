@@ -1,48 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
-import { neonConfig } from "@neondatabase/serverless";
-// @ts-ignore
-import ws from "ws";
-import dotenv from "dotenv";
-import path from "path";
-import fs from "fs";
+import { Pool, neonConfig } from "@neondatabase/serverless";
 
-// On Cloudflare Workers / Edge runtime, set webSocketConstructor to undefined to use HTTP fetch mode (eliminates WebSocket CPU overhead)
-if (typeof globalThis.WebSocket !== "undefined") {
-  neonConfig.webSocketConstructor = undefined;
-} else {
-  neonConfig.webSocketConstructor = ws;
-}
+// Force HTTP fetch mode on Cloudflare Edge Isolates (eliminates WebSocket CPU overhead)
+neonConfig.webSocketConstructor = undefined;
 
 export function ensureEnvLoaded() {
+  // Environment variables are pre-populated by Next.js & Cloudflare Pages runtime.
   if (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== "") {
     return;
-  }
-
-  const cwd = process.cwd();
-  const candidateDirs = [
-    cwd,
-    path.resolve(cwd, ".."),
-    path.resolve(cwd, "../.."),
-    path.resolve(__dirname, ".."),
-    path.resolve(__dirname, "../.."),
-    path.resolve(__dirname, "../../.."),
-  ];
-
-  for (const dir of candidateDirs) {
-    const envStandard = path.resolve(dir, ".env");
-    const envLocal = path.resolve(dir, ".env.local");
-
-    if (fs.existsSync(envStandard)) {
-      dotenv.config({ path: envStandard, override: true });
-    }
-    if (fs.existsSync(envLocal)) {
-      dotenv.config({ path: envLocal, override: true });
-    }
-
-    if (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== "") {
-      break;
-    }
   }
 }
 
@@ -59,15 +25,24 @@ function createPrismaClient(): PrismaClient {
     connectionString.trim() === "" ||
     connectionString === "undefined" ||
     connectionString === "null" ||
-    !(connectionString.startsWith("postgres://") || connectionString.startsWith("postgresql://"))
+    !(
+      connectionString.startsWith("postgres://") ||
+      connectionString.startsWith("postgresql://")
+    )
   ) {
-    console.error("❌ CRITICAL: DATABASE_URL is missing or invalid in process.env, .env.local, or .env");
+    console.error(
+      "❌ CRITICAL: DATABASE_URL is missing or invalid in process.env"
+    );
     throw new Error(
       `Database Client Initialization Error: Required environment variable DATABASE_URL is missing or invalid.`
     );
   }
 
-  const adapter = new PrismaNeon({ connectionString });
+  // Use HTTP Pool mode for zero-latency connection reuse across isolates
+  const pool = new Pool({ connectionString });
+  
+  // 🟢 Cast pool as `any` to bypass the @types/pg declaration clash
+  const adapter = new PrismaNeon(pool as any);
   return new PrismaClient({ adapter });
 }
 

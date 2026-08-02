@@ -23,16 +23,17 @@ export const metadata: Metadata = {
     default: "PulsePing | Developer-First Uptime Monitoring",
     template: "%s | PulsePing",
   },
-  description: "PulsePing is a developer-first uptime monitoring platform. Track API endpoints, configure Discord webhooks, and analyze response latency with Neon & Prisma.",
+  description:
+    "PulsePing is a developer-first uptime monitoring platform. Track API endpoints, configure Discord webhooks, and analyze response latency with Neon & Prisma.",
   keywords: [
-    "uptime monitoring", 
-    "developer tools", 
-    "SaaS monitoring", 
-    "endpoint tracker", 
-    "Discord alerts", 
-    "SLA logging", 
-    "API monitoring", 
-    "server health check"
+    "uptime monitoring",
+    "developer tools",
+    "SaaS monitoring",
+    "endpoint tracker",
+    "Discord alerts",
+    "SLA logging",
+    "API monitoring",
+    "server health check",
   ],
   authors: [{ name: "PulsePing Team" }],
   metadataBase: new URL("https://pulseping.subharup.com"),
@@ -55,7 +56,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "PulsePing | Developer-First Uptime Monitoring",
-    description: "PulsePing is a developer-first uptime monitoring platform. Track API endpoints, configure Discord webhooks, and analyze response latency with Neon & Prisma.",
+    description:
+      "PulsePing is a developer-first uptime monitoring platform. Track API endpoints, configure Discord webhooks, and analyze response latency with Neon & Prisma.",
     url: "https://pulseping.subharup.com",
     siteName: "PulsePing",
     type: "website",
@@ -72,13 +74,18 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "PulsePing | Developer-First Uptime Monitoring",
-    description: "PulsePing is a developer-first uptime monitoring platform. Track API endpoints, configure Discord webhooks, and analyze response latency with Neon & Prisma.",
+    description:
+      "PulsePing is a developer-first uptime monitoring platform. Track API endpoints, configure Discord webhooks, and analyze response latency with Neon & Prisma.",
     images: ["/og-image.png"],
     creator: "@pulseping",
   },
-  icons: {
-    icon: "/favicon.ico",
-  },
+
+  // 🟢 UPDATED: SVG Favicon linked directly to public static asset
+  icons: [
+    { rel: "icon", type: "image/svg+xml", url: "/logo.svg" },
+    { rel: "shortcut icon", url: "/logo.svg" },
+    { rel: "apple-touch-icon", url: "/logo.svg" },
+  ],
 };
 
 export default function RootLayout({
@@ -88,11 +95,23 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className="h-full antialiased" suppressHydrationWarning style={{ colorScheme: "dark light" }}>
+      <html
+        lang="en"
+        className="h-full antialiased"
+        suppressHydrationWarning
+        style={{ colorScheme: "dark light" }}
+      >
         <head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin="anonymous"
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+            rel="stylesheet"
+          />
           <script
             dangerouslySetInnerHTML={{
               __html: `
@@ -116,24 +135,29 @@ export default function RootLayout({
               __html: JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "WebApplication",
-                "name": "PulsePing",
-                "url": "https://pulseping.subharup.com",
-                "description": "Developer-first uptime monitoring platform with Discord alerts and Neon database logs.",
-                "applicationCategory": "DeveloperApplication",
-                "operatingSystem": "All",
-                "offers": {
+                name: "PulsePing",
+                url: "https://pulseping.subharup.com",
+                description:
+                  "Developer-first uptime monitoring platform with Discord alerts and Neon database logs.",
+                applicationCategory: "DeveloperApplication",
+                operatingSystem: "All",
+                offers: {
                   "@type": "Offer",
-                  "price": "499.00",
-                  "priceCurrency": "INR",
-                  "category": "Pro Tier Subscription"
-                }
-              })
+                  price: "499.00",
+                  priceCurrency: "INR",
+                  category: "Pro Tier Subscription",
+                },
+              }),
             }}
           />
         </head>
-        <body className={`${inter.variable} min-h-full flex flex-col overflow-x-hidden transition-colors duration-250 bg-sky-50 text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased`}>
+        <body
+          className={`${inter.variable} min-h-full flex flex-col overflow-x-hidden transition-colors duration-250 bg-sky-50 text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased`}
+        >
           {children}
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-DKG16R7DV4"} />
+          <GoogleAnalytics
+            gaId={process.env.NEXT_PUBLIC_GA_ID || "G-DKG16R7DV4"}
+          />
         </body>
       </html>
     </ClerkProvider>
