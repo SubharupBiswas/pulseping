@@ -19,8 +19,8 @@ const formatSize = (bytes) => {
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 };
 
-// 1. Forcefully purge BOTH framework caches to prevent stale compilation bleed
-const cachesToClean = ['.next', '.open-next'];
+// 1. Forcefully purge ALL framework & bundler caches to prevent stale compilation bleed
+const cachesToClean = ['.next', '.open-next', 'node_modules/.cache'];
 cachesToClean.forEach((dir) => {
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, { recursive: true, force: true });

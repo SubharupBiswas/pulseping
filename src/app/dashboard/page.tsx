@@ -9,10 +9,8 @@ import ThemeToggle from "@/components/ThemeToggle";
 import PulsePingLogo from "@/components/PulsePingLogo";
 import DashboardUserButton from "@/components/DashboardUserButton";
 import BillingUpgradeCard from "@/components/BillingUpgradeCard";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DashboardShell from "@/components/dashboard/DashboardShell";
-
 import { getOrCreateUser } from "@/lib/user";
 
 export const dynamic = "force-dynamic";
@@ -23,62 +21,88 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const { userId } = await auth();
+  // 1. Safe Auth Verification
+  let userId: string | null = null;
+  try {
+    const authData = await auth();
+    userId = authData.userId;
+  } catch (err) {
+    console.error("❌ Clerk auth verification failed on Edge:", err);
+  }
 
   if (!userId || userId === "mock-user-uuid") {
     redirect("/sign-in");
   }
 
-  // Ensure user record exists with dynamic auth provider sync
-  const userRecord = await getOrCreateUser(userId);
+  // 2. Safe User Record Fetch / Creation
+  let userRecord: any = null;
+  try {
+    userRecord = await getOrCreateUser(userId);
+  } catch (err) {
+    console.error("❌ Failed to fetch/create user record:", err);
+  }
 
-  const headersList = await headers();
-  const country = headersList.get("cf-ipcountry") || headersList.get("x-vercel-ip-country") || "US";
-  const defaultCurrency = country === "IN" ? "INR" : "USD";
+  // 3. Location & Currency Detection
+  let defaultCurrency: "USD" | "INR" = "USD";
+  try {
+    const headersList = await headers();
+    const country = headersList.get("cf-ipcountry") || headersList.get("x-vercel-ip-country") || "US";
+    defaultCurrency = country === "IN" ? "INR" : "USD";
+  } catch (err) {
+    console.error("❌ Headers parsing error:", err);
+  }
 
-  // Fetch monitors with full log history for charts and filters
-  const monitors = await db.monitor.findMany({
-    where: { userId },
-    select: {
-      id: true,
-      url: true,
-      isActive: true,
-      frequency: true,
-      alertEmail: true,
-      telegramChatId: true,
-      webhookUrl: true,
-      alertOnFailure: true,
-      method: true,
-      headers: true,
-      body: true,
-      keywordCheck: true,
-      sslTrack: true,
-      isHeartbeat: true,
-      alertChannels: {
-        select: {
-          id: true,
-          providerType: true,
-          destinationUrl: true,
-          userFriendlyName: true,
+  // 4. Safe Database Query for Monitors
+  let monitors: any[] = [];
+  try {
+    monitors = await db.monitor.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        url: true,
+        isActive: true,
+        frequency: true,
+        alertEmail: true,
+        telegramChatId: true,
+        webhookUrl: true,
+        alertOnFailure: true,
+        method: true,
+        headers: true,
+        body: true,
+        keywordCheck: true,
+        sslTrack: true,
+        isHeartbeat: true,
+        alertChannels: {
+          select: {
+            id: true,
+            providerType: true,
+            destinationUrl: true,
+            userFriendlyName: true,
+          }
+        },
+        logs: {
+          orderBy: { checkedAt: "desc" },
+          take: 30,
+          select: {
+            id: true,
+            statusCode: true,
+            latency: true,
+            checkedAt: true,
+          }
         }
       },
-      logs: {
-        orderBy: { checkedAt: "desc" },
-        take: 30,
-        select: {
-          id: true,
-          statusCode: true,
-          latency: true,
-          checkedAt: true,
-        }
-      }
-    } as any,
-    orderBy: { id: "desc" },
-  });  const plan = (userRecord as any)?.plan || "FREE";
+      orderBy: { id: "desc" },
+    });
+  } catch (err) {
+    console.error("❌ Database query for monitors failed:", err);
+    monitors = []; // Safe fallback shell
+  }
+
+  const plan = userRecord?.plan || "FREE";
   const isPremium = plan === "PRO" || plan === "BUSINESS";
 
-  // Serialize dates to ISO strings for the client
-  const serializedMonitors = monitors.map((m: any) => ({
+  // 5. Safe Data Serialization
+  const serializedMonitors = (monitors || []).map((m: any) => ({
     id: m.id,
     url: m.url,
     isActive: m.isActive,
@@ -99,7 +123,7 @@ export default async function DashboardPage() {
       destinationUrl: ch.destinationUrl,
       userFriendlyName: ch.userFriendlyName ?? null,
     })),
-    logs: m.logs.map((l: any) => ({
+    logs: (m.logs || []).map((l: any) => ({
       id: l.id,
       statusCode: l.statusCode,
       latency: l.latency,
@@ -107,7 +131,7 @@ export default async function DashboardPage() {
     })),
   }));
 
-  const serializedAlertChannels = ((userRecord as any).alertChannels || []).map((ch: any) => ({
+  const serializedAlertChannels = (userRecord?.alertChannels || []).map((ch: any) => ({
     id: ch.id,
     providerType: ch.providerType,
     destinationUrl: ch.destinationUrl,
@@ -211,9 +235,9 @@ export default async function DashboardPage() {
           userId={userId}
           plan={plan}
           isPremium={isPremium}
-          alertThreshold={(userRecord as any).alertThreshold ?? 3}
-          emailNotificationsEnabled={(userRecord as any).emailNotificationsEnabled !== false}
-          telegramNotificationsEnabled={Boolean((userRecord as any).telegramNotificationsEnabled)}
+          alertThreshold={userRecord?.alertThreshold ?? 3}
+          emailNotificationsEnabled={userRecord?.emailNotificationsEnabled !== false}
+          telegramNotificationsEnabled={Boolean(userRecord?.telegramNotificationsEnabled)}
           alertChannels={serializedAlertChannels as any}
         />
       </main>
