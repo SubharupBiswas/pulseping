@@ -6,7 +6,6 @@ import { Pool, neonConfig } from "@neondatabase/serverless";
 neonConfig.webSocketConstructor = undefined;
 
 export function ensureEnvLoaded() {
-  // Environment variables are pre-populated by Next.js & Cloudflare Pages runtime.
   if (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== "") {
     return;
   }
@@ -31,7 +30,7 @@ function createPrismaClient(): PrismaClient {
     )
   ) {
     console.error(
-      "❌ CRITICAL: DATABASE_URL is missing or invalid in process.env"
+      "❌ CRITICAL: DATABASE_URL is missing or invalid in process.env at execution time"
     );
     throw new Error(
       `Database Client Initialization Error: Required environment variable DATABASE_URL is missing or invalid.`
@@ -41,12 +40,22 @@ function createPrismaClient(): PrismaClient {
   // Use HTTP Pool mode for zero-latency connection reuse across isolates
   const pool = new Pool({ connectionString });
   
-  // 🟢 Cast pool as `any` to bypass the @types/pg declaration clash
+  // Cast pool as `any` to bypass the @types/pg declaration clash
   const adapter = new PrismaNeon(pool as any);
   return new PrismaClient({ adapter });
 }
 
-export const db = globalForPrisma.prisma ?? createPrismaClient();
+// 🟢 LAZY PROXY INITIALIZATION: Delays Prisma instantiation until request runtime
+export const db = new Proxy({} as PrismaClient, {
+  get(_target, prop: keyof PrismaClient) {
+    if (!globalForPrisma.prisma) {
+      globalForPrisma.prisma = createPrismaClient();
+    }
+    const instance = globalForPrisma.prisma;
+    const value = instance[prop];
+    return typeof value === "function" ? value.bind(instance) : value;
+  },
+});
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = db;
