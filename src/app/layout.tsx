@@ -80,12 +80,15 @@ export const metadata: Metadata = {
     creator: "@pulseping",
   },
 
-  // 🟢 UPDATED: SVG Favicon linked directly to public static asset
-  icons: [
-    { rel: "icon", type: "image/svg+xml", url: "/logo.svg" },
-    { rel: "shortcut icon", url: "/logo.svg" },
-    { rel: "apple-touch-icon", url: "/logo.svg" },
-  ],
+  // 🟢 Standardized Next.js App Router Icon Typings
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/logo.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
