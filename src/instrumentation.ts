@@ -5,15 +5,20 @@ export async function register() {
 
     console.log("⚡ [PulsePing Engine] Initializing automated 30s background cron ticker...");
 
-    // Initial ping check on boot
-    fetch(LOCAL_PING_URL).catch(() => {});
+    const requestHeaders: RequestInit = {
+      headers: {
+        "x-internal-cron": "true",
+        ...(process.env.CRON_SECRET ? { "Authorization": `Bearer ${process.env.CRON_SECRET}` } : {}),
+      },
+    };
 
-    // Automated 30-second interval ticker
+    // 1. Initial boot ping (with headers)
+    fetch(LOCAL_PING_URL, requestHeaders).catch(() => {});
+
+    // 2. Automated 30-second interval ticker
     setInterval(async () => {
       try {
-        await fetch(LOCAL_PING_URL, {
-          headers: { "x-internal-cron": "true" },
-        });
+        await fetch(LOCAL_PING_URL, requestHeaders);
       } catch (err) {
         // Silently swallow loopback connection hiccups
       }

@@ -9,10 +9,14 @@
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
-/* ── Global overflow & background guard ── */
+/* ── Global overflow guard ── */
 html, body {
   overflow-x: hidden;
-  background-color: #09090b !important;
+}
+
+/* Target dark mode explicitly so Light Mode isn't overridden */
+html.dark, html.dark body {
+  background-color: #09090b;
   color-scheme: dark;
 }
 

@@ -297,6 +297,7 @@ model WebhookLog {
 
 ## 🛡️ Security, Isolation & Performance Policies
 
+* **Resource-Based Auth Boundaries:** Enforces layout-level authorization boundaries (`await auth.protect()`) at `/dashboard` routes rather than relying on URL path-matching regex in middleware.
 * **Server-Only Isolation (`import 'server-only'`):** Datastore modules enforce compilation boundaries to ensure database credentials never leak into client browser JS bundles.
 * **Decoupled Client Containers:** Interactive third-party UI primitives are wrapped in hydrated client containers (e.g. `DashboardUserButton`), preserving server-native page-rendering speeds.
 * **Type Safety Guarantee:** Enforces zero compilation or lint errors via strict TypeScript checks (`npx tsc --noEmit`).
