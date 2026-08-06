@@ -17,6 +17,15 @@ import { getOrCreateUser } from "@/lib/user";
 
 export const dynamic = "force-dynamic";
 
+export function formatInvoiceDate(dateString: string | Date, locale = "en-IN", timeZone = "Asia/Kolkata") {
+  return new Date(dateString).toLocaleDateString(locale, {
+    timeZone,
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export default async function BillingPage() {
   const { userId } = await auth();
 
@@ -35,11 +44,7 @@ export default async function BillingPage() {
 
   // Calculate simulated renewal date (30 days from now)
   const renewalDateString = isPremium
-    ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
+    ? formatInvoiceDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))
     : "N/A";
 
   const dbInvoices = await db.invoice.findMany({
@@ -49,7 +54,7 @@ export default async function BillingPage() {
 
   const formattedDbInvoices = dbInvoices.map((inv) => ({
     id: inv.id,
-    date: inv.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }),
+    date: formatInvoiceDate(inv.date),
     amount: inv.amount,
     status: inv.status,
   }));
@@ -62,11 +67,7 @@ export default async function BillingPage() {
       ? [
           {
             id: `inv_synth_${userId.slice(-6)}`,
-            date: new Date().toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            }),
+            date: formatInvoiceDate(new Date()),
             amount:
               plan === "BUSINESS"
                 ? "₹1,499 (BUSINESS — INR)"
@@ -121,13 +122,21 @@ export default async function BillingPage() {
       {/* Main Content */}
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
 
-        {/* Back Link */}
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 mb-6 transition"
-        >
-          <span>←</span> Back to Dashboard
-        </Link>
+        {/* Back Link & Change Plan CTA */}
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition"
+          >
+            <span>←</span> Back to Dashboard
+          </Link>
+          <Link
+            href="/pricing"
+            className="inline-flex items-center text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg shadow-sm transition duration-150"
+          >
+            Change Plan / Manage Tier →
+          </Link>
+        </div>
 
         {/* Header Title */}
         <div className="mb-8">

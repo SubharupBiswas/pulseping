@@ -15,6 +15,7 @@ const LatencyChart = dynamic(() => import("./LatencyChart"), { ssr: false });
 
 import AddMonitorForm from "@/components/AddMonitorForm";
 import { getLatestTelemetry } from "@/app/actions/monitors";
+import { getPollingIntervalText } from "@/lib/plan";
 
 type Log = {
   id: string;
@@ -199,7 +200,7 @@ export default function DashboardShell({
       )}
 
       {/* Navigation */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-2">
         <PillTabNav tabs={TABS} active={activeTab} onChange={setActiveTab} />
         {activeTab === "streams" && totalMonitors > 0 && (
           <span className="text-xs text-zinc-400 dark:text-zinc-600 font-mono hidden sm:block">
@@ -207,6 +208,9 @@ export default function DashboardShell({
           </span>
         )}
       </div>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6">
+        Monitoring runs every <strong className="text-zinc-700 dark:text-zinc-300 font-semibold">{getPollingIntervalText(plan)}</strong> via serverless cron.
+      </p>
 
       {/* Tab content */}
       <AnimatePresence mode="wait">

@@ -8,9 +8,11 @@ import { generateIncidentDiagnostic } from "@/lib/ai";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const getFrequencyMs = (freq: number) => {
-  if (freq === 30) return 30 * 1000;
-  return freq * 60 * 1000;
+const getFrequencyMs = (plan?: string, configuredFrequency?: number) => {
+  const tier = (plan || "FREE").toUpperCase();
+  if (tier === "BUSINESS") return 30 * 1000; // 30 seconds (30,000 ms)
+  if (tier === "PRO") return 60 * 1000; // 1 minute (60,000 ms)
+  return 10 * 60 * 1000; // FREE: 10 minutes (600,000 ms)
 };
 
 // ── SSL Certificate Expiry Probe ──────────────────────────────────────────────
@@ -57,11 +59,11 @@ async function checkMonitor(monitor: any) {
   let errorBody: string | null = null;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
   // Build custom headers from JSON field
   const builtHeaders: Record<string, string> = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "User-Agent": "PulsePing-UptimeBot/1.0 (Mozilla/5.0 Macintosh; Intel Mac OS X 10_15_7)",
   };
   if (monitor.customHeaders && typeof monitor.customHeaders === "object") {
     for (const [k, v] of Object.entries(monitor.customHeaders)) {
@@ -448,13 +450,17 @@ async function handleCronRequest(req: NextRequest) {
 
   try {
     // === WAVE 1: 0-Second Mark ===
-    const activeMonitors = await db.monitor.findMany({ where: { isActive: true } });
+    const activeMonitors = await db.monitor.findMany({
+      where: { isActive: true },
+      include: { user: true },
+    });
 
     const now = new Date();
     const wave1Monitors = activeMonitors.filter((monitor: any) => {
       if (!monitor.lastChecked) return true;
       const elapsedMs = now.getTime() - new Date(monitor.lastChecked).getTime();
-      return elapsedMs >= getFrequencyMs(monitor.frequency);
+      const userPlan = monitor.user?.plan || "FREE";
+      return elapsedMs >= getFrequencyMs(userPlan, monitor.frequency);
     });
 
     if (wave1Monitors.length > 0) {

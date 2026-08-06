@@ -7,23 +7,17 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // ── Plan tier resolution ─────────────────────────────────────────────────────
-// Maps the canonical planId stored in order.notes to a DB plan value.
-// Falls back to "PRO" for any recognised paid plan so the account is
-// never downgraded on an unknown identifier.
 function resolveTierFromPlanId(planId?: string): "PRO" | "BUSINESS" | null {
   if (!planId) return null;
   const key = planId.toLowerCase();
-  if (key.startsWith("business")) return "BUSINESS";
+  if (key.startsWith("business") || key.startsWith("biz") || key.startsWith("plan_biz")) return "BUSINESS";
   if (key.startsWith("pro") || key.startsWith("plan_pro")) return "PRO";
-  if (key.startsWith("biz") || key.startsWith("plan_biz")) return "BUSINESS";
   return null;
 }
 
 // ── Webhook handler ──────────────────────────────────────────────────────────
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  // 1. Read the raw body as a Buffer for exact HMAC verification.
-  //    Converting to text first then back would work too, but raw ArrayBuffer
-  //    → Buffer is the most reliable path.
+  // 1. Read the raw body as a Buffer for exact HMAC verification
   let rawBody: Buffer;
   try {
     const arrayBuffer = await req.arrayBuffer();
@@ -61,11 +55,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     .update(rawBody)
     .digest("hex");
 
-  // Constant-time comparison to prevent timing attacks
-  const isValid = crypto.timingSafeEqual(
-    Buffer.from(expectedSignature, "hex"),
-    Buffer.from(signature, "hex")
-  );
+  const expectedBuf = Buffer.from(expectedSignature, "hex");
+  const signatureBuf = Buffer.from(signature, "hex");
+
+  // Prevent timing attacks & guard against length mismatch buffer crashes
+  const isValid =
+    expectedBuf.length === signatureBuf.length &&
+    crypto.timingSafeEqual(expectedBuf, signatureBuf);
 
   if (!isValid) {
     console.warn("[WEBHOOK] Signature mismatch — rejecting event");
@@ -106,7 +102,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const payment = event.payload?.payment?.entity;
         if (!payment) break;
 
-        // userId is embedded in order notes
         const notes = payment.notes as Record<string, string> | undefined;
         const userId = notes?.userId;
         const planId = notes?.planId;
@@ -129,27 +124,35 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             ? `₹${(capturedAmount / 100).toFixed(0)}`
             : `$${(capturedAmount / 100).toFixed(2)}`;
 
-        await Promise.all([
-          db.user.update({
-            where: { id: userId },
-            data:  { plan: tier },
-          }),
-          db.invoice.create({
+        const existingInvoice = await db.invoice.findFirst({
+          where: {
+            userId,
+            date: { gte: new Date(Date.now() - 2 * 60 * 1000) },
+          },
+        });
+
+        await db.user.update({
+          where: { id: userId },
+          data: { plan: tier },
+        });
+
+        if (!existingInvoice) {
+          await db.invoice.create({
             data: {
               userId,
               amount: `${displayAmount} (${tier} — ${capturedCurrency})`,
               status: "PAID",
             },
-          }),
-        ]);
+          });
+        }
 
         console.info(
-          `[WEBHOOK] payment.captured — upgraded user ${userId} → ${tier}, invoice created`
+          `[WEBHOOK] payment.captured — upgraded user ${userId} → ${tier}, invoice verified`
         );
         break;
       }
 
-      // ── subscription.charged: recurring billing event ────────────────────
+      // ── subscription.charged: recurring billing renewal ──────────────────
       case "subscription.charged": {
         const payment = event.payload?.payment?.entity;
         if (!payment) break;
@@ -163,11 +166,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           break;
         }
 
-        const tier = resolveTierFromPlanId(planId);
-        if (!tier) {
-          console.warn("[WEBHOOK] subscription.charged — unknown planId:", planId);
-          break;
-        }
+        const tier = resolveTierFromPlanId(planId) || "PRO"; // Default fallback to PRO for active renewals
 
         const chargedAmount = payment.amount ?? 0;
         const chargedCurrency: string = (payment.currency ?? "INR").toUpperCase();
@@ -176,20 +175,27 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             ? `₹${(chargedAmount / 100).toFixed(0)}`
             : `$${(chargedAmount / 100).toFixed(2)}`;
 
-        // Renew / confirm the plan on each successful charge
-        await Promise.all([
-          db.user.update({
-            where: { id: userId },
-            data:  { plan: tier },
-          }),
-          db.invoice.create({
+        const existingInvoice = await db.invoice.findFirst({
+          where: {
+            userId,
+            date: { gte: new Date(Date.now() - 2 * 60 * 1000) },
+          },
+        });
+
+        await db.user.update({
+          where: { id: userId },
+          data: { plan: tier },
+        });
+
+        if (!existingInvoice) {
+          await db.invoice.create({
             data: {
               userId,
               amount: `${chargedDisplay} (${tier} Renewal — ${chargedCurrency})`,
               status: "PAID",
             },
-          }),
-        ]);
+          });
+        }
 
         console.info(
           `[WEBHOOK] subscription.charged — renewed user ${userId} → ${tier}, renewal invoice created`
@@ -197,38 +203,43 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         break;
       }
 
-      // ── subscription.cancelled: downgrade back to FREE ───────────────────
-      case "subscription.cancelled": {
+      // ── subscription.cancelled & subscription.halted: revert to FREE ────
+      case "subscription.cancelled":
+      case "subscription.halted": {
         const subscription = event.payload?.subscription?.entity;
-        if (!subscription) break;
-
-        // userId may live in subscription notes
-        const notes = subscription.notes as Record<string, string> | undefined;
+        const notes = subscription?.notes as Record<string, string> | undefined;
         const userId = notes?.userId;
 
         if (!userId) {
-          console.warn("[WEBHOOK] subscription.cancelled — notes.userId missing");
+          console.warn(`[WEBHOOK] ${eventType} — notes.userId missing`);
           break;
         }
 
         await db.user.update({
           where: { id: userId },
-          data:  { plan: "FREE" },
+          data: { plan: "FREE" },
         });
 
         console.info(
-          `[WEBHOOK] subscription.cancelled — downgraded user ${userId} → FREE`
+          `[WEBHOOK] ${eventType} — downgraded user ${userId} → FREE`
+        );
+        break;
+      }
+
+      // ── payment.failed: log dropped or failed checkout attempts ─────────
+      case "payment.failed": {
+        const payment = event.payload?.payment?.entity;
+        console.warn(
+          `[WEBHOOK] payment.failed — paymentId: ${payment?.id}, reason: ${payment?.error_description}`
         );
         break;
       }
 
       default:
-        // Unknown / unhandled events — acknowledge silently
-        console.info(`[WEBHOOK] Unhandled event type: ${eventType}`);
+        console.info(`[WEBHOOK] Unhandled event type acknowledged: ${eventType}`);
     }
   } catch (dbErr: unknown) {
     console.error("[WEBHOOK] Database update failed:", dbErr);
-    // Return 500 so Razorpay retries delivery
     return NextResponse.json(
       { error: "Database sync failed — will retry" },
       { status: 500 }

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
+import { getPlanActionState } from "@/lib/plan";
+import { upgradeUserPlan } from "@/app/actions/billing";
 
 export default function BillingUpgradeCard({
   userId,
@@ -213,6 +215,26 @@ export default function BillingUpgradeCard({
     });
   };
 
+  const handlePlanSelect = (targetPlan: "FREE" | "PRO" | "BUSINESS") => {
+    const action = getPlanActionState(targetPlan, currentPlan);
+    if (action.disabled) return;
+
+    if (action.label.startsWith("Downgrade") || targetPlan === "FREE") {
+      setFeedback(null);
+      startTransition(async () => {
+        const res = await upgradeUserPlan(userId, targetPlan);
+        if (res.success) {
+          setFeedback({ type: "success", message: `Account plan updated to ${targetPlan} Tier.` });
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          setFeedback({ type: "error", message: res.error || "Failed to update plan." });
+        }
+      });
+    } else {
+      handleUpgrade(targetPlan as "PRO" | "BUSINESS");
+    }
+  };
+
   const formatPrice = (value: number, curr: "INR" | "USD") => {
     return new Intl.NumberFormat(curr === "INR" ? "en-IN" : "en-US", {
       style: "currency",
@@ -221,7 +243,11 @@ export default function BillingUpgradeCard({
     }).format(value);
   };
 
-  if (currentPlan === "PRO" || currentPlan === "BUSINESS") return null;
+  const freeState = getPlanActionState("FREE", currentPlan);
+  const proState = getPlanActionState("PRO", currentPlan);
+  const bizState = getPlanActionState("BUSINESS", currentPlan);
+
+  // Allow viewing & managing plans across all tiers (FREE, PRO, BUSINESS)
 
   return (
     <section className="relative z-10 bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-6 sm:p-8 mb-8 shadow-sm backdrop-blur-md transition-colors" aria-labelledby="billing-title">
@@ -324,10 +350,11 @@ export default function BillingUpgradeCard({
             </ul>
           </div>
           <button
-            disabled
-            className="w-full text-center text-xs font-semibold bg-zinc-200/50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-600 border border-zinc-300/30 dark:border-zinc-800 px-4 py-2.5 rounded-lg cursor-not-allowed shadow-[inset_0_1px_0_0_rgba(255,255,255,0.01)]"
+            onClick={() => handlePlanSelect("FREE")}
+            disabled={isPending || freeState.disabled}
+            className="w-full text-center text-xs font-semibold bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 disabled:opacity-50 px-4 py-2.5 rounded-lg cursor-pointer disabled:cursor-not-allowed shadow-sm transition"
           >
-            {currentPlan === "FREE" ? "Active" : "Downgrade"}
+            {freeState.label}
           </button>
         </div>
 
@@ -386,11 +413,11 @@ export default function BillingUpgradeCard({
             </ul>
           </div>
           <button
-            onClick={() => handleUpgrade("PRO")}
-            disabled={isPending || currentPlan === "PRO"}
+            onClick={() => handlePlanSelect("PRO")}
+            disabled={isPending || proState.disabled}
             className="w-full text-center text-xs font-semibold bg-zinc-900 hover:bg-zinc-850 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-200/50 dark:disabled:bg-zinc-900 disabled:text-zinc-500 dark:disabled:text-zinc-650 px-4 py-2.5 rounded-lg cursor-pointer disabled:cursor-not-allowed shadow-md transition-all duration-300 ease-in-out hover:scale-[1.01]"
           >
-            {isPending ? "Connecting..." : currentPlan === "PRO" ? "Current Plan" : "Upgrade to Pro"}
+            {isPending ? "Connecting..." : proState.label}
           </button>
         </div>
 
@@ -452,11 +479,11 @@ export default function BillingUpgradeCard({
             </ul>
           </div>
           <button
-            onClick={() => handleUpgrade("BUSINESS")}
-            disabled={isPending || currentPlan === "BUSINESS"}
+            onClick={() => handlePlanSelect("BUSINESS")}
+            disabled={isPending || bizState.disabled}
             className="w-full text-center text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 disabled:bg-zinc-200/50 dark:disabled:bg-zinc-900 disabled:text-zinc-500 dark:disabled:text-zinc-650 px-4 py-2.5 rounded-lg cursor-pointer disabled:cursor-not-allowed shadow-md transition-all duration-300 ease-in-out hover:scale-[1.01]"
           >
-            {isPending ? "Connecting..." : currentPlan === "BUSINESS" ? "Current Plan" : "Upgrade to Business"}
+            {isPending ? "Connecting..." : bizState.label}
           </button>
         </div>
 

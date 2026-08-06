@@ -33,7 +33,7 @@ It solves critical production engineering challenges: **monitoring API endpoints
 [ Scheduled Cron / Manual Ping / Inbound Heartbeat ]
                         │
                         ▼
-[ Concurrent Worker Pool ] ───(AbortController 5s Guard)───► [ Target Endpoint ]
+[ Concurrent Worker Pool ] ───(AbortController 10s Guard)───► [ Target Endpoint ]
                         │                                                        │
                         ├─────────────── HTTP Status & Latency Metric ───────────┘
                         ▼

@@ -66,20 +66,28 @@ export async function POST(req: NextRequest) {
     const curr = currency === "USD" ? "USD" : "INR";
     const invoiceAmount = PLAN_PRICES[normalizedPlan]?.[curr] ?? 499;
 
-    // Atomic update: upgrade plan + create invoice
-    await Promise.all([
-      db.user.update({
-        where: { id: userId },
-        data: { plan: normalizedPlan },
-      }),
-      db.invoice.create({
+    // Idempotency check: prevent duplicate invoices within 2 minutes
+    const existingInvoice = await db.invoice.findFirst({
+      where: {
+        userId,
+        date: { gte: new Date(Date.now() - 2 * 60 * 1000) },
+      },
+    });
+
+    await db.user.update({
+      where: { id: userId },
+      data: { plan: normalizedPlan },
+    });
+
+    if (!existingInvoice) {
+      await db.invoice.create({
         data: {
           userId,
           amount: `${curr === "INR" ? "₹" : "$"}${invoiceAmount} (${normalizedPlan} — ${curr})`,
           status: "PAID",
         },
-      }),
-    ]);
+      });
+    }
 
     console.info(`[VERIFY_PAYMENT] User ${userId} upgraded to ${normalizedPlan}, invoice created.`);
 
