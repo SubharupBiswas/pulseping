@@ -9,9 +9,16 @@
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
-/* ── Global overflow guard ── */
+/* ── Global overflow & background guard ── */
 html, body {
   overflow-x: hidden;
+  background-color: #09090b !important;
+  color-scheme: dark;
+}
+
+/* Force dark backdrop overlay behind Razorpay modal */
+.razorpay-container {
+  background-color: rgba(0, 0, 0, 0.85) !important;
 }
 
 html {
@@ -108,6 +115,9 @@ html {
     transparent 65%
   ) border-box;
   -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  mask:
     linear-gradient(#fff 0 0) padding-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
