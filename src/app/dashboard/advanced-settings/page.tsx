@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import ThemeToggle from "@/components/ThemeToggle";
 import PulsePingLogo from "@/components/PulsePingLogo";
 import DashboardUserButton from "@/components/DashboardUserButton";
+import AdvancedSettingsClient from "@/components/dashboard/AdvancedSettingsClient";
 
 import { getOrCreateUser } from "@/lib/user";
 
@@ -31,6 +32,12 @@ export default async function AdvancedSettingsPage() {
   if (plan === "FREE") {
     redirect("/dashboard");
   }
+
+  // Pre-fetch existing alert channels
+  const alertChannels = await db.alertChannel.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div className="min-h-screen bg-sky-50/60 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-hidden transition-colors duration-250">
@@ -81,30 +88,17 @@ export default async function AdvancedSettingsPage() {
           </Link>
         </div>
 
-        {/* Configurations Card */}
-        <div className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-6 shadow-sm backdrop-blur-md space-y-6">
-          <div>
-            <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2">Multi-Channel Webhooks</h4>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">
-              Integrate Slack, Discord, or Microsoft Teams channels to get alert notifications within seconds of an endpoint check failure.
-            </p>
-            <div className="flex gap-2">
-              <button className="text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 px-4 py-2 rounded-lg transition shadow-sm">
-                Add Alert Channel
-              </button>
-            </div>
-          </div>
-
-          <div className="border-t border-zinc-150 dark:border-zinc-800/60 pt-6">
-            <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2">Request Header Presets</h4>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">
-              Bind Authorization tokens, custom cookies, or developer context parameters to outbound test requests.
-            </p>
-            <button className="text-xs font-semibold border border-zinc-200 dark:border-zinc-800 px-4 py-2 rounded-lg hover:bg-sky-50 dark:hover:bg-zinc-800 transition">
-              Manage Custom Header Presets
-            </button>
-          </div>
-        </div>
+        {/* Interactive settings client (modals for channels + header presets) */}
+        <AdvancedSettingsClient
+          initialChannels={alertChannels.map((ch) => ({
+            id: ch.id,
+            providerType: ch.providerType,
+            destinationUrl: ch.destinationUrl,
+            userFriendlyName: ch.userFriendlyName ?? null,
+            createdAt: ch.createdAt.toISOString(),
+          }))}
+          plan={plan}
+        />
       </main>
     </div>
   );

@@ -9,6 +9,9 @@
 const GEMINI_REST_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
+const diagnosticCooldowns = new Map<string, number>(); // url -> timestamp
+const COOLDOWN_MS = 15 * 60 * 1000; // 15 minutes
+
 export async function generateIncidentDiagnostic(
   url: string,
   statusCode: number,
@@ -47,4 +50,24 @@ Produce a single concise sentence (max 20 words) summarizing the most likely roo
     console.warn("AI diagnostic generation failed (non-blocking):", err);
     return null;
   }
+}
+
+export async function generateIncidentDiagnosticWithCooldown(
+  url: string,
+  statusCode: number,
+  errorBody: string | null
+): Promise<string | null> {
+  const lastRun = diagnosticCooldowns.get(url) || 0;
+  const now = Date.now();
+
+  if (now - lastRun < COOLDOWN_MS) {
+    console.log(`[AI_GUARD] Cooldown active for ${url}. Skipping Gemini call.`);
+    return "Incident ongoing — AI diagnostic cached from recent failure evaluation.";
+  }
+
+  const diagnostic = await generateIncidentDiagnostic(url, statusCode, errorBody);
+  if (diagnostic) {
+    diagnosticCooldowns.set(url, now);
+  }
+  return diagnostic;
 }

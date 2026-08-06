@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import ThemeToggle from "@/components/ThemeToggle";
 import PulsePingLogo from "@/components/PulsePingLogo";
 import DashboardUserButton from "@/components/DashboardUserButton";
+import StatusPagesClient from "@/components/dashboard/StatusPagesClient";
 
 import { getOrCreateUser } from "@/lib/user";
 
@@ -32,18 +33,22 @@ export default async function StatusPagesPage() {
     redirect("/dashboard");
   }
 
-  // Fetch status pages for this user
-  const statusPages = await db.statusPage.findMany({
-    where: { userId },
-    include: {
-      monitors: {
-        include: {
-          monitor: true,
+  // Fetch status pages with linked monitors & user's monitors
+  const [statusPages, monitors] = await Promise.all([
+    db.statusPage.findMany({
+      where: { userId },
+      include: {
+        monitors: {
+          select: { monitorId: true },
         },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    }),
+    db.monitor.findMany({
+      where: { userId },
+      select: { id: true, url: true },
+    }),
+  ]);
 
   return (
     <div className="min-h-screen bg-sky-50/60 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-hidden transition-colors duration-250">
@@ -94,41 +99,19 @@ export default async function StatusPagesPage() {
           </Link>
         </div>
 
-        {/* Status page listing */}
-        <div className="space-y-4">
-          <div className="flex justify-end mb-4">
-            <button className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow-sm transition">
-              + Create Status Page
-            </button>
-          </div>
-
-          {statusPages.length === 0 ? (
-            <div className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-12 text-center backdrop-blur-md">
-              <span className="text-xl">🌐</span>
-              <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mt-2">No public status boards created</p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Create operational dashboards to keep users informed during outages.</p>
-            </div>
-          ) : (
-            statusPages.map((page) => (
-              <div key={page.id} className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm backdrop-blur-md transition-all hover:border-emerald-500/20 flex items-center justify-between gap-4">
-                <div>
-                  <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{page.title}</h4>
-                  <Link href={`/status/${page.slug}`} target="_blank" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-mono mt-1 block">
-                    /status/{page.slug}
-                  </Link>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full ${page.isPublic ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-zinc-150 text-zinc-650"}`}>
-                    {page.isPublic ? "Public" : "Private"}
-                  </span>
-                  <button className="text-xs font-semibold border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-lg hover:bg-sky-50 dark:hover:bg-zinc-800 transition">
-                    Configure
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+        {/* Interactive Status Pages section (client component handles modals) */}
+        <StatusPagesClient
+          initialPages={statusPages.map((p) => ({
+            id: p.id,
+            slug: p.slug,
+            title: p.title,
+            isPublic: p.isPublic,
+            createdAt: p.createdAt.toISOString(),
+            monitorIds: p.monitors.map((m) => m.monitorId),
+          }))}
+          userMonitors={monitors.map((m) => ({ id: m.id, url: m.url }))}
+          plan={plan}
+        />
       </main>
     </div>
   );

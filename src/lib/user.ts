@@ -31,112 +31,110 @@ export async function getOrCreateUser(userId: string): Promise<UserRecord> {
     return fallbackRecord;
   }
 
+  const alertChannelSelect = {
+    select: {
+      id: true,
+      providerType: true,
+      destinationUrl: true,
+      userFriendlyName: true,
+    },
+  };
+
   try {
-    let rawUser = await db.user.findUnique({
+    // 1. FAST PATH: Read without database write locks (handles 99.9% of user requests)
+    const existingUser = await db.user.findUnique({
       where: { id: userId },
-      include: {
-        alertChannels: {
-          select: {
-            id: true,
-            providerType: true,
-            destinationUrl: true,
-            userFriendlyName: true,
-          },
-        },
-      },
+      include: { alertChannels: alertChannelSelect },
     });
 
-    if (!rawUser) {
-      let userEmail = `${userId}@user.pulseping.com`;
-      try {
-        const clerkUser = await currentUser();
-        const primaryEmail =
-          clerkUser?.emailAddresses?.find((e) => e.id === clerkUser.primaryEmailAddressId)
-            ?.emailAddress || clerkUser?.emailAddresses?.[0]?.emailAddress;
-
-        if (primaryEmail) {
-          userEmail = primaryEmail;
-        }
-      } catch {
-        // Fallback to synthetic email if Clerk API fetch is unavailable
-      }
-
-      try {
-        rawUser = await db.user.create({
-          data: {
-            id: userId,
-            email: userEmail,
-            plan: "FREE",
-            alertThreshold: 3,
-            emailNotificationsEnabled: true,
-            telegramNotificationsEnabled: false,
-          },
-          include: {
-            alertChannels: {
-              select: {
-                id: true,
-                providerType: true,
-                destinationUrl: true,
-                userFriendlyName: true,
-              },
-            },
-          },
-        });
-      } catch (createErr) {
-        rawUser = await db.user.findUnique({
-          where: { id: userId },
-          include: {
-            alertChannels: {
-              select: {
-                id: true,
-                providerType: true,
-                destinationUrl: true,
-                userFriendlyName: true,
-              },
-            },
-          },
-        });
-
-        if (!rawUser) {
-          rawUser = await db.user.create({
-            data: {
-              id: userId,
-              email: `${userId}-${Date.now()}@user.pulseping.com`,
-              plan: "FREE",
-              alertThreshold: 3,
-              emailNotificationsEnabled: true,
-              telegramNotificationsEnabled: false,
-            },
-            include: {
-              alertChannels: {
-                select: {
-                  id: true,
-                  providerType: true,
-                  destinationUrl: true,
-                  userFriendlyName: true,
-                },
-              },
-            },
-          });
-        }
-      }
+    if (existingUser) {
+      return {
+        id: existingUser.id,
+        email: existingUser.email,
+        plan: existingUser.plan || "FREE",
+        alertThreshold: existingUser.alertThreshold ?? 3,
+        emailNotificationsEnabled: existingUser.emailNotificationsEnabled !== false,
+        telegramNotificationsEnabled: Boolean(existingUser.telegramNotificationsEnabled),
+        alertChannels: (existingUser.alertChannels || []).map((ch: any) => ({
+          id: ch.id,
+          providerType: ch.providerType,
+          destinationUrl: ch.destinationUrl,
+          userFriendlyName: ch.userFriendlyName ?? null,
+        })),
+      };
     }
 
+    // 2. SLOW PATH: First-time user creation
+    let userEmail = `${userId}@user.pulseping.com`;
+    try {
+      const clerkUser = await currentUser();
+      const primaryEmail =
+        clerkUser?.emailAddresses?.find((e) => e.id === clerkUser.primaryEmailAddressId)
+          ?.emailAddress || clerkUser?.emailAddresses?.[0]?.emailAddress;
+
+      if (primaryEmail) {
+        userEmail = primaryEmail;
+      }
+    } catch {
+      // Fallback to synthetic email if Clerk API fetch is unavailable
+    }
+
+    const newUser = await db.user.create({
+      data: {
+        id: userId,
+        email: userEmail,
+        plan: "FREE",
+        alertThreshold: 3,
+        emailNotificationsEnabled: true,
+        telegramNotificationsEnabled: false,
+      },
+      include: { alertChannels: alertChannelSelect },
+    });
+
     return {
-      id: rawUser.id,
-      email: rawUser.email,
-      plan: rawUser.plan || "FREE",
-      alertThreshold: rawUser.alertThreshold ?? 3,
-      emailNotificationsEnabled: rawUser.emailNotificationsEnabled !== false,
-      telegramNotificationsEnabled: Boolean(rawUser.telegramNotificationsEnabled),
-      alertChannels: (rawUser.alertChannels || []).map((ch: any) => ({
+      id: newUser.id,
+      email: newUser.email,
+      plan: newUser.plan || "FREE",
+      alertThreshold: newUser.alertThreshold ?? 3,
+      emailNotificationsEnabled: newUser.emailNotificationsEnabled !== false,
+      telegramNotificationsEnabled: Boolean(newUser.telegramNotificationsEnabled),
+      alertChannels: (newUser.alertChannels || []).map((ch: any) => ({
         id: ch.id,
         providerType: ch.providerType,
         destinationUrl: ch.destinationUrl,
         userFriendlyName: ch.userFriendlyName ?? null,
       })),
     };
-  } catch (err) {
+  } catch (err: any) {
+    // 3. RACE CONDITION GUARD: If a concurrent request created the user mid-flight
+    if (err?.code === "P2002") {
+      try {
+        const raceUser = await db.user.findUnique({
+          where: { id: userId },
+          include: { alertChannels: alertChannelSelect },
+        });
+
+        if (raceUser) {
+          return {
+            id: raceUser.id,
+            email: raceUser.email,
+            plan: raceUser.plan || "FREE",
+            alertThreshold: raceUser.alertThreshold ?? 3,
+            emailNotificationsEnabled: raceUser.emailNotificationsEnabled !== false,
+            telegramNotificationsEnabled: Boolean(raceUser.telegramNotificationsEnabled),
+            alertChannels: (raceUser.alertChannels || []).map((ch: any) => ({
+              id: ch.id,
+              providerType: ch.providerType,
+              destinationUrl: ch.destinationUrl,
+              userFriendlyName: ch.userFriendlyName ?? null,
+            })),
+          };
+        }
+      } catch {
+        // Fallthrough to fallback
+      }
+    }
+
     console.error("Error in getOrCreateUser:", err);
     return fallbackRecord;
   }

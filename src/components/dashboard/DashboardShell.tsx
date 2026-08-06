@@ -195,7 +195,7 @@ export default function DashboardShell({
 
       {/* Add monitor form — only in streams tab */}
       {activeTab === "streams" && (
-        <AddMonitorForm userId={userId} />
+        <AddMonitorForm userId={userId} plan={plan} />
       )}
 
       {/* Navigation */}

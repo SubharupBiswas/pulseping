@@ -122,13 +122,29 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           break;
         }
 
-        await db.user.update({
-          where: { id: userId },
-          data:  { plan: tier },
-        });
+        const capturedAmount = payment.amount ?? 0; // amount in paise
+        const capturedCurrency: string = (payment.currency ?? "INR").toUpperCase();
+        const displayAmount =
+          capturedCurrency === "INR"
+            ? `₹${(capturedAmount / 100).toFixed(0)}`
+            : `$${(capturedAmount / 100).toFixed(2)}`;
+
+        await Promise.all([
+          db.user.update({
+            where: { id: userId },
+            data:  { plan: tier },
+          }),
+          db.invoice.create({
+            data: {
+              userId,
+              amount: `${displayAmount} (${tier} — ${capturedCurrency})`,
+              status: "PAID",
+            },
+          }),
+        ]);
 
         console.info(
-          `[WEBHOOK] payment.captured — upgraded user ${userId} → ${tier}`
+          `[WEBHOOK] payment.captured — upgraded user ${userId} → ${tier}, invoice created`
         );
         break;
       }
@@ -153,14 +169,30 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           break;
         }
 
+        const chargedAmount = payment.amount ?? 0;
+        const chargedCurrency: string = (payment.currency ?? "INR").toUpperCase();
+        const chargedDisplay =
+          chargedCurrency === "INR"
+            ? `₹${(chargedAmount / 100).toFixed(0)}`
+            : `$${(chargedAmount / 100).toFixed(2)}`;
+
         // Renew / confirm the plan on each successful charge
-        await db.user.update({
-          where: { id: userId },
-          data:  { plan: tier },
-        });
+        await Promise.all([
+          db.user.update({
+            where: { id: userId },
+            data:  { plan: tier },
+          }),
+          db.invoice.create({
+            data: {
+              userId,
+              amount: `${chargedDisplay} (${tier} Renewal — ${chargedCurrency})`,
+              status: "PAID",
+            },
+          }),
+        ]);
 
         console.info(
-          `[WEBHOOK] subscription.charged — renewed user ${userId} → ${tier}`
+          `[WEBHOOK] subscription.charged — renewed user ${userId} → ${tier}, renewal invoice created`
         );
         break;
       }

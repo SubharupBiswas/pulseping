@@ -16,6 +16,37 @@ export default function BillingUpgradeCard({
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
 
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem("pulseping_currency");
+      if (saved === "INR" || saved === "USD") {
+        setCurrency(saved);
+        return;
+      }
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+      if (tz.includes("Kolkata") || tz.includes("Calcutta") || tz.includes("Asia/Colombo")) {
+        setCurrency("INR");
+        return;
+      }
+      if (typeof navigator !== "undefined" && navigator.language.toLowerCase().includes("in")) {
+        setCurrency("INR");
+        return;
+      }
+      setCurrency("USD");
+    } catch {
+      // Ignore if localStorage/Intl is unavailable
+    }
+  }, []);
+
+  const handleCurrencySelect = (selectedCurrency: "INR" | "USD") => {
+    setCurrency(selectedCurrency);
+    try {
+      localStorage.setItem("pulseping_currency", selectedCurrency);
+    } catch {
+      // Ignore if localStorage is unavailable
+    }
+  };
+
   const loadRazorpayScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
       if (typeof window === "undefined") return resolve(false);

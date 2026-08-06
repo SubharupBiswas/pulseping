@@ -13,7 +13,6 @@ const PLAN_PRICES: Record<string, { INR: number; USD: number }> = {
 
 function normalisePlanKey(planId: string): string {
   const raw = (planId || "").toLowerCase().trim();
-  // Map legacy / shorthand IDs to canonical keys
   const aliases: Record<string, string> = {
     pro:                    "pro_monthly",
     plan_pro_test_id:       "pro_monthly",
@@ -66,7 +65,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // FIX: Strict integer paise conversion — Math.round prevents float drift
     const amount = Math.round(prices[curr] * 100);
 
     if (amount < 100) {
@@ -76,24 +74,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Credentials ─────────────────────────────────────────────────────────
-    const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    // ── Credentials with Auto-Trimming ──────────────────────────────────────
+    const rawKeyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    const rawKeySecret = process.env.RAZORPAY_KEY_SECRET;
 
-    console.log(`[ORDER_ROUTE] process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID: ${keyId ? `present (length: ${keyId.length})` : 'missing/undefined'}, process.env.RAZORPAY_KEY_SECRET: ${keySecret ? `present (length: ${keySecret.length})` : 'missing/undefined'}`);
+    const keyId = rawKeyId?.trim();
+    const keySecret = rawKeySecret?.trim();
+
+    console.log(`[ORDER_ROUTE] Key ID present: ${!!keyId} (length: ${keyId?.length}), Secret present: ${!!keySecret} (length: ${keySecret?.length})`);
 
     if (!keyId || !keySecret) {
       console.error("[ORDER_ROUTE] Missing Razorpay credentials — check env vars");
       return NextResponse.json(
         {
           success: false,
-          error: "Razorpay payment gateway credentials are not configured on the server. Please define NEXT_PUBLIC_RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in your environment variables."
+          error: "Razorpay payment gateway credentials are not configured on the server."
         },
         { status: 500 }
       );
     }
 
-    // ── Derive a safe receipt ID (max 40 chars, alphanumeric + underscore) ──
+    // ── Derive receipt ID ───────────────────────────────────────────────────
     const safeUserId = userId.replace(/[^a-zA-Z0-9]/g, "").substring(0, 12);
     const receipt = `rcpt_${safeUserId}_${Date.now()}`.substring(0, 40);
 
@@ -108,11 +109,9 @@ export async function POST(req: NextRequest) {
         Authorization: authHeader,
       },
       body: JSON.stringify({
-        amount,          // integer paise — no floats
+        amount,
         currency: curr,
         receipt,
-        // Embed userId in notes so it travels with the ledger record
-        // and can be read by the webhook handler without a DB lookup
         notes: {
           userId,
           planId: canonicalKey,

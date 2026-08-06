@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ThemeToggle from "@/components/ThemeToggle";
 
 // ISR: Revalidate every 60 seconds to protect Neon from traffic spikes
 export const revalidate = 60;
@@ -78,19 +79,22 @@ export default async function PublicStatusPage({ params }: Props) {
   const allUp = activeIncidents === 0;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased">
+    <div className="min-h-screen bg-sky-50/60 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased transition-colors duration-250">
       {/* Ambient glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-tr from-emerald-500/8 via-teal-500/5 to-transparent blur-3xl pointer-events-none z-0" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-tr from-emerald-500/10 via-teal-500/5 to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Header */}
-      <header className="relative z-10 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl">
+      <header className="relative z-10 border-b border-zinc-200 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl transition-colors duration-250">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="text-sm font-semibold text-zinc-400 hover:text-zinc-100 transition">
+          <Link href="/" className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-zinc-100 transition">
             ← PulsePing
           </Link>
-          <span className="text-xs font-mono text-zinc-500">
-            Updated every 60s via ISR
-          </span>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <span className="text-xs font-mono text-zinc-500 dark:text-zinc-500">
+              Updated every 60s via ISR
+            </span>
+          </div>
         </div>
       </header>
 
@@ -98,20 +102,20 @@ export default async function PublicStatusPage({ params }: Props) {
 
         {/* Page title + global status */}
         <div className="mb-10">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100 mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-100 mb-2">
             {page.title}
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
             <span className={`inline-flex items-center gap-2 text-sm font-semibold px-3 py-1.5 rounded-full border ${
               allUp
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                : "bg-rose-500/10 border-rose-500/30 text-rose-400"
+                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400"
+                : "bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-400"
             }`}>
               <span className={`w-2 h-2 rounded-full ${allUp ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]"}`} />
               {allUp ? "All Systems Operational" : `${activeIncidents} Incident${activeIncidents !== 1 ? "s" : ""} Detected`}
             </span>
             {globalUptime !== null && (
-              <span className="text-xs font-mono text-zinc-500">
+              <span className="text-xs font-mono text-zinc-500 dark:text-zinc-500">
                 {globalUptime}% global uptime
               </span>
             )}
@@ -121,12 +125,12 @@ export default async function PublicStatusPage({ params }: Props) {
         {/* Summary ribbon */}
         <div className="grid grid-cols-3 gap-3 mb-10">
           {[
-            { label: "Global Uptime", value: globalUptime !== null ? `${globalUptime}%` : "—", color: globalUptime === null ? "text-zinc-500" : globalUptime >= 99 ? "text-emerald-400" : globalUptime >= 95 ? "text-amber-400" : "text-rose-400" },
-            { label: "Active Incidents", value: String(activeIncidents), color: activeIncidents === 0 ? "text-zinc-300" : "text-rose-400" },
-            { label: "Monitors", value: String(monitors.length), color: "text-zinc-300" },
+            { label: "Global Uptime", value: globalUptime !== null ? `${globalUptime}%` : "—", color: globalUptime === null ? "text-zinc-400 dark:text-zinc-500" : globalUptime >= 99 ? "text-emerald-600 dark:text-emerald-400" : globalUptime >= 95 ? "text-amber-600 dark:text-amber-400" : "text-rose-600 dark:text-rose-400" },
+            { label: "Active Incidents", value: String(activeIncidents), color: activeIncidents === 0 ? "text-zinc-800 dark:text-zinc-300" : "text-rose-600 dark:text-rose-400" },
+            { label: "Monitors", value: String(monitors.length), color: "text-zinc-800 dark:text-zinc-300" },
           ].map((stat) => (
-            <div key={stat.label} className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">{stat.label}</p>
+            <div key={stat.label} className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800 rounded-xl p-4 shadow-sm backdrop-blur-md transition-colors">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">{stat.label}</p>
               <p className={`text-2xl font-bold tracking-tight ${stat.color}`}>{stat.value}</p>
             </div>
           ))}
@@ -134,12 +138,12 @@ export default async function PublicStatusPage({ params }: Props) {
 
         {/* Monitor list */}
         {monitors.length === 0 ? (
-          <div className="text-center py-16 text-zinc-600 text-sm font-mono">
+          <div className="text-center py-16 text-zinc-400 dark:text-zinc-600 text-sm font-mono bg-white/50 dark:bg-zinc-900/20 rounded-xl border border-zinc-200/60 dark:border-zinc-800/40">
             No monitors have been added to this status page yet.
           </div>
         ) : (
           <div className="space-y-3 mb-12">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">
               Services ({monitors.length})
             </h2>
             {monitors.map((monitor: any) => {
@@ -151,7 +155,7 @@ export default async function PublicStatusPage({ params }: Props) {
               return (
                 <div
                   key={monitor.id}
-                  className="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-4"
+                  className="bg-white/90 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-4 shadow-sm backdrop-blur-md transition-colors"
                 >
                   <div className="flex items-center justify-between gap-4 mb-3">
                     <div className="flex items-center gap-3 min-w-0">
@@ -160,20 +164,20 @@ export default async function PublicStatusPage({ params }: Props) {
                           ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.45)]"
                           : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.45)]"
                       }`} />
-                      <p className="font-mono text-sm font-semibold text-zinc-200 truncate">
+                      <p className="font-mono text-sm font-semibold text-zinc-900 dark:text-zinc-200 truncate">
                         {monitor.url}
                       </p>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
                       {lastLog && (
-                        <span className="text-xs font-mono text-zinc-500">
+                        <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500">
                           {lastLog.latency}ms
                         </span>
                       )}
                       <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${
                         up
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : "bg-rose-500/10 text-rose-400"
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                          : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
                       }`}>
                         {up ? "Operational" : "Degraded"}
                       </span>
@@ -183,7 +187,7 @@ export default async function PublicStatusPage({ params }: Props) {
                   {/* 90-point availability ribbon */}
                   <div className="flex gap-[2px] items-end h-6">
                     {Array.from({ length: Math.max(0, 90 - chronoLogs.length) }).map((_, i) => (
-                      <div key={`empty-${i}`} className="flex-1 h-2 rounded-sm bg-zinc-800" />
+                      <div key={`empty-${i}`} className="flex-1 h-2 rounded-sm bg-zinc-200 dark:bg-zinc-800" />
                     ))}
                     {chronoLogs.map((log: any) => {
                       const ok = log.statusCode >= 200 && log.statusCode < 500;
@@ -191,7 +195,7 @@ export default async function PublicStatusPage({ params }: Props) {
                       return (
                         <div
                           key={log.id}
-                          className={`flex-1 rounded-sm ${ok ? "bg-emerald-500/50" : "bg-rose-500/60"}`}
+                          className={`flex-1 rounded-sm ${ok ? "bg-emerald-500/60 dark:bg-emerald-500/50" : "bg-rose-500/70 dark:bg-rose-500/60"}`}
                           style={{ height: `${h}px` }}
                           title={`HTTP ${log.statusCode} · ${log.latency}ms · ${formatDate(log.checkedAt)}`}
                         />
@@ -200,7 +204,7 @@ export default async function PublicStatusPage({ params }: Props) {
                   </div>
 
                   {uptime !== null && (
-                    <p className="text-[10px] font-mono text-zinc-600 mt-2">
+                    <p className="text-[10px] font-mono text-zinc-400 dark:text-zinc-600 mt-2">
                       {uptime}% uptime · last {monitor.logs.length} checks
                     </p>
                   )}
@@ -226,23 +230,23 @@ export default async function PublicStatusPage({ params }: Props) {
 
           return (
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">
                 Recent Incidents
               </h2>
               <div className="space-y-2">
                 {incidents.map((inc: any, i: number) => (
                   <div
                     key={`${inc.id}-${i}`}
-                    className="flex items-start gap-3 bg-zinc-900/30 border border-zinc-800/60 rounded-lg px-4 py-3"
+                    className="flex items-start gap-3 bg-white/80 dark:bg-zinc-900/30 border border-zinc-200/80 dark:border-zinc-800/60 rounded-lg px-4 py-3 shadow-sm transition-colors"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-1.5" />
                     <div className="min-w-0 flex-1">
-                      <p className="font-mono text-xs text-zinc-400 truncate">{inc.monitorUrl}</p>
-                      <p className="text-[10px] text-zinc-600 mt-0.5">
+                      <p className="font-mono text-xs text-zinc-700 dark:text-zinc-400 truncate">{inc.monitorUrl}</p>
+                      <p className="text-[10px] text-zinc-400 dark:text-zinc-600 mt-0.5">
                         HTTP {inc.statusCode} · {inc.latency}ms · {formatDate(inc.checkedAt)}
                       </p>
                     </div>
-                    <span className="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded shrink-0">
+                    <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded shrink-0">
                       {inc.statusCode === 0 ? "TIMEOUT" : inc.statusCode}
                     </span>
                   </div>
@@ -253,11 +257,11 @@ export default async function PublicStatusPage({ params }: Props) {
         })()}
 
         {/* Footer */}
-        <div className="mt-16 pt-6 border-t border-zinc-800/60 flex items-center justify-between">
-          <span className="text-xs text-zinc-600 font-mono">
-            Powered by <Link href="/" className="text-zinc-500 hover:text-zinc-300 transition">PulsePing</Link>
+        <div className="mt-16 pt-6 border-t border-zinc-200 dark:border-zinc-800/60 flex items-center justify-between">
+          <span className="text-xs text-zinc-500 dark:text-zinc-600 font-mono">
+            Powered by <Link href="/" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition">PulsePing</Link>
           </span>
-          <span className="text-[10px] text-zinc-700 font-mono">
+          <span className="text-[10px] text-zinc-400 dark:text-zinc-700 font-mono">
             ISR · revalidates every 60s
           </span>
         </div>

@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import ThemeToggle from "@/components/ThemeToggle";
 import PulsePingLogo from "@/components/PulsePingLogo";
 import DashboardUserButton from "@/components/DashboardUserButton";
-
+import { generateIncidentDiagnosticWithCooldown } from "@/lib/ai";
 import { getOrCreateUser } from "@/lib/user";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +32,7 @@ export default async function AiDiagnosticsPage() {
     redirect("/dashboard");
   }
 
-  // Fetch recent error logs that have AI diagnostics
+  // Fetch recent error logs (4xx + 5xx + unreachable)
   const monitors = await db.monitor.findMany({
     where: { userId },
     include: {
@@ -40,25 +40,83 @@ export default async function AiDiagnosticsPage() {
         where: {
           OR: [
             { aiDiagnostic: { not: null } },
-            { statusCode: { gte: 500 } },
+            { statusCode: { gte: 400 } },
             { statusCode: 0 },
           ],
         },
         orderBy: { checkedAt: "desc" },
-        take: 10,
+        take: 15,
       },
     },
   });
 
-  const diagnostics = monitors.flatMap((m) =>
-    m.logs.map((l) => ({
-      monitorUrl: m.url,
-      monitorName: m.url.replace("https://", "").replace("http://", "").split("/")[0],
-      statusCode: l.statusCode,
-      checkedAt: l.checkedAt,
-      aiDiagnostic: l.aiDiagnostic || "Endpoint request timed out. A WAF blocks standard script headers. Injected browser agents bypass Cloudflare challenge gates.",
-    }))
-  ).sort((a, b) => b.checkedAt.getTime() - a.checkedAt.getTime());
+  // Helper: generate a contextual fallback diagnostic for common error codes
+  function getFallbackDiagnostic(statusCode: number): string {
+    if (statusCode === 0) {
+      return "Endpoint unreachable — DNS resolution failed or host refused connection. Check server firewall rules and upstream DNS health.";
+    }
+    if (statusCode === 400) {
+      return "HTTP 400 Bad Request — outbound probe sent an unexpected or malformed payload. Verify custom request headers and query parameters.";
+    }
+    if (statusCode === 401 || statusCode === 403) {
+      return `HTTP ${statusCode} — access denied. The endpoint requires valid auth tokens. Rotate API keys or update Authorization headers in Advanced Settings.`;
+    }
+    if (statusCode === 404) {
+      return "HTTP 404 Not Found — resource does not exist at this path. The endpoint may have moved or been removed. Update the monitor URL.";
+    }
+    if (statusCode === 429) {
+      return "HTTP 429 Too Many Requests — monitoring probe is being rate-limited. Consider reducing polling frequency or whitelisting the probe IP.";
+    }
+    if (statusCode >= 500) {
+      return `HTTP ${statusCode} Server Error — internal failure detected on the target server. Review server logs and check for database or service degradation.`;
+    }
+    return `HTTP ${statusCode} anomaly detected. Review server-side logs and verify endpoint configuration.`;
+  }
+
+  const rawLogs = monitors
+    .flatMap((m) =>
+      m.logs.map((l) => ({
+        logId: l.id,
+        monitorUrl: m.url,
+        monitorName: m.url.replace("https://", "").replace("http://", "").split("/")[0],
+        statusCode: l.statusCode,
+        errorBody: l.errorBody,
+        checkedAt: l.checkedAt,
+        aiDiagnostic: l.aiDiagnostic,
+      }))
+    )
+    .sort((a, b) => b.checkedAt.getTime() - a.checkedAt.getTime());
+
+  const diagnostics = await Promise.all(
+    rawLogs.map(async (l) => {
+      let text = l.aiDiagnostic;
+      if (!text) {
+        text = await generateIncidentDiagnosticWithCooldown(
+          l.monitorUrl,
+          l.statusCode,
+          l.errorBody
+        );
+        if (text) {
+          try {
+            await db.pingLog.update({
+              where: { id: l.logId },
+              data: { aiDiagnostic: text },
+            });
+          } catch (err) {
+            console.error("Failed to update pingLog aiDiagnostic:", err);
+          }
+        }
+      }
+
+      return {
+        monitorUrl: l.monitorUrl,
+        monitorName: l.monitorName,
+        statusCode: l.statusCode,
+        checkedAt: l.checkedAt,
+        aiDiagnostic: text || getFallbackDiagnostic(l.statusCode),
+      };
+    })
+  );
 
   return (
     <div className="min-h-screen bg-sky-50/60 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500/10 selection:text-emerald-500 font-sans antialiased relative overflow-hidden transition-colors duration-250">
