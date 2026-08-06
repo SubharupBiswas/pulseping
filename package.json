@@ -1,11 +1,12 @@
 {
-  "name": "app",
-  "version": "0.1.0",
+  "name": "pulseping",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "postinstall": "prisma generate",
     "worker": "npx tsx scripts/worker.ts",
     "prisma:generate": "prisma generate",
     "lint": "eslint"
@@ -13,14 +14,16 @@
   "dependencies": {
     "@clerk/nextjs": "^7.6.4",
     "@clerk/themes": "^2.4.57",
+    "@neondatabase/serverless": "^1.1.0",
     "@next/third-parties": "^16.3.0",
+    "@prisma/adapter-neon": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "dotenv": "^17.4.2",
     "framer-motion": "^12.43.0",
     "next": "^16.3.0",
     "pg": "^8.22.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "recharts": "^3.10.1",
     "resend": "^6.18.1",
     "swr": "^2.4.2",
@@ -44,6 +47,7 @@
     "sharp@0.35.2": true,
     "sharp@0.34.5": true,
     "prisma@7.9.1": true,
+    "@prisma/engines@7.9.1": true,
     "unrs-resolver@1.12.2": true
   }
 }
