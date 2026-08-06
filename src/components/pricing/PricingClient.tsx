@@ -28,6 +28,41 @@ type Props = {
 export default function PricingClient({ defaultCurrency }: Props) {
   const [currency, setCurrency] = useState<"INR" | "USD">(defaultCurrency);
 
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem("pulseping_currency");
+      if (saved === "INR" || saved === "USD") {
+        setCurrency(saved);
+        return;
+      }
+
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+      const lang = typeof navigator !== "undefined" ? navigator.language || "" : "";
+
+      const isIndiaRegion =
+        timeZone.includes("Kolkata") ||
+        timeZone.includes("Calcutta") ||
+        lang.toLowerCase().includes("in");
+
+      if (isIndiaRegion) {
+        setCurrency("INR");
+      } else {
+        setCurrency(defaultCurrency);
+      }
+    } catch {
+      // Fallback cleanly to defaultCurrency if Intl/localStorage is restricted
+    }
+  }, [defaultCurrency]);
+
+  const handleCurrencyChange = (newCurrency: "INR" | "USD") => {
+    setCurrency(newCurrency);
+    try {
+      localStorage.setItem("pulseping_currency", newCurrency);
+    } catch {
+      // Ignore if localStorage is unavailable
+    }
+  };
+
   const formatPrice = (value: number, curr: "INR" | "USD") => {
     return new Intl.NumberFormat(curr === "INR" ? "en-IN" : "en-US", {
       style: "currency",
@@ -145,7 +180,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
             {(["INR", "USD"] as const).map((cur) => (
               <button
                 key={cur}
-                onClick={() => setCurrency(cur)}
+                onClick={() => handleCurrencyChange(cur)}
                 className="relative z-10 px-5 py-2 text-xs font-bold rounded-lg transition-colors duration-150"
                 aria-pressed={currency === cur}
               >
