@@ -147,6 +147,7 @@ export default function BillingUpgradeCard({
           currency: orderData.currency as string,
           name:     "PulsePing",
           description: `Upgrade to ${plan} — ${billingPeriod} subscription`,
+          image: "/icon.svg",
           order_id: orderData.order_id as string,
           prefill: {
             contact: "9876543210",
@@ -154,6 +155,7 @@ export default function BillingUpgradeCard({
           },
           theme: {
             color: "#09090b",
+            backdrop_color: "rgba(0, 0, 0, 0.85)",
           },
           modal: {
             ondismiss: () => {

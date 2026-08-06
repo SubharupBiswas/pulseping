@@ -2,6 +2,7 @@
 
 import React, { useState, useTransition } from "react";
 import { createMonitor } from "@/app/actions/monitors";
+import { getPollingIntervalText } from "@/lib/plan";
 
 const HTTP_METHODS = ["GET", "POST", "HEAD", "PUT", "DELETE", "PATCH"];
 
@@ -72,7 +73,7 @@ export default function AddMonitorForm({ userId, plan = "FREE" }: { userId: stri
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">Register an HTTPS endpoint for automated uptime polling.</p>
         </div>
         <span className="text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm bg-sky-50/40 dark:bg-zinc-800/40 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hidden sm:block">
-          {plan === "BUSINESS" ? "⚡ 30s polling" : plan === "PRO" ? "⚡ 1 min polling" : "🕐 10 min polling"}
+          ⚡ {getPollingIntervalText(plan)} polling
         </span>
       </div>
 

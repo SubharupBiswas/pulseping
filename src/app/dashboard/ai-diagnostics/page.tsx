@@ -185,12 +185,13 @@ export default async function AiDiagnosticsPage() {
                   </div>
                   <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">{d.checkedAt.toLocaleString()}</span>
                 </div>
-                <div className="flex items-start gap-3 bg-violet-500/5 border border-violet-500/15 rounded-lg px-3 py-3">
-                  <span className="text-violet-400 text-sm shrink-0">✦</span>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400/80 mb-1">AI Diagnostics Summary</p>
-                    <p className="text-xs text-zinc-700 dark:text-zinc-350 leading-relaxed font-mono">{d.aiDiagnostic}</p>
-                  </div>
+                <div className="bg-purple-950/40 dark:bg-purple-950/60 border border-purple-800/50 rounded-xl p-4 text-xs font-mono">
+                  <p className="text-purple-400 dark:text-purple-300 font-bold mb-1.5 flex items-center gap-1.5">
+                    ✦ AI DIAGNOSTICS SUMMARY
+                  </p>
+                  <p className="text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                    {d.aiDiagnostic}
+                  </p>
                 </div>
               </div>
             ))

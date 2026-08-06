@@ -64,6 +64,8 @@ async function checkMonitor(monitor: any) {
   // Build custom headers from JSON field
   const builtHeaders: Record<string, string> = {
     "User-Agent": "PulsePing-UptimeBot/1.0 (Mozilla/5.0 Macintosh; Intel Mac OS X 10_15_7)",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
   };
   if (monitor.customHeaders && typeof monitor.customHeaders === "object") {
     for (const [k, v] of Object.entries(monitor.customHeaders)) {
@@ -130,10 +132,33 @@ async function checkMonitor(monitor: any) {
 
   const isFailure = statusCode < 200 || statusCode >= 300 || statusCode === 0;
 
-  // ── AI Diagnostic (fire-and-forget, non-blocking) ─────────────────────────
+  // ── AI Credit Protection Guard (Skip 403 WAF blocks & only trigger on UP -> DOWN transition) ──
   let aiDiagnostic: string | null = null;
-  if (isFailure && errorBody) {
-    aiDiagnostic = await generateIncidentDiagnostic(monitor.url, statusCode, errorBody);
+  const isWafBlock = statusCode === 403;
+
+  if (isFailure && errorBody && !isWafBlock) {
+    let wasPreviousPingHealthy = true;
+    if (Array.isArray(monitor.logs) && monitor.logs.length > 0) {
+      const prevStatusCode = monitor.logs[0].statusCode;
+      wasPreviousPingHealthy = prevStatusCode >= 200 && prevStatusCode < 300;
+    } else {
+      try {
+        const lastLog = await db.pingLog.findFirst({
+          where: { monitorId: monitor.id },
+          orderBy: { checkedAt: "desc" },
+          select: { statusCode: true },
+        });
+        if (lastLog) {
+          wasPreviousPingHealthy = lastLog.statusCode >= 200 && lastLog.statusCode < 300;
+        }
+      } catch (err) {
+        wasPreviousPingHealthy = true;
+      }
+    }
+
+    if (wasPreviousPingHealthy) {
+      aiDiagnostic = await generateIncidentDiagnostic(monitor.url, statusCode, errorBody);
+    }
   }
 
   // ── Database Writes ───────────────────────────────────────────────────────
