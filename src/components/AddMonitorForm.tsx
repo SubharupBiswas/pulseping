@@ -6,7 +6,17 @@ import { getPollingIntervalText } from "@/lib/plan";
 
 const HTTP_METHODS = ["GET", "POST", "HEAD", "PUT", "DELETE", "PATCH"];
 
-export default function AddMonitorForm({ userId, plan = "FREE" }: { userId: string; plan?: string }) {
+export default function AddMonitorForm({
+  userId,
+  plan = "FREE",
+  userTier,
+}: {
+  userId: string;
+  plan?: string;
+  userTier?: string;
+}) {
+  const activeTier = userTier || plan;
+  const intervalText = getPollingIntervalText(activeTier);
   const [url, setUrl] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [alertEmail, setAlertEmail] = useState("");
@@ -72,8 +82,8 @@ export default function AddMonitorForm({ userId, plan = "FREE" }: { userId: stri
           <h3 id="form-title" className="text-sm font-semibold text-zinc-900 dark:text-zinc-300 uppercase tracking-widest">Provision Target Stream</h3>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">Register an HTTPS endpoint for automated uptime polling.</p>
         </div>
-        <span className="text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm bg-sky-50/40 dark:bg-zinc-800/40 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hidden sm:block">
-          ⚡ {getPollingIntervalText(plan)} polling
+        <span className="text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border shadow-sm bg-sky-50/40 dark:bg-zinc-800/40 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hidden sm:block">
+          ⚡ {intervalText} polling
         </span>
       </div>
 
@@ -227,8 +237,8 @@ export default function AddMonitorForm({ userId, plan = "FREE" }: { userId: stri
 
         {/* Submit Action */}
         <div className="flex items-center justify-between pt-1 gap-3">
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Monitoring runs every 10 minutes via serverless cron.
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-3">
+            Monitoring runs every {intervalText} via serverless cron.
           </p>
           <button
             type="submit"

@@ -234,6 +234,7 @@ export default async function DashboardPage() {
           monitors={serializedMonitors as any}
           userId={userId}
           plan={plan}
+          userTier={plan}
           isPremium={isPremium}
           alertThreshold={userRecord?.alertThreshold ?? 3}
           emailNotificationsEnabled={userRecord?.emailNotificationsEnabled !== false}

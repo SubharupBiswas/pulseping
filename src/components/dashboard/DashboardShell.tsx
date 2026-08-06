@@ -54,6 +54,7 @@ type Props = {
   monitors: Monitor[];
   userId: string;
   plan: string;
+  userTier?: string;
   isPremium: boolean;
   alertThreshold: number;
   emailNotificationsEnabled: boolean;
@@ -80,6 +81,7 @@ export default function DashboardShell({
   monitors,
   userId,
   plan,
+  userTier,
   isPremium,
   alertThreshold,
   emailNotificationsEnabled,
@@ -196,7 +198,7 @@ export default function DashboardShell({
 
       {/* Add monitor form — only in streams tab */}
       {activeTab === "streams" && (
-        <AddMonitorForm userId={userId} plan={plan} />
+        <AddMonitorForm userId={userId} plan={plan} userTier={userTier || plan} />
       )}
 
       {/* Navigation */}
@@ -208,8 +210,8 @@ export default function DashboardShell({
           </span>
         )}
       </div>
-      <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6">
-        Monitoring runs every <strong className="text-zinc-700 dark:text-zinc-300 font-semibold">{getPollingIntervalText(plan)}</strong> via serverless cron.
+      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 mb-6">
+        Monitoring runs every <span className="font-semibold text-zinc-700 dark:text-zinc-300">{getPollingIntervalText(userTier || plan)}</span> via serverless cron.
       </p>
 
       {/* Tab content */}
