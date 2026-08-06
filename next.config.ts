@@ -3,38 +3,26 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  reactStrictMode: true,
   productionBrowserSourceMaps: false,
-  serverExternalPackages: [
-    "@prisma/client",
-    ".prisma/client",
-    "@prisma/adapter-neon",
-    "@neondatabase/serverless",
-    "ws",
-  ],
 
   experimental: {
     optimizePackageImports: [
       "lucide-react",
       "@clerk/nextjs",
-      "@trpc/server",
-      "@trpc/client",
       "recharts",
       "framer-motion",
     ],
   },
 
-  // Trim down deployment package size by omitting heavy source maps
-  outputFileTracingExcludes: {
-    "*": ["./**/*.js.map", "./**/*.mjs.map", "./**/*.cjs.map"],
-  },
-
-  // Silence Next.js 16 Turbopack warning when custom webpack config is present
+  // Silence the Turbopack+webpack co-existence warning.
+  // The webpack config below only adds the @/ path alias — harmless.
   turbopack: {},
 
-  // Webpack configurations with explicit path alias resolution
+  // Webpack path alias resolution for @/... imports (also used by type-checker)
   webpack: (config, { dev, isServer }) => {
     if (isServer) {
-      config.devtool = false; // Prevents embedding inline source maps into server bundles
+      config.devtool = false;
     }
     if (!dev && isServer) {
       config.optimization = {
@@ -43,12 +31,10 @@ const nextConfig: NextConfig = {
         sideEffects: true,
       };
     }
-
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': path.resolve(process.cwd(), 'src'),
+      "@": path.resolve(process.cwd(), "src"),
     };
-
     return config;
   },
 };

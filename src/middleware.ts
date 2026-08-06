@@ -1,8 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-// Mandatory edge runtime declaration for @opennextjs/cloudflare
-export const runtime = "experimental-edge";
 
 const isPublicRoute = createRouteMatcher([
   "/",

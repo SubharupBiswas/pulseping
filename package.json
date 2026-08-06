@@ -4,21 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
-    "prisma:generate": "prisma generate",
-    "preview": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare preview",
-    "deploy": "npx --no-install opennextjs-cloudflare build && npx --no-install opennextjs-cloudflare deploy",
+    "build": "next build",
     "start": "next start",
     "worker": "npx tsx scripts/worker.ts",
-    "lint": "eslint",
-    "cloudflare-deploy": "node scripts/cloudflare-build.js"
+    "prisma:generate": "prisma generate",
+    "lint": "eslint"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.6.4",
     "@clerk/themes": "^2.4.57",
     "@neondatabase/serverless": "^1.1.0",
     "@next/third-parties": "^16.2.12",
-    "@opennextjs/cloudflare": "*",
+
     "@prisma/adapter-neon": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "dotenv": "^17.4.2",
@@ -38,18 +35,13 @@
     "@types/pg": "^8.20.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "esbuild": "^0.25.12",
     "eslint": "^10.8.0",
     "eslint-config-next": "^16.2.12",
-    "glob": "^13.0.6",
     "prisma": "^7.9.1",
     "tailwindcss": "^4",
-    "typescript": "^6.0.3",
-    "wrangler": "^4.118.0"
+    "typescript": "^6.0.3"
   },
-  "overrides": {
-    "glob": "^13.0.6"
-  },
+
   "allowScripts": {
     "@clerk/shared@4.25.10": true,
     "@clerk/shared@3.47.8": true,
@@ -61,7 +53,6 @@
     "sharp@0.35.2": true,
     "sharp@0.34.5": true,
     "prisma@7.9.1": true,
-    "unrs-resolver@1.12.2": true,
-    "workerd@1.20260730.1": true
+    "unrs-resolver@1.12.2": true
   }
 }

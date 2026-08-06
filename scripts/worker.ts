@@ -1,11 +1,9 @@
 import "dotenv/config";
-import { loadEnv, db } from "../src/lib/db";
+import { db } from "../src/lib/db";
 import { generateIncidentDiagnostic } from "../src/lib/ai";
 import { Resend } from "resend";
 import * as https from "https";
 
-// Explicitly ensure environment variables are loaded prior to any database queries or network requests
-loadEnv();
 
 let isRunning = true;
 const CHECK_INTERVAL_MS = 10000; // 10-second master check loop
