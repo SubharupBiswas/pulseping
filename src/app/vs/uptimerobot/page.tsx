@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 const TABLE_DATA = [
-  { feature: "Free Plan Monitors", pulseping: "3 monitors", competitor: "50 monitors" },
+  { feature: "Free Plan Monitors", pulseping: "2 monitors", competitor: "50 monitors" },
   { feature: "Free Poll Interval", pulseping: "3 minutes", competitor: "5 minutes" },
   { feature: "Paid Poll Interval", pulseping: "30 seconds (Pro)", competitor: "1 minute (paid)" },
   { feature: "AI Root-Cause Diagnostics", pulseping: "✓ Built-in", competitor: "✗ Not available" },

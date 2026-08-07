@@ -7,20 +7,22 @@ export interface TierConfig {
   maxStatusPages: number; // 1 for FREE, 3 for PRO, Infinity for BUSINESS
   allowRemoveBadge: boolean;
   aiDiagnosticDepth: "BASIC" | "DETAILED" | "PRIORITY";
-  allowedAlertChannels: ("EMAIL" | "DISCORD" | "SLACK" | "TELEGRAM" | "WEBHOOK" | "SMS")[];
+  allowedAlertChannels: ("EMAIL" | "DISCORD" | "SLACK" | "TELEGRAM" | "WEBHOOK")[];
+  logRetentionDays: number;
   priceMonthlyINR: number;
   priceMonthlyUSD: number;
 }
 
 export const TIER_LIMITS: Record<PlanTier, TierConfig> = {
   FREE: {
-    maxMonitors: 3,
+    maxMonitors: 2,
     minIntervalSeconds: 180,
     maxHeartbeats: 1,
     maxStatusPages: 1,
     allowRemoveBadge: false,
     aiDiagnosticDepth: "BASIC",
     allowedAlertChannels: ["EMAIL"],
+    logRetentionDays: 7,
     priceMonthlyINR: 0,
     priceMonthlyUSD: 0,
   },
@@ -32,6 +34,7 @@ export const TIER_LIMITS: Record<PlanTier, TierConfig> = {
     allowRemoveBadge: true,
     aiDiagnosticDepth: "DETAILED",
     allowedAlertChannels: ["EMAIL", "DISCORD", "SLACK", "TELEGRAM"],
+    logRetentionDays: 30,
     priceMonthlyINR: 699,
     priceMonthlyUSD: 9,
   },
@@ -42,7 +45,8 @@ export const TIER_LIMITS: Record<PlanTier, TierConfig> = {
     maxStatusPages: 999,
     allowRemoveBadge: true,
     aiDiagnosticDepth: "PRIORITY",
-    allowedAlertChannels: ["EMAIL", "DISCORD", "SLACK", "TELEGRAM", "WEBHOOK", "SMS"],
+    allowedAlertChannels: ["EMAIL", "DISCORD", "SLACK", "TELEGRAM", "WEBHOOK"],
+    logRetentionDays: 90,
     priceMonthlyINR: 2199,
     priceMonthlyUSD: 29,
   },

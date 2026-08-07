@@ -436,7 +436,7 @@ export default function BillingUpgradeCard({
             <ul className="space-y-2.5 mb-6 text-xs text-zinc-500 dark:text-zinc-400">
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>3 Active Monitors</span>
+                <span>2 Active Monitors</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
@@ -449,6 +449,10 @@ export default function BillingUpgradeCard({
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
                 <span>1 Public Status Page (With Badge)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>7-Day Log History</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
@@ -522,6 +526,10 @@ export default function BillingUpgradeCard({
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
                 <span>3 Public Status Pages (Option to Hide Badge)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>30-Day Log History</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
@@ -599,11 +607,15 @@ export default function BillingUpgradeCard({
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
+                <span>90-Day Log History</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-500 font-bold">✓</span>
                 <span>Priority AI Diagnostics (Gemini -&gt; OmniRoute -&gt; Groq)</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-emerald-500 font-bold">✓</span>
-                <span>Webhook Relays, SMS &amp; Dedicated Support</span>
+                <span>Webhook Relays &amp; Dedicated Support</span>
               </li>
             </ul>
           </div>

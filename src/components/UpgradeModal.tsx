@@ -41,7 +41,7 @@ const REASON_COPY: Record<UpgradeReason, { title: string; body: string }> = {
   },
   alert_channels: {
     title: "Alert Channel Not Available",
-    body: "This notification channel type (Slack, Telegram, SMS) is not available on your current plan. Upgrade to unlock multi-channel alerting.",
+    body: "This notification channel type (Slack, Telegram, Webhook) is not available on your current plan. Upgrade to unlock multi-channel alerting.",
   },
   ai_diagnostics: {
     title: "AI Diagnostics Locked",
@@ -70,7 +70,7 @@ const PLAN_OPTIONS = [
     tier: "BUSINESS",
     priceINR: "₹2,199/mo",
     priceUSD: "$29/mo",
-    highlights: ["100 Monitors", "10-second checks", "All channel types + SMS", "Priority Support"],
+    highlights: ["100 Monitors", "10-second checks", "All channel types + Webhooks", "Priority Support"],
     planId: "business_monthly",
     popular: false,
   },

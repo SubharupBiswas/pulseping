@@ -2,13 +2,17 @@
 
 import React, { useEffect, useState } from "react";
 import { SignUp } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import Script from "next/script";
 import PulsePingLogo from "@/components/PulsePingLogo";
 import Footer from "@/components/Footer";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function SignUpPage() {
   const [mounted, setMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -33,15 +37,18 @@ export default function SignUpPage() {
               PulsePing
             </span>
           </Link>
-          <span className="text-sm text-zinc-600 dark:text-zinc-400 font-medium">
-            Already have an account?{" "}
-            <Link
-              href="/sign-in"
-              className="text-zinc-900 dark:text-zinc-100 font-semibold underline hover:text-emerald-500 transition duration-150"
-            >
-              Sign in
-            </Link>
-          </span>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <span className="text-sm text-zinc-600 dark:text-zinc-400 font-medium">
+              Already have an account?{" "}
+              <Link
+                href="/sign-in"
+                className="text-zinc-900 dark:text-zinc-100 font-semibold underline hover:text-emerald-500 transition duration-150"
+              >
+                Sign in
+              </Link>
+            </span>
+          </div>
         </div>
       </header>
 
@@ -60,11 +67,12 @@ export default function SignUpPage() {
           <div className="flex flex-col items-center gap-4">
             <SignUp
               appearance={{
+                baseTheme: mounted && resolvedTheme === "dark" ? dark : undefined,
                 elements: {
                   rootBox: "mx-auto w-full",
                   card: "bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-xl rounded-2xl transition-colors",
                 },
-              }}
+              } as any}
               fallbackRedirectUrl="/dashboard"
               signInUrl="/sign-in"
             />

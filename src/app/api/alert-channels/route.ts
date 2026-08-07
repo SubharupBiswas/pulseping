@@ -6,7 +6,7 @@ import { getTierLimits } from "@/lib/tiers";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const ALL_SUPPORTED_TYPES = ["DISCORD", "SLACK", "EMAIL", "WEBHOOK", "TELEGRAM", "SMS"];
+const ALL_SUPPORTED_TYPES = ["DISCORD", "SLACK", "EMAIL", "WEBHOOK", "TELEGRAM"];
 
 export async function POST(req: NextRequest) {
   try {

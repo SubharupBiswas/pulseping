@@ -95,6 +95,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { ThemeProvider } from "@/components/ThemeProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -161,7 +163,9 @@ export default function RootLayout({
         <body
           className={`${inter.variable} min-h-full flex flex-col overflow-x-hidden transition-colors duration-250 bg-sky-50 text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased`}
         >
-          {children}
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={true}>
+            {children}
+          </ThemeProvider>
           <GoogleAnalytics
             gaId={process.env.NEXT_PUBLIC_GA_ID || "G-DKG16R7DV4"}
           />

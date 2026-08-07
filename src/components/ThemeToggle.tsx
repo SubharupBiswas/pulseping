@@ -1,47 +1,42 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
-    // Check local storage or system preference
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    
-    const initialTheme = savedTheme || (systemPrefersDark ? "dark" : "light");
-    setTheme(initialTheme);
-
-    if (initialTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    setMounted(true);
   }, []);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
+  const isDark = resolvedTheme === "dark";
 
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+  const toggleTheme = () => {
+    setTheme(isDark ? "light" : "dark");
   };
+
+  if (!mounted) {
+    return (
+      <button
+        className="w-8 h-8 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/20 flex items-center justify-center shadow-sm cursor-pointer"
+        aria-label="Toggle theme"
+        id="theme-toggle-btn"
+      />
+    );
+  }
 
   return (
     <button
       onClick={toggleTheme}
       className="w-8 h-8 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900/20 dark:hover:bg-zinc-800/50 flex items-center justify-center transition-all duration-200 shadow-sm cursor-pointer text-zinc-650 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
-      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      aria-pressed={theme === "dark"}
-      title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-pressed={isDark}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       id="theme-toggle-btn"
     >
-      {theme === "dark" ? (
+      {isDark ? (
         // Sun Icon
         <svg
           className="w-4 h-4"

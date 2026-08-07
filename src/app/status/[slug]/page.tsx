@@ -269,10 +269,10 @@ export default async function PublicStatusPage({ params }: Props) {
               href={`https://pulseping.subharup.com?utm_source=status_board&utm_medium=badge&utm_campaign=viral_footer`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-xs font-medium text-slate-400 hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-200 shadow-sm"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-200 shadow-sm"
             >
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              Powered by <span className="font-semibold text-slate-200 hover:text-emerald-400">PulsePing</span>
+              Powered by <span className="font-semibold text-slate-900 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400">PulsePing</span>
             </a>
           ) : (
             <span className="text-xs text-zinc-500 dark:text-zinc-600 font-mono">
