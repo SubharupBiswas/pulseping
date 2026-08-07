@@ -90,19 +90,20 @@ It solves critical production engineering challenges: **monitoring API endpoints
 
 The system exposes high-performance REST endpoints under `/api`:
 
-* **`GET /api/cron/ping`**: Executes concurrent endpoint telemetry checks across all active user monitors (supports `x-internal-cron: true` and `x-cron-secret` authorization headers).
+* **`GET /api/cron/ping`**: Executes concurrent endpoint telemetry checks across all active user monitors (supports `x-internal-cron: true` and `x-cron-secret` authorization headers). Probes use full browser-like HTTP headers (Sec-Ch-Ua, Sec-Fetch-*) to bypass Cloudflare WAF Super Bot Fight Mode.
 * **`GET /api/health`**: Database connection health check and status reporting.
 * **`POST /api/status-pages`**: Creates a new public status board using `getUniqueSlug` for guaranteed collision-free URLs.
 * **`PATCH /api/status-pages/[id]`**: Updates status page metadata, visibility, and linked monitor streams.
 * **`DELETE /api/status-pages/[id]`**: Removes a public status board.
-* **`POST /api/razorpay/order` & `POST /api/create-order`**: Generates signed Razorpay payment orders for PRO/BUSINESS plan upgrades.
+* **`POST /api/razorpay/order`**: Generates signed Razorpay payment orders for PRO/BUSINESS plan upgrades. Supports promo codes (`LAUNCH50` — 50% off, `PULSEFIRST` — 20% off) and resolves amounts from the central `PLAN_PRICES` table. Returns `discountApplied`, `discountLabel`, and `originalAmount` fields when a promo is active.
 * **`POST /api/verify-payment`**: Validates payment HMAC signatures and logs billing `Invoice` records.
 * **`POST /api/webhooks/razorpay`**: Asynchronous Razorpay event webhook handler.
 * **`POST /api/subscription/cancel`**: Handles subscription tier downgrades back to `FREE`.
 * **`GET/POST /api/heartbeat/[token]`**: Inbound ping tracking for cron job and background script heartbeats ("dead-man's switch").
 * **`GET/POST /api/relay/[id]` & `/api/relay/replay`**: Inbound webhook payload inspection, validation, and manual replay.
-* **`GET/POST /api/alert-channels`**: Manages user notification channels (Discord, Slack, Telegram, Webhook).
+* **`GET/POST /api/alert-channels`**: Manages user notification channels (Discord, Slack, Telegram, Webhook, SMS). Channel availability is enforced per-tier via `TIER_LIMITS.allowedAlertChannels`.
 * **`GET /api/telemetry`**: Retrieves monitor latency history and uptime availability percentages.
+* **`POST /api/admin/switch-plan`**: Superuser instant plan override endpoint (strictly authorized by `ADMIN_EMAILS` env var).
 
 ---
 
@@ -113,11 +114,11 @@ The system exposes high-performance REST endpoints under `/api`:
 | **Framework** | **Next.js** | `16.3.0` | React 19 async rendering, App Router, Server Components & Turbopack. |
 | **Language** | **TypeScript** | `5.8.2` | End-to-end static type safety across API routes, Prisma schemas & UI components. |
 | **Styling** | **Tailwind CSS** | `v4.0` | Zero runtime CSS injection overhead, container queries, dark/light theme switching. |
-| **Database** | **Neon Postgres** | `1.1.0` | Serverless PostgreSQL with instant autoscaling and connection pooling. |
-| **ORM & Driver** | **Prisma & Adapter** | `7.9.1` | Type-safe queries using `@prisma/adapter-neon` and `@prisma/adapter-pg`. |
+| **Database** | **PostgreSQL (TCP)** | `pg@latest` | Local TCP PostgreSQL via `pg.Pool` + `@prisma/adapter-pg`. Migrated from Neon Serverless WS driver. |
+| **ORM & Driver** | **Prisma + PrismaPg** | `7.9.1` | Type-safe queries using `@prisma/adapter-pg` over standard TCP connection pool. |
 | **Auth** | **Clerk Identity** | `7.6.4` | Edge-compatible middleware session control and OAuth management. |
 | **AI Engine** | **Google Gemini** | REST API | Automated root cause analysis for 4xx/5xx HTTP errors & connection timeouts. |
-| **Payments** | **Razorpay** | REST API | Multi-tier subscription billing with cryptographic HMAC-SHA256 signature verification. |
+| **Payments** | **Razorpay** | REST API | Multi-tier subscription billing with promo code support and HMAC-SHA256 signature verification. |
 | **Deployment** | **Node.js Standalone** | `v24 LTS` | Native standalone process runner with automated static asset syncing. |
 
 ---
@@ -327,6 +328,9 @@ RAZORPAY_KEY_SECRET="your_razorpay_secret"
 
 # Application Base URL
 NEXT_PUBLIC_APP_URL="https://pulseping.subharup.com"
+
+# Admin Superuser Privileges
+ADMIN_EMAILS="admin@example.com,subharup@example.com"
 ```
 
 ---

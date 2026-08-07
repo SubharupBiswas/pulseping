@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { getTierLimits } from "@/lib/tiers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const SUPPORTED_TYPES = ["DISCORD", "SLACK", "EMAIL", "WEBHOOK"];
+const ALL_SUPPORTED_TYPES = ["DISCORD", "SLACK", "EMAIL", "WEBHOOK", "TELEGRAM", "SMS"];
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,9 +18,11 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { type, url, name } = body;
 
-    if (!type || !SUPPORTED_TYPES.includes(type.toUpperCase())) {
+    const channelType = (type || "").toUpperCase();
+
+    if (!channelType || !ALL_SUPPORTED_TYPES.includes(channelType)) {
       return NextResponse.json(
-        { error: `Invalid channel type. Supported: ${SUPPORTED_TYPES.join(", ")}` },
+        { error: `Invalid channel type. Supported: ${ALL_SUPPORTED_TYPES.join(", ")}` },
         { status: 400 }
       );
     }
@@ -28,11 +31,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "A valid webhook URL is required" }, { status: 400 });
     }
 
-    // Check plan gating
+    // Enforce tier-based channel type restrictions
     const userRecord = await db.user.findUnique({ where: { id: userId } });
-    if (!userRecord || userRecord.plan === "FREE") {
+    const tierLimits = getTierLimits(userRecord?.plan || "FREE");
+
+    if (!tierLimits.allowedAlertChannels.includes(channelType as any)) {
       return NextResponse.json(
-        { error: "Alert Channels require a PRO or BUSINESS subscription" },
+        {
+          error: "UPGRADE_REQUIRED",
+          message: `${channelType} alert channels are not available on the ${userRecord?.plan || "FREE"} plan. Upgrade to access this feature.`,
+        },
         { status: 403 }
       );
     }
@@ -40,14 +48,14 @@ export async function POST(req: NextRequest) {
     const channel = await db.alertChannel.create({
       data: {
         userId,
-        providerType: type.toUpperCase(),
+        providerType: channelType,
         destinationUrl: url,
         userFriendlyName: name?.trim() || null,
       },
     });
 
     return NextResponse.json({ success: true, channel });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[ALERT_CHANNELS_CREATE_ERROR]:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

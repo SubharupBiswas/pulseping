@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
+import { getTierLimits } from "@/lib/tiers";
 
 // ISR: Revalidate every 60 seconds to protect Neon from traffic spikes
 export const revalidate = 60;
@@ -77,6 +78,11 @@ export default async function PublicStatusPage({ params }: Props) {
   const globalUptime = calcUptime(allLogs);
   const activeIncidents = monitors.filter((m: any) => !isCurrentlyUp(m.logs)).length;
   const allUp = activeIncidents === 0;
+
+  // Determine badge visibility: FREE plans always show badge; PRO/BUSINESS can opt out
+  const ownerPlan: string = (page as any).user?.plan || "FREE";
+  const tierConfig = getTierLimits(ownerPlan);
+  const showBadge = !tierConfig.allowRemoveBadge || !(page as any).hideBadge;
 
   return (
     <div className="min-h-screen bg-sky-50/60 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased transition-colors duration-250">
@@ -258,9 +264,21 @@ export default async function PublicStatusPage({ params }: Props) {
 
         {/* Footer */}
         <div className="mt-16 pt-6 border-t border-zinc-200 dark:border-zinc-800/60 flex items-center justify-between">
-          <span className="text-xs text-zinc-500 dark:text-zinc-600 font-mono">
-            Powered by <Link href="/" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition">PulsePing</Link>
-          </span>
+          {showBadge ? (
+            <a
+              href={`https://pulseping.subharup.com?utm_source=status_board&utm_medium=badge&utm_campaign=viral_footer`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-xs font-medium text-slate-400 hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-200 shadow-sm"
+            >
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              Powered by <span className="font-semibold text-slate-200 hover:text-emerald-400">PulsePing</span>
+            </a>
+          ) : (
+            <span className="text-xs text-zinc-500 dark:text-zinc-600 font-mono">
+              Powered by <Link href="/" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-300 transition">PulsePing</Link>
+            </span>
+          )}
           <span className="text-[10px] text-zinc-400 dark:text-zinc-700 font-mono">
             ISR · revalidates every 60s
           </span>

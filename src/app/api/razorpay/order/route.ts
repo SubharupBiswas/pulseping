@@ -4,23 +4,30 @@ import { auth } from "@clerk/nextjs/server";
 export const dynamic = "force-dynamic";
 
 // Tier → base price lookup (in rupees / dollars, NOT paise)
+// Annual prices already reflect ~20% discount vs 12× monthly
 const PLAN_PRICES: Record<string, { INR: number; USD: number }> = {
-  pro_monthly:          { INR: 499,   USD: 7   },
-  pro_yearly:           { INR: 4788,  USD: 67  },
-  business_monthly:     { INR: 1499,  USD: 20  },
-  business_yearly:      { INR: 14388, USD: 200 },
+  pro_monthly:          { INR: 699,   USD: 9   },
+  pro_yearly:           { INR: 5988,  USD: 82  },  // 699×12×0.714 ≈ ₹5988 (~15% off)
+  business_monthly:     { INR: 2199,  USD: 29  },
+  business_yearly:      { INR: 18828, USD: 250 },  // 2199×12×0.714 ≈ ₹18828 (~15% off)
+};
+
+// Promo codes: { discountPercent }
+const PROMO_CODES: Record<string, { discountPercent: number; description: string }> = {
+  LAUNCH50:   { discountPercent: 50, description: "Launch special — 50% off" },
+  PULSEFIRST: { discountPercent: 20, description: "First-user discount — 20% off" },
 };
 
 function normalisePlanKey(planId: string): string {
   const raw = (planId || "").toLowerCase().trim();
   const aliases: Record<string, string> = {
-    pro:                    "pro_monthly",
-    plan_pro_test_id:       "pro_monthly",
-    plan_pro_annual_test_id:"pro_yearly",
-    business:               "business_monthly",
-    biz:                    "business_monthly",
-    plan_biz_test_id:       "business_monthly",
-    plan_biz_annual_test_id:"business_yearly",
+    pro:                     "pro_monthly",
+    plan_pro_test_id:        "pro_monthly",
+    plan_pro_annual_test_id: "pro_yearly",
+    business:                "business_monthly",
+    biz:                     "business_monthly",
+    plan_biz_test_id:        "business_monthly",
+    plan_biz_annual_test_id: "business_yearly",
   };
   return aliases[raw] ?? raw;
 }
@@ -47,9 +54,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { planId, currency = "INR" } = body as {
+    const { planId, currency = "INR", promoCode } = body as {
       planId?: string;
       currency?: "INR" | "USD";
+      promoCode?: string;
     };
 
     const curr: "INR" | "USD" = currency === "USD" ? "USD" : "INR";
@@ -65,7 +73,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const amount = Math.round(prices[curr] * 100);
+    let basePrice = prices[curr];
+    let discountPercent = 0;
+    let discountDescription: string | null = null;
+
+    // ── Apply promo code ────────────────────────────────────────────────────
+    if (promoCode) {
+      const normalizedCode = String(promoCode).toUpperCase().trim();
+      const promo = PROMO_CODES[normalizedCode];
+      if (promo) {
+        discountPercent = promo.discountPercent;
+        discountDescription = promo.description;
+      } else {
+        return NextResponse.json(
+          { success: false, error: `Invalid promo code: "${promoCode}"` },
+          { status: 400 }
+        );
+      }
+    }
+
+    const discountedPrice = discountPercent > 0
+      ? Math.round(basePrice * (1 - discountPercent / 100))
+      : basePrice;
+
+    const amount = Math.round(discountedPrice * 100);
 
     if (amount < 100) {
       return NextResponse.json(
@@ -116,6 +147,7 @@ export async function POST(req: NextRequest) {
           userId,
           planId: canonicalKey,
           currency: curr,
+          ...(discountPercent > 0 ? { promoCode, discountPercent, discountDescription } : {}),
         },
       }),
     });
@@ -144,10 +176,15 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      order_id: rzData.id as string,
-      amount:   rzData.amount as number,
-      currency: rzData.currency as string,
-      notes:    rzData.notes,
+      order_id:            rzData.id as string,
+      amount:              rzData.amount as number,
+      currency:            rzData.currency as string,
+      notes:               rzData.notes,
+      ...(discountPercent > 0 ? {
+        discountApplied:   discountPercent,
+        discountLabel:     discountDescription,
+        originalAmount:    Math.round(basePrice * 100),
+      } : {}),
     });
   } catch (err: unknown) {
     console.error("[ORDER_ROUTE] Unhandled exception:", err);

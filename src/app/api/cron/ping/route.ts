@@ -71,19 +71,33 @@ async function checkMonitor(monitor: any) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-    // Build custom headers from JSON field
-    const builtHeaders: Record<string, string> = {
-      "User-Agent": "PulsePing-UptimeBot/1.0 (Mozilla/5.0 Macintosh; Intel Mac OS X 10_15_7)",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    // Build full browser-like headers to bypass Cloudflare WAF / Super Bot Fight Mode
+    const defaultHeaders: Record<string, string> = {
+      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 PulsePingBot/1.0",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.9",
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache",
+      "Sec-Ch-Ua": '"Not-A.Brand";v="99", "Chromium";v="124", "Google Chrome";v="124"',
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": '"macOS"',
+      "Sec-Fetch-Dest": "document",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "none",
+      "Sec-Fetch-User": "?1",
+      "Upgrade-Insecure-Requests": "1",
     };
+
+    // Merge user-defined custom headers on top of defaults
+    const parsedCustomHeaders: Record<string, string> = {};
     if (monitor.customHeaders && typeof monitor.customHeaders === "object") {
       for (const [k, v] of Object.entries(monitor.customHeaders)) {
         if (typeof k === "string" && typeof v === "string") {
-          builtHeaders[k] = v;
+          parsedCustomHeaders[k] = v;
         }
       }
     }
+    const builtHeaders = { ...defaultHeaders, ...parsedCustomHeaders };
 
     const httpMethod: string = (monitor.httpMethod || "GET").toUpperCase();
     let responseText: string | null = null;

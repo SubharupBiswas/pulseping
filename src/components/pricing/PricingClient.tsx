@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
+import { PlanTier } from "@/lib/tiers";
 
 const faqItems = [
   {
@@ -23,10 +25,35 @@ const faqItems = [
 
 type Props = {
   defaultCurrency: "INR" | "USD";
+  isAdmin?: boolean;
 };
 
-export default function PricingClient({ defaultCurrency }: Props) {
+export default function PricingClient({ defaultCurrency, isAdmin = false }: Props) {
+  const router = useRouter();
   const [currency, setCurrency] = useState<"INR" | "USD">(defaultCurrency);
+  const [switchingTier, setSwitchingTier] = useState<string | null>(null);
+
+  const handleAdminSwitchPlan = async (plan: PlanTier) => {
+    try {
+      setSwitchingTier(plan);
+      const res = await fetch("/api/admin/switch-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        router.refresh();
+      } else {
+        alert(data.error || "Failed to switch plan");
+      }
+    } catch (err: any) {
+      console.error("Failed to switch plan:", err);
+      alert("An error occurred while switching plan");
+    } finally {
+      setSwitchingTier(null);
+    }
+  };
 
   React.useEffect(() => {
     try {
@@ -74,6 +101,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
   const pricingPlans = [
     {
       name: "Free",
+      tier: "FREE" as PlanTier,
       price: formatPrice(0, currency),
       period: "forever",
       description: "Essential status checking parameters for personal services.",
@@ -89,6 +117,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
     },
     {
       name: "Pro",
+      tier: "PRO" as PlanTier,
       price: currency === "INR" ? formatPrice(499, "INR") : formatPrice(7, "USD"),
       period: "per month",
       description: "Expanded limits and faster resolution loops for production pipelines.",
@@ -107,6 +136,7 @@ export default function PricingClient({ defaultCurrency }: Props) {
     },
     {
       name: "Business",
+      tier: "BUSINESS" as PlanTier,
       price: currency === "INR" ? formatPrice(1499, "INR") : formatPrice(20, "USD"),
       period: "per month",
       description: "Dedicated scaling limits and custom SLA validation profiles.",
@@ -264,16 +294,29 @@ export default function PricingClient({ defaultCurrency }: Props) {
                   </div>
                 </div>
 
-                <Link
-                  href={plan.href}
-                  className={`btn-shimmer w-full py-2.5 rounded-lg text-center text-xs font-bold transition-all duration-200 block ${
-                    plan.popular
-                      ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/10"
-                      : "bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-50 dark:hover:bg-white dark:text-zinc-950 border border-zinc-200 dark:border-transparent shadow-sm"
-                  }`}
-                >
-                  {plan.cta}
-                </Link>
+                <div>
+                  <Link
+                    href={plan.href}
+                    className={`btn-shimmer w-full py-2.5 rounded-lg text-center text-xs font-bold transition-all duration-200 block ${
+                      plan.popular
+                        ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/10"
+                        : "bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-50 dark:hover:bg-white dark:text-zinc-950 border border-zinc-200 dark:border-transparent shadow-sm"
+                    }`}
+                  >
+                    {plan.cta}
+                  </Link>
+
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      disabled={switchingTier === plan.tier}
+                      onClick={() => handleAdminSwitchPlan(plan.tier)}
+                      className="mt-2 w-full py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-black shadow-sm transition-all duration-150 flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                    >
+                      ⚡ Dev Switch (Instant) {switchingTier === plan.tier ? "..." : ""}
+                    </button>
+                  )}
+                </div>
               </motion.div>
             ))}
           </motion.div>

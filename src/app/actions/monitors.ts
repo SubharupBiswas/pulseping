@@ -3,8 +3,8 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-
 import { getOrCreateUser } from "@/lib/user";
+import { getTierLimits } from "@/lib/tiers";
 
 export async function createMonitor(
   url: string,
@@ -25,13 +25,13 @@ export async function createMonitor(
 
     const userRecord = await getOrCreateUser(userId);
     const plan = userRecord?.plan || "FREE";
+    const tierLimits = getTierLimits(plan);
     const currentCount = await db.monitor.count({ where: { userId } });
 
-    if (plan === "FREE" && currentCount >= 2) {
-      throw new Error("Free Tier monitor limit reached (max 2 endpoints). Upgrade to Pro or Business to expand capacity.");
-    }
-    if (plan === "PRO" && currentCount >= 20) {
-      throw new Error("Pro Tier monitor limit reached (max 20 endpoints). Upgrade to Business Tier for unlimited capacity.");
+    if (currentCount >= tierLimits.maxMonitors) {
+      throw new Error(
+        `${plan} Tier monitor limit reached (max ${tierLimits.maxMonitors} endpoints). Upgrade to expand capacity.`
+      );
     }
 
     const parsedUrl = new URL(url);
@@ -39,24 +39,22 @@ export async function createMonitor(
       throw new Error("Invalid target protocol. URL must be http:// or https://");
     }
 
-    if (webhookUrl) {
-      if (plan === "FREE") {
-        throw new Error("Webhook alerts are a premium feature. Upgrade to Pro or Business Tier to activate alerts.");
-      }
-      const parsedWebhook = new URL(webhookUrl);
-      if (plan === "PRO" && !parsedWebhook.hostname.includes("discord")) {
-        throw new Error("Pro Tier only supports Discord webhook alert channels. Upgrade to Business Tier to activate Slack or Custom webhooks.");
-      }
+    if (webhookUrl && plan === "FREE") {
+      throw new Error("Webhook alerts are a premium feature. Upgrade to Pro or Business Tier to activate alerts.");
     }
 
-    const frequency = plan === "FREE" ? 10 : plan === "PRO" ? 1 : 30;
+    // Frequency in minutes, driven by tier
+    const frequencyMinutes =
+      plan === "BUSINESS" ? 0.5  // 30s
+      : plan === "PRO"      ? 1    // 1 min
+      : 3;                         // 3 min (FREE = 180s)
 
     const monitor = await db.monitor.create({
       data: {
         url: parsedUrl.href,
         webhookUrl: webhookUrl || null,
         userId,
-        frequency,
+        frequency: frequencyMinutes,
         isActive: true,
         alertEmail: alertEmail || null,
         telegramChatId: telegramChatId || null,
@@ -173,6 +171,16 @@ export async function createHeartbeat(
   try {
     const session = await auth();
     if (!session.userId) throw new Error("Unauthorized.");
+
+    // Tier-gated heartbeat limit
+    const userRecord = await db.user.findUnique({ where: { id: session.userId } });
+    const tierLimits = getTierLimits(userRecord?.plan || "FREE");
+    const existingHeartbeats = await (db as any).heartbeat.count({ where: { userId: session.userId } });
+    if (existingHeartbeats >= tierLimits.maxHeartbeats) {
+      throw new Error(
+        `${userRecord?.plan || "FREE"} Tier heartbeat limit reached (max ${tierLimits.maxHeartbeats}). Upgrade to expand capacity.`
+      );
+    }
 
     const heartbeat = await (db as any).heartbeat.create({
       data: {

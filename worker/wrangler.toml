@@ -1,6 +1,0 @@
-name = "pulseping-cron-worker"
-main = "index.ts"
-compatibility_date = "2026-08-01"
-
-[triggers]
-crons = ["*/10 * * * *"]
