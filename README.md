@@ -310,8 +310,8 @@ model WebhookLog {
 Create a `.env.local` file in the root directory:
 
 ```env
-# Datastore (Neon PostgreSQL)
-DATABASE_URL="postgresql://user:password@ep-cool-host.neon.tech/neondb?sslmode=require"
+# Datastore (PostgreSQL)
+DATABASE_URL="postgresql://user:password@localhost:5432/pulseping"
 
 # Authentication (Clerk)
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
