@@ -90,6 +90,10 @@ It solves critical production engineering challenges: **monitoring API endpoints
 * **Problem:** Serving global users requires multi-currency pricing (INR ₹ vs USD $), but static server-rendering IP lookups fail behind CDN caches or load balancers.
 * **Solution:** Implemented client-side timezone and locale auto-detection using `Intl.DateTimeFormat().resolvedOptions().timeZone` (`Asia/Kolkata`, `Asia/Calcutta`) and `navigator.language` (`en-IN`), persisted seamlessly in `localStorage` (`pulseping_currency`).
 
+### 8. 🔍 Dynamic SEO Engine & Automated XML Sitemap
+* **Problem:** Static sitemap XML files easily become stale when new competitor comparison or legal pages are added, and hardcoded `public/sitemap.xml` files cause collisions with Next.js App Router dynamic route handlers.
+* **Solution:** Engineered native Next.js App Router sitemap and crawler controls (`src/app/sitemap.ts` & `src/app/robots.ts`). Dynamically generates `/sitemap.xml` with tuned priorities, change frequencies, and `lastmod` timestamps across all indexable landing, competitor comparison (`/vs/betterstack`, `/vs/uptimerobot`), and legal pages while strictly disallowing private routes (`/dashboard/*`, `/api/*`, `/sign-in`, `/sign-up`).
+
 ---
 
 ## 🔌 Operational API Endpoints
