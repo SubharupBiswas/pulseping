@@ -176,10 +176,8 @@ export default async function BillingPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-205">Resource Allocations & Limits</h4>
-              <p className="text-xs text-zinc-550 dark:text-zinc-400 mt-0.5">
-                {plan === "FREE" && "Allows up to 2 active monitor streams, 10-minute resolution polling, and basic email notifications."}
-                {plan === "PRO" && "Allows up to 20 active monitor streams, 1-minute high-frequency polling, and Discord webhook triggers."}
-                {plan === "BUSINESS" && "Allows unlimited monitor streams, 30-second real-time polling, and priority multi-channel alerts."}
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                Allows {plan === "BUSINESS" ? "100" : plan === "PRO" ? "20" : "3"} monitor streams, {plan === "BUSINESS" ? "10-second" : plan === "PRO" ? "30-second" : "3-minute"} real-time polling, and priority multi-channel alerts.
               </p>
             </div>
 

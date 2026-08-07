@@ -1,11 +1,11 @@
 export const getPollingIntervalText = (tier?: string) => {
   switch (tier?.toUpperCase()) {
     case "BUSINESS":
-      return "30 seconds";
+      return "10 seconds";
     case "PRO":
-      return "1 minute";
+      return "30 seconds";
     default:
-      return "10 minutes";
+      return "3 minutes";
   }
 };
 

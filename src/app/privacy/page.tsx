@@ -13,7 +13,7 @@ const sections = [
     body: `We collect information necessary to perform uptime monitoring and alert notifications. This includes:`,
     bullets: [
       `User Profile Data: Email addresses, user IDs, and metadata provided by Clerk during user sign-in processes.`,
-      `Registered Target Data: Target URLs and optional Discord webhook URL strings registered to user monitoring channels.`,
+      `Registered Target Data: Target URLs and optional Discord, Slack, Telegram, or custom webhook URL strings registered to user monitoring channels.`,
       `Telemetry Log Records: Status codes, HTTP response headers, check latencies, check timestamps, and target accessibility metrics logged to PostgreSQL.`,
       `Billing Details: Subscription status, payment references, and plan limits processed securely by Razorpay. We do not store raw card numbers.`,
     ],
@@ -23,27 +23,27 @@ const sections = [
     body: `Information is processed exclusively to:`,
     bullets: [
       `Instantiate and execute automated endpoint check cron tasks.`,
-      `Dispatch Markdown failure embeds to your Discord channel targets when health rules are breached.`,
-      `Generate the dashboard console charts, stats matrices, and check histories.`,
+      `Dispatch failure alerts and Markdown embeds to your configured notification channels when health rules are breached.`,
+      `Generate dashboard console charts, stats matrices, and check histories.`,
       `Manage subscription records, verify signatures, and upgrade plan capacities.`,
-      `Verify user authorization inside monitors server actions.`,
+      `Verify user authorization inside monitor server actions.`,
     ],
   },
   {
     title: "3. Service Infrastructure and Database Storage",
-    body: `Data is stored durably on Neon PostgreSQL servers utilizing Prisma 7. The database records are protected by encryption at rest. Internal database queries are strictly constrained to ensure that users may only view telemetry data matching their authenticated Clerk identity signature.`,
+    body: `Data is stored durably on PostgreSQL datastores utilizing Prisma ORM. Database records are protected by encryption at rest. Internal database queries are strictly constrained to ensure that users may only view telemetry data matching their authenticated Clerk identity signature.`,
   },
   {
     title: "4. Telemetry Log Retention and Purges",
     body: `Uptime logs (PingLogs) are stored for:`,
     bullets: [
       `Free Plan (₹0 INR / $0 USD): 90 days of check history, after which logs are permanently deleted.`,
-      `Pro Plan (₹499 INR / $7 USD) or Business Plan (₹1,499 INR / $20 USD): 365 days of check history, allowing for long-term SLA reporting.`,
+      `Pro Plan (₹699 INR / $9 USD) or Business Plan (₹2,199 INR / $29 USD): 365 days of check history, allowing for long-term SLA reporting.`,
       `Deleted Monitors: When a website monitor is deleted, all dependent PingLog entries are purged from the database immediately to preserve integrity.`,
     ],
   },
   {
-    title: "5. Security notice and Warning Interception",
+    title: "5. Security Notice and Warning Interception",
     body: `To protect your operational metrics, all dashboard and server pipelines intercept database driver event outputs. Database warnings are caught and sanitized before logs are written to external diagnostic consoles, preventing credentials or configurations from leaking.`,
   },
   {
@@ -52,11 +52,11 @@ const sections = [
   },
   {
     title: "7. Cookies and Authentication Identifiers",
-    body: `We do not set tracking or advertising cookies. Access tokens and session keys are managed natively by Clerk using secure HTTP-only cookie parameters to validate route routing configurations.`,
+    body: `We do not set tracking or advertising cookies. Access tokens and session keys are managed natively by Clerk using secure HTTP-only cookie parameters to validate routing configurations.`,
   },
   {
     title: "8. Data Sharing and Third-Party API Hooks",
-    body: `We do not sell user data. Target check metrics are dispatched to third-party endpoints (e.g. Discord servers) solely when a webhook URL is configured by the user. These requests are sent over HTTPS with payload signatures.`,
+    body: `We do not sell user data. Target check metrics are dispatched to third-party endpoints (e.g. Discord, Slack, Telegram, Webhook) solely when a notification channel is configured by the user. These requests are sent over HTTPS with payload signatures.`,
   },
   {
     title: "9. Your Rights and Access Controls",

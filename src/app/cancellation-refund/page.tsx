@@ -39,7 +39,7 @@ export default function CancellationRefundPage() {
           <div>
             <h2 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mb-3">1. Instant Resource Provisioning</h2>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              PulsePing operates a developer-first SaaS platform. Upon successful signature verification of a checkout transaction processed by our payment gateway (Razorpay), your subscription resources (e.g., increased stream limit parameters, high-frequency 1-minute checking, cron configurations) are provisioned instantaneously to your Clerk account context.
+              PulsePing operates a developer-first SaaS platform. Upon successful signature verification of a checkout transaction processed by our payment gateway (Razorpay), your subscription resources (e.g. up to 100 monitor streams, high-frequency 10-second or 30-second checking, multi-channel webhook alert relays) are provisioned instantaneously to your account context.
             </p>
           </div>
 
@@ -51,9 +51,9 @@ export default function CancellationRefundPage() {
           </div>
 
           <div>
-            <h2 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mb-3">3. Refund Terms</h2>
+            <h2 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mb-3">3. Refund Terms & 14-Day Guarantee</h2>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              Since platform tier resources are instantiated and utilized immediately upon checkout, we do not offer refunds or pro-rated credits for billing cycles already completed or active. All payments processed via the Razorpay gateway framework are final.
+              We offer a <strong>14-day money-back guarantee</strong> for initial paid subscription upgrades. If you are unsatisfied with your upgraded tier, contact support at <a href="mailto:support@subharup.com" className="text-emerald-600 dark:text-emerald-400 underline font-semibold">support@subharup.com</a> within 14 days of purchase for a full cancellation refund. Payments processed via the Razorpay gateway for subsequent recurring renewal cycles are non-refundable except as required by applicable law.
             </p>
           </div>
         </div>

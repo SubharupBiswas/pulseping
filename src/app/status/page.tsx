@@ -102,7 +102,7 @@ export default async function StatusPage() {
         { 
           name: "Background Cron Ticker", 
           status: allOperational ? "operational" : "degraded", 
-          latency: "25s loop", 
+          latency: "10s loop", 
           uptime: "100.00%" 
         },
         { 

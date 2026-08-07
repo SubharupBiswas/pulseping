@@ -3,7 +3,10 @@ export async function register() {
     const PORT = process.env.PORT || 3000;
     const LOCAL_PING_URL = `http://127.0.0.1:${PORT}/api/cron/ping`;
 
-    console.log("⚡ [PulsePing Engine] Initializing automated 25s background cron ticker...");
+    // Set ticker to 10 seconds (10000ms) to support Business Tier 10s resolution
+    const TICKER_INTERVAL_MS = 10000;
+
+    console.log("⚡ [PulsePing Engine] Initializing automated 10s background cron ticker...");
 
     const requestHeaders: RequestInit = {
       headers: {
@@ -20,6 +23,6 @@ export async function register() {
       } catch (err) {
         // Silently swallow transient loopback connection hiccups
       }
-    }, 25000); // 25s interval guarantees ticks fire before 30s threshold
+    }, TICKER_INTERVAL_MS); // 10s interval guarantees ticks fire for Business Tier 10s polling
   }
 }

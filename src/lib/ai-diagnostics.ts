@@ -2,7 +2,7 @@
  * 3-Tier AI Provider Waterfall Engine + 15-Minute Cooldown Throttling
  *
  * Priority 1: Google Gemini API (gemini-2.5-flash)
- * Priority 2: OmniRoute AI Gateway (https://api.omniroute.ai/v1/chat/completions)
+ * Priority 2: OmniRoute AI Gateway (https://api.omniroute.ai/v1/chat/completions or custom OMNIROUTE_BASE_URL)
  * Priority 3: Groq API (llama-3.3-70b-versatile)
  * Priority 4: Graceful Fallback string
  */
@@ -16,8 +16,16 @@ export interface DiagnosticPayload {
 
 const GEMINI_REST_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-const OMNIROUTE_REST_URL = "https://api.omniroute.ai/v1/chat/completions";
 const GROQ_REST_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+function getOmniRouteUrl(): string {
+  const baseUrl = process.env.OMNIROUTE_BASE_URL?.trim();
+  if (baseUrl) {
+    const cleanBase = baseUrl.replace(/\/$/, "");
+    return cleanBase.endsWith("/chat/completions") ? cleanBase : `${cleanBase}/chat/completions`;
+  }
+  return "https://api.omniroute.ai/v1/chat/completions";
+}
 
 // 15-Minute Cooldown Cache per monitorId
 const diagnosticCooldownCache = new Map<string, { diagnostic: string; timestamp: number }>();
@@ -57,7 +65,7 @@ Provide a concise single-sentence (max 25 words) root-cause summary of this inci
 
 // Priority 1: Gemini
 async function callGemini(payload: DiagnosticPayload): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) throw new Error("GEMINI_API_KEY missing");
 
   const prompt = buildPrompt(payload.url, payload.statusCode, payload.errorBody);
@@ -84,11 +92,12 @@ async function callGemini(payload: DiagnosticPayload): Promise<string> {
 
 // Priority 2: OmniRoute AI Gateway
 async function callOmniRoute(payload: DiagnosticPayload): Promise<string> {
-  const apiKey = process.env.OMNIROUTE_API_KEY;
+  const apiKey = process.env.OMNIROUTE_API_KEY?.trim();
   if (!apiKey) throw new Error("OMNIROUTE_API_KEY missing");
 
   const prompt = buildPrompt(payload.url, payload.statusCode, payload.errorBody);
-  const res = await fetch(OMNIROUTE_REST_URL, {
+  const omniUrl = getOmniRouteUrl();
+  const res = await fetch(omniUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -122,7 +131,7 @@ async function callOmniRoute(payload: DiagnosticPayload): Promise<string> {
 
 // Priority 3: Groq API
 async function callGroq(payload: DiagnosticPayload): Promise<string> {
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY?.trim();
   if (!apiKey) throw new Error("GROQ_API_KEY missing");
 
   const prompt = buildPrompt(payload.url, payload.statusCode, payload.errorBody);
@@ -169,30 +178,43 @@ export async function generateAIDiagnostic(payload: DiagnosticPayload): Promise<
   }
 
   // 2. Priority 1: Gemini
-  try {
-    const result = await callGemini(payload);
-    cacheDiagnostic(key, result);
-    return result;
-  } catch (err: any) {
-    console.warn("[AI_WATERFALL] Gemini primary rate limited or failed, attempting OmniRoute...", err?.message || err);
+  if (process.env.GEMINI_API_KEY?.trim()) {
+    try {
+      const result = await callGemini(payload);
+      cacheDiagnostic(key, result);
+      return result;
+    } catch (err: any) {
+      console.warn("[AI_WATERFALL] Gemini primary rate limited or failed, attempting OmniRoute...", err?.message || err);
+    }
+  } else {
+    console.warn("⚠️ [AI Diagnostics] Gemini API key unconfigured. Attempting Tier 2 (OmniRoute)...");
   }
 
   // 3. Priority 2: OmniRoute
-  try {
-    const result = await callOmniRoute(payload);
-    cacheDiagnostic(key, result);
-    return result;
-  } catch (err: any) {
-    console.warn("[AI_WATERFALL] OmniRoute failed, attempting Groq...", err?.message || err);
+  const omniRouteKey = process.env.OMNIROUTE_API_KEY?.trim();
+  if (omniRouteKey) {
+    try {
+      const result = await callOmniRoute(payload);
+      cacheDiagnostic(key, result);
+      return result;
+    } catch (err: any) {
+      console.warn("[AI_WATERFALL] OmniRoute failed, attempting Groq...", err?.message || err);
+    }
+  } else {
+    console.warn("⚠️ [AI Diagnostics] OmniRoute API key unconfigured. Routing to Tier 3 (Groq)...");
   }
 
   // 4. Priority 3: Groq
-  try {
-    const result = await callGroq(payload);
-    cacheDiagnostic(key, result);
-    return result;
-  } catch (err: any) {
-    console.error("[AI_WATERFALL] All AI providers failed or rate-limited:", err?.message || err);
+  if (process.env.GROQ_API_KEY?.trim()) {
+    try {
+      const result = await callGroq(payload);
+      cacheDiagnostic(key, result);
+      return result;
+    } catch (err: any) {
+      console.error("[AI_WATERFALL] All AI providers failed or rate-limited:", err?.message || err);
+    }
+  } else {
+    console.warn("⚠️ [AI Diagnostics] Groq API key unconfigured. Falling back to default incident message.");
   }
 
   // 5. Priority 4: Graceful Fallback

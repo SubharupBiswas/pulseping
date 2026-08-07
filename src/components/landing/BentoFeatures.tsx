@@ -8,7 +8,7 @@ const features = [
   {
     icon: "⬡",
     title: "Automated Cron Engine",
-    desc: "30-second automated polling cycles with loopback orchestration and zero external infrastructure overhead.",
+    desc: "High-frequency automated polling cycles (10s Business / 30s Pro) with loopback orchestration and zero external infrastructure overhead.",
   },
   {
     icon: "🤖",

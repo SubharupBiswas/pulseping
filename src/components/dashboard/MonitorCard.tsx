@@ -312,9 +312,7 @@ export default function MonitorCard({ monitor, isPremium, plan }: Props) {
 
                   {/* Frequency badge */}
                   <span className="ml-auto text-xs text-zinc-400 dark:text-zinc-600 font-mono">
-                    {plan === "BUSINESS" || monitor.frequency === 30
-                      ? "every 30s"
-                      : `every ${monitor.frequency}m`}
+                    every {plan === "BUSINESS" ? "10s" : plan === "PRO" ? "30s" : "3m"}
                   </span>
                 </div>
               </div>

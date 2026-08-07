@@ -14,7 +14,7 @@ const sections = [
   },
   {
     title: "2. Service Description",
-    body: `PulsePing provides automated HTTP endpoint monitoring, uptime logging, and alert notification services. The Service operates serverless polling pipelines that periodically send HTTP requests to registered endpoint URLs and records response telemetry including status codes and latency measurements.`,
+    body: `PulsePing provides automated HTTP endpoint monitoring, uptime logging, AI-driven diagnostics, and alert notification services. The Service operates serverless polling pipelines that periodically send HTTP requests to registered endpoint URLs and records response telemetry including status codes and latency measurements.`,
   },
   {
     title: "3. Account Registration",
@@ -22,7 +22,7 @@ const sections = [
   },
   {
     title: "4. Monitor Stream Limits",
-    body: `Free Plan (₹0 INR / $0 USD) accounts may register up to two (2) active monitor streams. Pro Plan (₹499 INR / $7 USD) and Business Plan (₹1,499 INR / $20 USD) accounts support expanded monitor stream registrations. Monitors that consistently fail validation or target private IP ranges, localhost addresses, or internal network endpoints may be suspended without notice to protect shared infrastructure. Frequency of polling is fixed at 10-minute intervals for all plans.`,
+    body: `Free Plan (₹0 INR / $0 USD) accounts may register up to three (3) active monitor streams with 3-minute polling cycles. Pro Plan (₹699 INR / $9 USD) accounts support up to twenty (20) active monitor streams with 30-second polling cycles. Business Plan (₹2,199 INR / $29 USD) accounts support up to one hundred (100) active monitor streams with 10-second polling cycles. Monitors that consistently fail validation or target private IP ranges, localhost addresses, or internal network endpoints may be suspended without notice to protect shared infrastructure.`,
   },
   {
     title: "5. Acceptable Use Policy",
@@ -30,15 +30,15 @@ const sections = [
   },
   {
     title: "6. Billing and Subscription",
-    body: `Pro Plan (₹499 INR / $7 USD) and Business Plan (₹1,499 INR / $20 USD) subscriptions are billed monthly at the rate published on the pricing page at the time of purchase. All payments are processed securely via Razorpay. Subscription fees are non-refundable except as required by applicable law. You may cancel your subscription at any time; cancellation takes effect at the end of the current billing period. Downgrades to Free Plan (₹0 INR / $0 USD) will enforce stream limits at the start of the next billing cycle.`,
+    body: `Pro Plan (₹699 INR / $9 USD) and Business Plan (₹2,199 INR / $29 USD) subscriptions are billed monthly or annually at the rates published on the pricing page at the time of purchase. All payments are processed securely via Razorpay. Subscriptions automatically renew unless cancelled prior to the renewal date. You may cancel your subscription at any time via your Billing & Usage settings; cancellation takes effect at the end of the current billing period. Downgrades to the Free Plan will enforce stream limits at the start of the next billing cycle.`,
   },
   {
     title: "7. Service Availability",
-    body: `PulsePing targets 99.5% monthly uptime for its core monitoring infrastructure. Scheduled maintenance windows will be announced via the status page at /status. We are not liable for missed alert notifications caused by third-party webhook delivery failures, including Discord API outages. Monitor polling may be delayed during infrastructure maintenance periods.`,
+    body: `PulsePing targets 99.5% monthly uptime for its core monitoring infrastructure. Scheduled maintenance windows will be announced via the status page at /status. We are not liable for missed alert notifications caused by third-party webhook delivery failures, including Discord, Slack, or Telegram API outages. Monitor polling may be delayed during infrastructure maintenance periods.`,
   },
   {
     title: "8. Data Retention",
-    body: `PingLog entries (response records) are retained for 90 days for Free Plan (₹0 INR / $0 USD) accounts and 12 months for Pro Plan (₹499 INR / $7 USD) or Business Plan (₹1,499 INR / $20 USD) accounts, after which they are automatically purged. Registered endpoint URLs and Discord webhook URLs are retained for the lifetime of the account. Account data is deleted within 30 days of account termination.`,
+    body: `PingLog entries (response records) are retained for 90 days for Free Plan accounts and 12 months for Pro Plan or Business Plan accounts, after which they are automatically purged. Registered endpoint URLs, alert channels, and status boards are retained for the lifetime of the account. Account data is deleted within 30 days of account termination.`,
   },
   {
     title: "9. Intellectual Property",

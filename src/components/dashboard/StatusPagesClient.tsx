@@ -232,7 +232,7 @@ export default function StatusPagesClient({ initialPages, userMonitors = [], pla
                   rel="noreferrer"
                   className="text-xs font-mono text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 mt-1"
                 >
-                  {typeof window !== "undefined" ? window.location.host : "pulseping.example.com"}/status/{page.slug} ↗
+                  {typeof window !== "undefined" ? window.location.host : "pulseping.subharup.com"}/status/{page.slug} ↗
                 </a>
               </div>
               <div className="flex items-center gap-3">
@@ -399,7 +399,7 @@ export default function StatusPagesClient({ initialPages, userMonitors = [], pla
                 <div className="mt-1.5 text-xs font-mono text-zinc-500 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700/60 flex items-center gap-1 overflow-x-auto">
                   <span className="text-zinc-400">Public Link:</span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                    {typeof window !== "undefined" ? window.location.origin : "https://pulseping.example.com"}/status/{editSlug || "your-slug"}
+                    {typeof window !== "undefined" ? window.location.origin : "https://pulseping.subharup.com"}/status/{editSlug || "your-slug"}
                   </span>
                 </div>
               </div>

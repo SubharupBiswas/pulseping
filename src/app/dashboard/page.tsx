@@ -212,9 +212,11 @@ export default async function DashboardPage() {
                   Active Subscription: {plan} Tier
                 </h4>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                  {plan === "PRO"
-                    ? "Up to 20 streams, 1-min polling resolution."
-                    : "Unlimited streams, 30-sec polling resolution."}
+                  {plan === "BUSINESS"
+                    ? "Up to 100 streams, 10-second polling resolution."
+                    : plan === "PRO"
+                    ? "Up to 20 streams, 30-second polling resolution."
+                    : "Up to 3 streams, 3-minute polling resolution."}
                 </p>
               </div>
             </div>

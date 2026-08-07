@@ -73,14 +73,14 @@ async function checkMonitor(monitor: any) {
 
     // Build full browser-like headers to bypass Cloudflare WAF / Super Bot Fight Mode
     const defaultHeaders: Record<string, string> = {
-      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 PulsePingBot/1.0",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 PulsePing-Bot/1.0 (+https://pulseping.subharup.com)",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.9",
       "Cache-Control": "no-cache",
       "Pragma": "no-cache",
       "Sec-Ch-Ua": '"Not-A.Brand";v="99", "Chromium";v="124", "Google Chrome";v="124"',
       "Sec-Ch-Ua-Mobile": "?0",
-      "Sec-Ch-Ua-Platform": '"macOS"',
+      "Sec-Ch-Ua-Platform": '"Windows"',
       "Sec-Fetch-Dest": "document",
       "Sec-Fetch-Mode": "navigate",
       "Sec-Fetch-Site": "none",
@@ -530,7 +530,7 @@ async function handleCronRequest(req: NextRequest) {
       errStr.includes("127.0.0.1:5432");
 
     if (isUnreachable) {
-      console.warn("⚠️ [PulsePing Cron] Database unreachable (127.0.0.1:5432). Skipping 25s ping cycle.");
+      console.warn("⚠️ [PulsePing Cron] Database unreachable (127.0.0.1:5432). Skipping 10s ping cycle.");
       return NextResponse.json(
         { status: "DB_OFFLINE", message: "Database server unreachable. Ping cycle skipped." },
         { status: 503 }
@@ -593,7 +593,7 @@ async function handleCronRequest(req: NextRequest) {
       errorMessage.includes("127.0.0.1:5432");
 
     if (isUnreachable) {
-      console.warn("⚠️ [PulsePing Cron] Database unreachable (127.0.0.1:5432). Skipping 25s ping cycle.");
+      console.warn("⚠️ [PulsePing Cron] Database unreachable (127.0.0.1:5432). Skipping 10s ping cycle.");
       return NextResponse.json(
         { status: "DB_OFFLINE", message: "Database server unreachable. Ping cycle skipped." },
         { status: 503 }

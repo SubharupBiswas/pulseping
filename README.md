@@ -68,7 +68,7 @@ It solves critical production engineering challenges: **monitoring API endpoints
 
 ### 2. 🛡️ Silent Offline Database Fault Tolerance
 * **Problem:** In local development or during transient DB connection blinks, cron ping tickers dump massive error stacktraces into console logs every cycle.
-* **Solution:** Implemented explicit connection error catching (`P1001` / `DatabaseNotReachable`) in `/api/cron/ping` and homepage telemetry queries, logging a single clean status line (`⚠️ [PulsePing Cron] Database unreachable (127.0.0.1:5432). Skipping 25s ping cycle.`) and returning HTTP 503 without crashing or polluting logs.
+* **Solution:** Implemented explicit connection error catching (`P1001` / `DatabaseNotReachable`) in `/api/cron/ping` and homepage telemetry queries, logging a single clean status line (`⚠️ [PulsePing Cron] Database unreachable (127.0.0.1:5432). Skipping 10s ping cycle.`) and returning HTTP 503 without crashing or polluting logs.
 
 ### 3. 📦 Standalone Production Asset Bundling
 * **Problem:** Next.js `output: 'standalone'` bundles `.next/standalone` without copying static chunks (`.next/static`) or `public/` assets, leading to unstyled raw HTML and missing 404 assets in isolated container runtimes.
@@ -281,6 +281,7 @@ CLERK_SECRET_KEY="sk_test_..."
 # AI Diagnostics (3-Tier Waterfall)
 GEMINI_API_KEY="AIzaSy..."
 OMNIROUTE_API_KEY="or_..."
+OMNIROUTE_BASE_URL="http://127.0.0.1:20128/v1" # Optional local gateway
 GROQ_API_KEY="gsk_..."
 
 # Payment Layer (Razorpay)
