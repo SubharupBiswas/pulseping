@@ -12,6 +12,7 @@ import BillingUpgradeCard from "@/components/BillingUpgradeCard";
 import Footer from "@/components/Footer";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import { getOrCreateUser } from "@/lib/user";
+import { getTierLimits } from "@/lib/tiers";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,11 @@ export default async function DashboardPage() {
   } catch (err) {
     console.error("❌ Failed to fetch/create user record:", err);
   }
+
+  const plan = userRecord?.plan || "FREE";
+  const isPremium = plan === "PRO" || plan === "BUSINESS";
+  const tierLimits = getTierLimits(plan);
+  const cutoffDate = new Date(Date.now() - tierLimits.logRetentionDays * 24 * 60 * 60 * 1000);
 
   // 3. Location & Currency Detection
   let defaultCurrency: "USD" | "INR" = "USD";
@@ -81,8 +87,9 @@ export default async function DashboardPage() {
           }
         },
         logs: {
+          where: { checkedAt: { gte: cutoffDate } },
           orderBy: { checkedAt: "desc" },
-          take: 30,
+          take: 100,
           select: {
             id: true,
             statusCode: true,
@@ -97,9 +104,6 @@ export default async function DashboardPage() {
     console.error("❌ Database query for monitors failed:", err);
     monitors = []; // Safe fallback shell
   }
-
-  const plan = userRecord?.plan || "FREE";
-  const isPremium = plan === "PRO" || plan === "BUSINESS";
 
   // 5. Safe Data Serialization
   const serializedMonitors = (monitors || []).map((m: any) => ({

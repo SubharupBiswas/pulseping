@@ -108,7 +108,7 @@ The system exposes high-performance REST endpoints under `/api`:
 * **`GET/POST /api/heartbeat/[token]`**: Inbound ping tracking for cron job and background script heartbeats ("dead-man's switch").
 * **`GET/POST /api/relay/[id]` & `/api/relay/replay`**: Inbound webhook payload inspection, validation, and manual replay.
 * **`GET/POST /api/alert-channels`**: Manages user notification channels (Discord, Slack, Telegram, Webhook). Channel availability is enforced per-tier via `TIER_LIMITS.allowedAlertChannels`.
-* **`GET /api/telemetry`**: Retrieves monitor latency history and uptime availability percentages.
+* **`GET /api/telemetry`**: Retrieves monitor latency history and uptime availability percentages filtered by tier log retention window (`logRetentionDays`).
 * **`POST /api/admin/switch-plan`**: Superuser instant plan override endpoint (strictly authorized by `ADMIN_EMAILS` env var).
 
 ---

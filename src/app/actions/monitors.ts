@@ -258,6 +258,10 @@ export async function getLatestTelemetry(userId: string) {
       throw new Error("Unauthorized.");
     }
 
+    const userRecord = await db.user.findUnique({ where: { id: userId } });
+    const tierLimits = getTierLimits(userRecord?.plan || "FREE");
+    const cutoffDate = new Date(Date.now() - tierLimits.logRetentionDays * 24 * 60 * 60 * 1000);
+
     const monitors = await db.monitor.findMany({
       where: { userId },
       select: {
@@ -284,8 +288,9 @@ export async function getLatestTelemetry(userId: string) {
           }
         },
         logs: {
+          where: { checkedAt: { gte: cutoffDate } },
           orderBy: { checkedAt: "desc" },
-          take: 30,
+          take: 100,
           select: {
             id: true,
             statusCode: true,

@@ -16,6 +16,7 @@ const LatencyChart = dynamic(() => import("./LatencyChart"), { ssr: false });
 import AddMonitorForm from "@/components/AddMonitorForm";
 import { getLatestTelemetry } from "@/app/actions/monitors";
 import { getPollingIntervalText } from "@/lib/plan";
+import { getTierLimits } from "@/lib/tiers";
 
 type Log = {
   id: string;
@@ -152,6 +153,7 @@ export default function DashboardShell({
   });
 
   // ── System Diagnostics Log ─────────────────────────────────────
+  const retentionDays = getTierLimits(plan).logRetentionDays;
   type LogEntry = Log & { monitorUrl: string; monitorId: string };
   const systemLogs: LogEntry[] = monitorsState
     .flatMap((m) => m.logs.map((l) => ({ ...l, monitorUrl: m.url, monitorId: m.id })))
@@ -316,7 +318,7 @@ export default function DashboardShell({
                             System Diagnostics Log
                           </h2>
                           <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
-                            {filteredSystemLogs.length} entries
+                            {filteredSystemLogs.length} entries (Last {retentionDays} Days)
                           </span>
                         </div>
                         <button
@@ -398,7 +400,7 @@ export default function DashboardShell({
                         {filteredSystemLogs.length > 25 && (
                           <div className="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between bg-zinc-50/60 dark:bg-zinc-900/40">
                             <span className="text-[10px] font-mono text-zinc-400 dark:text-zinc-600">
-                              Showing {visibleLogs.length} of {filteredSystemLogs.length}
+                              Showing {visibleLogs.length} of {filteredSystemLogs.length} entries (Last {retentionDays} Days)
                             </span>
                             <button
                               onClick={() => setLogExpanded((x) => !x)}
