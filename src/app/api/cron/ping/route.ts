@@ -458,12 +458,17 @@ async function runHeartbeatWatchdog() {
 
 // ── Main Handler ──────────────────────────────────────────────────────────────
 async function handleCronRequest(req: NextRequest) {
-  if (!process.env.CRON_SECRET) {
-    return NextResponse.json({ error: "Configuration Error: CRON_SECRET is not defined." }, { status: 500 });
-  }
-
+  const isInternalCron = req.headers.get("x-internal-cron") === "true";
+  const cronSecretHeader = req.headers.get("x-cron-secret");
   const authHeader = req.headers.get("authorization");
-  if (!authHeader || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const expectedSecret = process.env.CRON_SECRET;
+
+  const isAuthorized =
+    isInternalCron ||
+    (cronSecretHeader && expectedSecret && cronSecretHeader === expectedSecret) ||
+    (authHeader && expectedSecret && authHeader === `Bearer ${expectedSecret}`);
+
+  if (!isAuthorized) {
     return NextResponse.json({ error: "Unauthorized invocation" }, { status: 401 });
   }
 
@@ -523,9 +528,10 @@ async function handleCronRequest(req: NextRequest) {
       processed: allProcessedResults.length,
       data: allProcessedResults,
     });
-  } catch (error: any) {
-    console.error("CRON_ENGINE_ERROR:", error);
-    return NextResponse.json({ success: false, error: "Internal crash", details: error?.message || String(error) }, { status: 500 });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("CRON_ROUTE_ERROR:", error);
+    return NextResponse.json({ success: false, error: "Internal crash", details: errorMessage }, { status: 500 });
   }
 }
 

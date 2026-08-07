@@ -8,7 +8,7 @@ export async function register() {
     const requestHeaders: RequestInit = {
       headers: {
         "x-internal-cron": "true",
-        ...(process.env.CRON_SECRET ? { Authorization: `Bearer ${process.env.CRON_SECRET}` } : {}),
+        ...(process.env.CRON_SECRET ? { "x-cron-secret": process.env.CRON_SECRET } : {}),
       },
     };
 

@@ -90,7 +90,7 @@ It solves critical production engineering challenges: **monitoring API endpoints
 
 The system exposes high-performance REST endpoints under `/api`:
 
-* **`GET /api/cron/ping`**: Executes concurrent endpoint telemetry checks across all active user monitors.
+* **`GET /api/cron/ping`**: Executes concurrent endpoint telemetry checks across all active user monitors (supports `x-internal-cron: true` and `x-cron-secret` authorization headers).
 * **`GET /api/health`**: Database connection health check and status reporting.
 * **`POST /api/status-pages`**: Creates a new public status board using `getUniqueSlug` for guaranteed collision-free URLs.
 * **`PATCH /api/status-pages/[id]`**: Updates status page metadata, visibility, and linked monitor streams.
