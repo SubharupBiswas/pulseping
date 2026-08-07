@@ -7,9 +7,9 @@ export const dynamic = "force-dynamic";
 // Annual prices already reflect ~20% discount vs 12× monthly
 const PLAN_PRICES: Record<string, { INR: number; USD: number }> = {
   pro_monthly:          { INR: 699,   USD: 9   },
-  pro_yearly:           { INR: 5988,  USD: 82  },  // 699×12×0.714 ≈ ₹5988 (~15% off)
+  pro_yearly:           { INR: 6708,  USD: 84  },  // ₹559/mo × 12 = ₹6,708 ($7/mo × 12 = $84)
   business_monthly:     { INR: 2199,  USD: 29  },
-  business_yearly:      { INR: 18828, USD: 250 },  // 2199×12×0.714 ≈ ₹18828 (~15% off)
+  business_yearly:      { INR: 21108, USD: 276 },  // ₹1,759/mo × 12 = ₹21,108 ($23/mo × 12 = $276)
 };
 
 // Promo codes: { discountPercent }

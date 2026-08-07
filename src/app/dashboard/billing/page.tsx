@@ -1,7 +1,8 @@
 import React from "react";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { isAdminUser } from "@/lib/admin";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -38,6 +39,15 @@ export default async function BillingPage() {
   const headersList = await headers();
   const country = headersList.get("cf-ipcountry") || headersList.get("x-vercel-ip-country") || "US";
   const defaultCurrency = country === "IN" ? "INR" : "USD";
+
+  let isAdmin = false;
+  try {
+    const user = await currentUser();
+    const primaryEmail = user?.emailAddresses?.[0]?.emailAddress;
+    isAdmin = isAdminUser(primaryEmail);
+  } catch (err) {
+    console.error("Failed to check admin status:", err);
+  }
 
   const plan = userRecord.plan;
   const isPremium = plan === "PRO" || plan === "BUSINESS";
@@ -185,7 +195,7 @@ export default async function BillingPage() {
         </section>
 
         {/* Upgrade Billing Options */}
-        <BillingUpgradeCard userId={userId} currentPlan={plan as any} currency={defaultCurrency} />
+        <BillingUpgradeCard userId={userId} currentPlan={plan as any} currency={defaultCurrency} isAdmin={isAdmin} />
 
         {/* Invoice History */}
         <section className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm backdrop-blur-md transition-colors">

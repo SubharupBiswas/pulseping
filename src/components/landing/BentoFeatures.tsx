@@ -9,29 +9,31 @@ const features = [
     icon: "⬡",
     title: "Automated Cron Engine",
     desc: "30-second automated polling cycles with loopback orchestration and zero external infrastructure overhead.",
-    colSpan: "md:col-span-2 md:row-span-2",
-    large: true,
   },
   {
     icon: "🤖",
     title: "AI Incident Diagnostics",
-    desc: "Dual-provider AI intelligence powered by Gemini and Groq AI analyzes HTTP status failures and response bodies for instant root-cause diagnostics.",
-    colSpan: "md:col-span-1",
-    large: false,
+    desc: "3-Tier AI waterfall engine powered by Gemini, OmniRoute, and Groq analyzes status failures for instant root-cause diagnostics.",
   },
   {
     icon: "⚡",
     title: "Webhook Guard & Relay",
-    desc: "Catch silent webhook timeouts (>4.5s), verify HMAC signatures, and inspect/replay failed payloads.",
-    colSpan: "md:col-span-1",
-    large: false,
+    desc: "Catch silent webhook timeouts (>4.5s), verify HMAC signatures, and inspect or replay failed payloads.",
   },
   {
     icon: "🔔",
     title: "Multi-Channel Alert Dispatch",
-    desc: "Per-monitor routing across Discord Webhooks, Telegram Bot, and Resend Email dispatch with custom triggers.",
-    colSpan: "md:col-span-2",
-    large: false,
+    desc: "Per-monitor routing across Discord Webhooks, Telegram Bot, Slack, and Email dispatch with custom triggers.",
+  },
+  {
+    icon: "💓",
+    title: "Inverse Heartbeats",
+    desc: "Monitor background cron jobs, worker scripts, and database sync pipelines with tokenized dead-man switches.",
+  },
+  {
+    icon: "📊",
+    title: "Public Status Boards",
+    desc: "Share real-time operational availability with custom-branded, 1-minute ISR public status pages.",
   },
 ];
 
@@ -81,15 +83,10 @@ const cardVariant = {
   },
 };
 
-/**
- * BentoFeatures — asymmetric bento grid with hover.dev border-glow on each card.
- * First card spans 2×2 on desktop; right column fills with 3 smaller cards.
- * Each card tracks cursor position locally for per-card glow.
- */
 export default function BentoFeatures() {
   return (
     <section
-      className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-24"
+      className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-24"
       aria-labelledby="features-title"
     >
       <h2 id="features-title" className="sr-only">
@@ -97,46 +94,39 @@ export default function BentoFeatures() {
       </h2>
 
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4 auto-rows-fr"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr"
         variants={containerVariants}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-60px" }}
       >
         {features.map((feature) => (
-          <motion.div
-            key={feature.title}
-            variants={cardVariant}
-            className={feature.colSpan}
-          >
-            <GlowCard className={`p-5 h-full flex flex-col justify-between ${feature.large ? "min-h-[200px]" : "min-h-[120px]"}`}>
-              <div className="relative z-10">
-                <span
-                  className="text-emerald-500 dark:text-emerald-400 text-2xl mb-4 block"
-                  aria-hidden="true"
-                >
-                  {feature.icon}
-                </span>
-                <h3
-                  className={`font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight mb-2 ${feature.large ? "text-base" : "text-sm"}`}
-                >
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  {feature.desc}
-                </p>
-              </div>
-              {feature.large && (
-                <div className="relative z-10 mt-6">
+          <motion.div key={feature.title} variants={cardVariant} className="h-full">
+            <GlowCard className="p-6 h-full flex flex-col justify-between min-h-[200px]">
+              <div className="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                  <span
+                    className="text-emerald-500 dark:text-emerald-400 text-2xl mb-3 block"
+                    aria-hidden="true"
+                  >
+                    {feature.icon}
+                  </span>
+                  <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight text-base mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    {feature.desc}
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/40">
                   <Link
                     href="/dashboard"
-                    className="btn-shimmer inline-flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50 dark:bg-emerald-950/20 px-3 py-1.5 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-950/40 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline"
                   >
-                    Start monitoring free
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                    Learn more →
                   </Link>
                 </div>
-              )}
+              </div>
             </GlowCard>
           </motion.div>
         ))}

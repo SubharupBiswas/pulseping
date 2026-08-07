@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LaunchDiscountBanner from "@/components/LaunchDiscountBanner";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlanTier } from "@/lib/tiers";
 
@@ -31,25 +32,58 @@ type Props = {
 export default function PricingClient({ defaultCurrency, isAdmin = false }: Props) {
   const router = useRouter();
   const [currency, setCurrency] = useState<"INR" | "USD">(defaultCurrency);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const [switchingTier, setSwitchingTier] = useState<string | null>(null);
+  const [adminToast, setAdminToast] = useState<string | null>(null);
+
+  // Promo code engine
+  const [promoInput, setPromoInput] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoError, setPromoError] = useState("");
+
+  const handleApplyPromo = () => {
+    setPromoError("");
+    const code = promoInput.trim().toUpperCase();
+    if (code === "LAUNCH50") {
+      setPromoApplied(true);
+    } else if (code === "") {
+      setPromoApplied(false);
+      setPromoError("");
+    } else {
+      setPromoApplied(false);
+      setPromoError("Invalid promo code. Use LAUNCH50 for 50% OFF.");
+    }
+  };
 
   const handleAdminSwitchPlan = async (plan: PlanTier) => {
     try {
       setSwitchingTier(plan);
+      setAdminToast(`⚡ [ADMIN OVERRIDE] Account tier switched to ${plan}! Refreshing...`);
+
       const res = await fetch("/api/admin/switch-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan }),
       });
       const data = await res.json();
+
       if (res.ok && data.success) {
-        router.refresh();
+        setAdminToast(`⚡ [ADMIN OVERRIDE] Account tier switched to ${plan}! Refreshing...`);
+        setTimeout(() => {
+          if (typeof window !== "undefined") {
+            window.location.reload();
+          } else {
+            router.refresh();
+          }
+        }, 500);
       } else {
         alert(data.error || "Failed to switch plan");
+        setAdminToast(null);
       }
     } catch (err: any) {
       console.error("Failed to switch plan:", err);
       alert("An error occurred while switching plan");
+      setAdminToast(null);
     } finally {
       setSwitchingTier(null);
     }
@@ -62,22 +96,15 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
         setCurrency(saved);
         return;
       }
-
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
       const lang = typeof navigator !== "undefined" ? navigator.language || "" : "";
-
-      const isIndiaRegion =
-        timeZone.includes("Kolkata") ||
-        timeZone.includes("Calcutta") ||
-        lang.toLowerCase().includes("in");
-
-      if (isIndiaRegion) {
+      if (timeZone.includes("Kolkata") || timeZone.includes("Calcutta") || lang.toLowerCase().includes("in")) {
         setCurrency("INR");
       } else {
         setCurrency(defaultCurrency);
       }
     } catch {
-      // Fallback cleanly to defaultCurrency if Intl/localStorage is restricted
+      // Fallback
     }
   }, [defaultCurrency]);
 
@@ -86,17 +113,30 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
     try {
       localStorage.setItem("pulseping_currency", newCurrency);
     } catch {
-      // Ignore if localStorage is unavailable
+      // Ignore
     }
   };
 
   const formatPrice = (value: number, curr: "INR" | "USD") => {
+    const discountMultiplier = promoApplied ? 0.5 : 1;
+    const finalVal = Math.round(value * discountMultiplier);
     return new Intl.NumberFormat(curr === "INR" ? "en-IN" : "en-US", {
       style: "currency",
       currency: curr,
       maximumFractionDigits: 0,
-    }).format(value);
+    }).format(finalVal);
   };
+
+  // Base prices:
+  // PRO: Monthly ₹699 / $9 | Annual ₹559 / $7
+  // BIZ: Monthly ₹2,199 / $29 | Annual ₹1,759 / $23
+  const proPriceVal = currency === "INR"
+    ? billingPeriod === "monthly" ? 699 : 559
+    : billingPeriod === "monthly" ? 9 : 7;
+
+  const bizPriceVal = currency === "INR"
+    ? billingPeriod === "monthly" ? 2199 : 1759
+    : billingPeriod === "monthly" ? 29 : 23;
 
   const pricingPlans = [
     {
@@ -106,9 +146,10 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
       period: "forever",
       description: "Essential status checking parameters for personal services.",
       features: [
-        "Max 2 Active Monitors",
-        "Standard Uptime Monitoring (HTTP GET only)",
-        "7-Day Historical Data Retention Guard",
+        "3 Active Monitors",
+        "3-Minute Polling Cycles",
+        "1 Heartbeat Monitor",
+        "1 Public Status Page (With Badge)",
         "Basic Email Alerts",
       ],
       cta: "Get Started for Free",
@@ -118,40 +159,37 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
     {
       name: "Pro",
       tier: "PRO" as PlanTier,
-      price: currency === "INR" ? formatPrice(499, "INR") : formatPrice(7, "USD"),
+      price: formatPrice(proPriceVal, currency),
       period: "per month",
       description: "Expanded limits and faster resolution loops for production pipelines.",
       features: [
-        "Up to 20 Active Monitors",
-        "1-Minute Polling Cycles",
-        "Advanced Telemetry (POST/PUT/PATCH verbs, Custom Headers, Content-Match checking)",
-        "Automated TLS/SSL Certificate Expiration Tracking",
-        "Inverse Heartbeats & Cron Dead-Man Switches",
-        "Public-Facing Releasable Status Pages (1-min ISR)",
-        "✦ AI-Powered Incident Root-Cause Diagnostics",
+        "20 Active Monitors",
+        "30-Second Polling Cycles",
+        "5 Inverse Heartbeats & Dead-Man Switches",
+        "3 Public Status Pages (Option to Hide Badge)",
+        "Detailed Gemini & OmniRoute AI Root-Cause Diagnostics",
+        "Discord, Slack & Telegram Alerts",
       ],
       cta: "Upgrade to Pro",
-      href: `/sign-up?redirect=/dashboard/billing&currency=${currency}`,
+      href: `/sign-up?redirect=/dashboard/billing&currency=${currency}&plan=pro`,
       popular: true,
     },
     {
       name: "Business",
       tier: "BUSINESS" as PlanTier,
-      price: currency === "INR" ? formatPrice(1499, "INR") : formatPrice(20, "USD"),
+      price: formatPrice(bizPriceVal, currency),
       period: "per month",
       description: "Dedicated scaling limits and custom SLA validation profiles.",
       features: [
-        "Unlimited Monitors",
-        "30-Second Polling Cycles",
-        "Full access to all Advanced Telemetry parameters",
-        "Automated TLS/SSL",
-        "Inverse Heartbeats",
-        "Public Status Pages",
-        "✦ AI-Powered Incident Root-Cause Diagnostics",
-        "Priority developer support",
+        "100 Active Monitors",
+        "10-Second Polling Cycles",
+        "25 Inverse Heartbeats & Dead-Man Switches",
+        "Unlimited Public Status Pages + Custom Domains",
+        "Priority AI Diagnostics (Gemini -> OmniRoute -> Groq)",
+        "Webhook Relays, SMS & Dedicated Support",
       ],
-      cta: "Contact Sales",
-      href: `mailto:support@subharup.com?subject=PulsePing%20Business%20Tier%20Onboarding%20(${currency})`,
+      cta: "Upgrade to Business",
+      href: `/sign-up?redirect=/dashboard/billing&currency=${currency}&plan=business`,
       popular: false,
     },
   ];
@@ -173,13 +211,24 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
 
   return (
     <div className="min-h-screen bg-sky-50 text-zinc-900 dark:bg-[#030303] dark:text-zinc-100 font-sans antialiased relative overflow-x-hidden transition-colors duration-250">
+      {/* Sticky Launch Discount Banner */}
+      <LaunchDiscountBanner />
+
       {/* Ambient Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[480px] bg-gradient-to-tr from-emerald-500/[0.03] via-indigo-500/[0.015] to-transparent blur-3xl pointer-events-none z-0" />
 
       {/* Sticky Header */}
       <Navbar activeLink="pricing" />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 relative z-10">
+      {/* Admin Toast */}
+      {adminToast && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[100] bg-amber-500 text-black px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-2xl flex items-center gap-2 animate-bounce">
+          <span className="w-2 h-2 rounded-full bg-black animate-ping" />
+          <span>{adminToast}</span>
+        </div>
+      )}
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 relative z-10">
         {/* Hero Header */}
         <section className="text-center mb-10" aria-labelledby="pricing-title">
           <motion.span
@@ -188,15 +237,16 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
             transition={{ duration: 0.5 }}
             className="text-xs font-bold tracking-widest uppercase text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 bg-emerald-500/[0.04] px-2.5 py-1 rounded-full mb-4 inline-block"
           >
-            Pricing Plans
+            TRANSPARENT TELEMETRY PRICING
           </motion.span>
+
           <h1
             id="pricing-title"
-            className="text-3xl sm:text-5xl font-extrabold text-zinc-950 dark:text-zinc-50 leading-tight mb-4"
+            className="text-3xl sm:text-5xl font-extrabold text-zinc-950 dark:text-zinc-50 tracking-tight max-w-2xl mx-auto leading-tight mb-4"
           >
-            Predictable Pricing for{" "}
-            <span className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 bg-clip-text text-transparent">
-              Production Teams.
+            Simple, predictable pricing for{" "}
+            <span className="bg-gradient-to-r from-emerald-500 to-teal-400 bg-clip-text text-transparent">
+              production engineering.
             </span>
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-base max-w-lg mx-auto leading-relaxed">
@@ -204,14 +254,15 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
           </p>
         </section>
 
-        {/* Currency selector */}
-        <div className="flex items-center justify-center mb-12">
+        {/* Currency & Billing Period Selectors */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+          {/* Currency Toggle */}
           <div className="relative inline-flex p-1 rounded-xl bg-sky-100/40 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800">
             {(["INR", "USD"] as const).map((cur) => (
               <button
                 key={cur}
                 onClick={() => handleCurrencyChange(cur)}
-                className="relative z-10 px-5 py-2 text-xs font-bold rounded-lg transition-colors duration-150"
+                className="relative z-10 px-5 py-2 text-xs font-bold rounded-lg transition-colors duration-150 cursor-pointer"
                 aria-pressed={currency === cur}
               >
                 {currency === cur && (
@@ -233,6 +284,78 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
               </button>
             ))}
           </div>
+
+          {/* Monthly / Yearly Toggle */}
+          <div className="relative inline-flex p-1 rounded-xl bg-sky-100/40 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800">
+            {(["monthly", "yearly"] as const).map((period) => (
+              <button
+                key={period}
+                onClick={() => setBillingPeriod(period)}
+                className="relative z-10 px-5 py-2 text-xs font-bold rounded-lg transition-colors duration-150 cursor-pointer flex items-center gap-1.5"
+                aria-pressed={billingPeriod === period}
+              >
+                {billingPeriod === period && (
+                  <motion.div
+                    layoutId="period-pill"
+                    className="absolute inset-0 bg-zinc-900 dark:bg-zinc-100 rounded-lg shadow-md"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <span
+                  className={`relative z-10 transition-colors duration-150 ${
+                    billingPeriod === period
+                      ? "text-white dark:text-zinc-950"
+                      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+                  }`}
+                >
+                  {period === "monthly" ? "Monthly" : "Yearly"}
+                </span>
+                {period === "yearly" && (
+                  <span
+                    className={`relative z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                      billingPeriod === "yearly"
+                        ? "bg-emerald-500 text-black"
+                        : "bg-emerald-500/10 text-emerald-500"
+                    }`}
+                  >
+                    Save ~20%
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Promo Code Input Field */}
+        <div className="max-w-md mx-auto mb-12 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-sky-50/50 dark:bg-zinc-900/40">
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Enter Promo Code (e.g. LAUNCH50)"
+                value={promoInput}
+                onChange={(e) => {
+                  setPromoInput(e.target.value);
+                  if (promoApplied) setPromoApplied(false);
+                  if (promoError) setPromoError("");
+                }}
+                className="w-full px-3.5 py-2 text-xs font-mono rounded-xl bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 uppercase tracking-wider"
+              />
+              {promoApplied && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                  ✓ 50% OFF APPLIED
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={handleApplyPromo}
+              className="w-full sm:w-auto px-4 py-2 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-black rounded-xl transition cursor-pointer shrink-0"
+            >
+              Apply Code
+            </button>
+          </div>
+          {promoError && <p className="text-xs text-rose-500 font-mono mt-2 text-center">{promoError}</p>}
         </div>
 
         {/* Card Grid */}
@@ -261,30 +384,56 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
                 )}
 
                 <div>
-                  <h3 className="text-base font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">{plan.name} Plan</h3>
+                  <h3 className="text-base font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">
+                    {plan.name} Plan
+                  </h3>
                   <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1.5">{plan.description}</p>
 
-                  <div className="my-5 flex items-baseline gap-1 overflow-hidden">
-                    <AnimatePresence mode="wait">
-                      <motion.span
-                        key={`${plan.name}-${currency}`}
-                        initial={{ opacity: 0, y: -14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 14 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 24 }}
-                        className="text-3xl sm:text-4xl font-extrabold text-zinc-950 dark:text-zinc-50 tabular-nums"
-                      >
-                        {plan.price}
-                      </motion.span>
-                    </AnimatePresence>
-                    <span className="text-xs text-zinc-400 dark:text-zinc-500">/ {plan.period}</span>
+                  <div className="my-5 flex flex-col gap-0.5 overflow-hidden">
+                    <div className="flex items-baseline gap-1">
+                      <AnimatePresence mode="wait">
+                        <motion.span
+                          key={`${plan.name}-${currency}-${billingPeriod}-${promoApplied}`}
+                          initial={{ opacity: 0, y: -14 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 14 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 24 }}
+                          className="text-3xl sm:text-4xl font-extrabold text-zinc-950 dark:text-zinc-50 tabular-nums"
+                        >
+                          {plan.price}
+                        </motion.span>
+                      </AnimatePresence>
+                      <span className="text-xs text-zinc-400 dark:text-zinc-500">/ {plan.period}</span>
+                    </div>
+
+                    {/* Total Billed Annually Subtext */}
+                    {billingPeriod === "yearly" && plan.tier !== "FREE" && (
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                        {plan.tier === "PRO"
+                          ? `Billed as ${formatPrice(promoApplied ? 3354 : 6708, "INR")} / year (${formatPrice(
+                              promoApplied ? 42 : 84,
+                              "USD"
+                            )} / year)`
+                          : `Billed as ${formatPrice(promoApplied ? 10554 : 21108, "INR")} / year (${formatPrice(
+                              promoApplied ? 138 : 276,
+                              "USD"
+                            )} / year)`}
+                      </p>
+                    )}
                   </div>
 
                   <div className="border-t border-zinc-200 dark:border-zinc-800 pt-5 mb-8">
                     <ul className="space-y-3" aria-label={`Included features for ${plan.name} plan`}>
                       {plan.features.map((feat) => (
                         <li key={feat} className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-400">
-                          <svg className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" aria-hidden="true" width="14" height="14">
+                          <svg
+                            className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                           </svg>
                           <span>{feat}</span>
@@ -311,7 +460,7 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
                       type="button"
                       disabled={switchingTier === plan.tier}
                       onClick={() => handleAdminSwitchPlan(plan.tier)}
-                      className="mt-2 w-full py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-black shadow-sm transition-all duration-150 flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                      className="mt-2 w-full py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-black shadow-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
                     >
                       ⚡ Dev Switch (Instant) {switchingTier === plan.tier ? "..." : ""}
                     </button>
@@ -323,8 +472,14 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
         </section>
 
         {/* FAQ */}
-        <section className="border-t border-zinc-200 dark:border-zinc-800 pt-16 max-w-3xl mx-auto" aria-labelledby="faq-title">
-          <h2 id="faq-title" className="text-lg sm:text-xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 text-center mb-10">
+        <section
+          className="border-t border-zinc-200 dark:border-zinc-800 pt-16 max-w-3xl mx-auto"
+          aria-labelledby="faq-title"
+        >
+          <h2
+            id="faq-title"
+            className="text-lg sm:text-xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 text-center mb-10"
+          >
             Frequently Asked Questions
           </h2>
           <div className="space-y-6">
@@ -333,8 +488,12 @@ export default function PricingClient({ defaultCurrency, isAdmin = false }: Prop
                 key={faq.question}
                 className="border border-zinc-200 dark:border-zinc-900/60 rounded-xl px-5 py-4 bg-sky-50/30 dark:bg-transparent transition-colors hover:border-zinc-300 dark:hover:border-zinc-800"
               >
-                <h3 className="text-sm font-semibold text-zinc-950 dark:text-zinc-100 tracking-tight">{faq.question}</h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mt-1.5">{faq.answer}</p>
+                <h3 className="text-sm font-semibold text-zinc-950 dark:text-zinc-100 tracking-tight">
+                  {faq.question}
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mt-1.5">
+                  {faq.answer}
+                </p>
               </div>
             ))}
           </div>

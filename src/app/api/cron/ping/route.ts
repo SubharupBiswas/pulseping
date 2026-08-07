@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { Resend } from "resend";
 import * as https from "https";
-import { generateIncidentDiagnostic } from "@/lib/ai";
+import { generateAIDiagnostic } from "@/lib/ai-diagnostics";
 
 // Switch to Node.js runtime to enable TLS certificate introspection
 export const runtime = "nodejs";
@@ -182,7 +182,12 @@ async function checkMonitor(monitor: any) {
     }
 
     if (wasPreviousPingHealthy) {
-      aiDiagnostic = await generateIncidentDiagnostic(monitor.url, statusCode, errorBody);
+      aiDiagnostic = await generateAIDiagnostic({
+        monitorId: monitor.id,
+        url: monitor.url,
+        statusCode,
+        errorBody,
+      });
     }
   }
 
@@ -508,13 +513,33 @@ async function handleCronRequest(req: NextRequest) {
 
   const allProcessedResults: any[] = [];
 
+  let activeMonitors: any[] = [];
   try {
     // === WAVE 1: 0-Second Mark ===
-    const activeMonitors = await db.monitor.findMany({
+    activeMonitors = await db.monitor.findMany({
       where: { isActive: true },
       include: { user: true },
     });
+  } catch (dbErr: any) {
+    const errCode = dbErr?.code;
+    const errStr = String(dbErr?.message || dbErr || "");
+    const isUnreachable =
+      errCode === "P1001" ||
+      errStr.includes("DatabaseNotReachable") ||
+      errStr.includes("Can't reach database server") ||
+      errStr.includes("127.0.0.1:5432");
 
+    if (isUnreachable) {
+      console.warn("⚠️ [PulsePing Cron] Database unreachable (127.0.0.1:5432). Skipping 25s ping cycle.");
+      return NextResponse.json(
+        { status: "DB_OFFLINE", message: "Database server unreachable. Ping cycle skipped." },
+        { status: 503 }
+      );
+    }
+    throw dbErr;
+  }
+
+  try {
     const now = new Date();
     const wave1Monitors = activeMonitors.filter((monitor: any) => {
       if (!monitor.lastChecked) return true;
@@ -559,7 +584,22 @@ async function handleCronRequest(req: NextRequest) {
       data: allProcessedResults,
     });
   } catch (error: unknown) {
+    const errCode = (error as any)?.code;
     const errorMessage = error instanceof Error ? error.message : String(error);
+    const isUnreachable =
+      errCode === "P1001" ||
+      errorMessage.includes("DatabaseNotReachable") ||
+      errorMessage.includes("Can't reach database server") ||
+      errorMessage.includes("127.0.0.1:5432");
+
+    if (isUnreachable) {
+      console.warn("⚠️ [PulsePing Cron] Database unreachable (127.0.0.1:5432). Skipping 25s ping cycle.");
+      return NextResponse.json(
+        { status: "DB_OFFLINE", message: "Database server unreachable. Ping cycle skipped." },
+        { status: 503 }
+      );
+    }
+
     console.error("CRON_ROUTE_ERROR:", error);
     return NextResponse.json({ success: false, error: "Internal crash", details: errorMessage }, { status: 500 });
   }

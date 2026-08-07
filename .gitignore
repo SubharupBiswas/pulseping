@@ -23,12 +23,20 @@ node_modules/
 .next/
 /out/
 /build
+.turbo
 
 # Cloudflare & OpenNext Build Outputs
 /.open-next/
 .open-next/
 /.wrangler/
 .wrangler/
+
+# Prisma & Local Databases
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-journal
+dev.db
 
 # Package Manager & Local Runtime Caches
 .npm-cache/
@@ -50,12 +58,25 @@ yarn-error.log*
 next-env.d.ts
 /coverage
 
-# Operating System Metadata
+# Testing Output Artifacts (Do NOT ignore source test files)
+test-results/
+playwright-report/
+blob-report/
+cypress/videos/
+cypress/screenshots/
+
+# Operating System Metadata & Certificates
 .DS_Store
 Thumbs.db
-*.pem
+.AppleDouble
+.LSOverride
 .Spotlight-V100
 .Trashes
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
 
 # IDE & Editor Configurations
 .vscode/
@@ -67,7 +88,3 @@ Thumbs.db
 *.sw?
 *.code-workspace
 .vercel
-
-# Testing & Scratch Utilities
-tests/
-*.test.tsx
