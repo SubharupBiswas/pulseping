@@ -50,79 +50,90 @@ function getSslExpiry(url: string): Promise<Date | null> {
   });
 }
 
+// ── Safe Error String Parser ──────────────────────────────────────────────────
+const parseErrorMessage = (err: unknown): string => {
+  if (err instanceof Error) return err.message;
+  if (typeof err === "object" && err !== null && "type" in err) {
+    return `Network/Socket error event: ${String((err as any).type)}`;
+  }
+  return String(err);
+};
+
 // ── Core Monitor Check ────────────────────────────────────────────────────────
 async function checkMonitor(monitor: any) {
-  const startTime = performance.now();
-  let statusCode = 500;
-  let latency = 0;
-  let connectionError = false;
-  let errorBody: string | null = null;
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-
-  // Build custom headers from JSON field
-  const builtHeaders: Record<string, string> = {
-    "User-Agent": "PulsePing-UptimeBot/1.0 (Mozilla/5.0 Macintosh; Intel Mac OS X 10_15_7)",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-  };
-  if (monitor.customHeaders && typeof monitor.customHeaders === "object") {
-    for (const [k, v] of Object.entries(monitor.customHeaders)) {
-      if (typeof k === "string" && typeof v === "string") {
-        builtHeaders[k] = v;
-      }
-    }
-  }
-
-  const httpMethod: string = (monitor.httpMethod || "GET").toUpperCase();
-  let responseText: string | null = null;
-
   try {
-    const response = await fetch(monitor.url, {
-      method: httpMethod,
-      cache: "no-store",
-      signal: controller.signal,
-      headers: builtHeaders,
-    });
-    statusCode = response.status;
-    latency = Math.round(performance.now() - startTime);
+    const startTime = performance.now();
+    let statusCode = 500;
+    let latency = 0;
+    let connectionError = false;
+    let errorBody: string | null = null;
 
-    // Content matching — only read body for non-HEAD requests
-    if (httpMethod !== "HEAD") {
-      try {
-        responseText = await response.text();
-      } catch {
-        responseText = null;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+    // Build custom headers from JSON field
+    const builtHeaders: Record<string, string> = {
+      "User-Agent": "PulsePing-UptimeBot/1.0 (Mozilla/5.0 Macintosh; Intel Mac OS X 10_15_7)",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+    };
+    if (monitor.customHeaders && typeof monitor.customHeaders === "object") {
+      for (const [k, v] of Object.entries(monitor.customHeaders)) {
+        if (typeof k === "string" && typeof v === "string") {
+          builtHeaders[k] = v;
+        }
       }
     }
 
-    // Content match validation
-    if (
-      monitor.expectedBodyText &&
-      typeof monitor.expectedBodyText === "string" &&
-      monitor.expectedBodyText.trim() !== ""
-    ) {
-      if (!responseText || !responseText.includes(monitor.expectedBodyText)) {
-        // Content mismatch: override status to 0 to trigger alert
-        statusCode = 0;
-        connectionError = true;
-        errorBody = `Content Mismatch Failure: Expected "${monitor.expectedBodyText}" not found in response body.`;
-      }
-    }
+    const httpMethod: string = (monitor.httpMethod || "GET").toUpperCase();
+    let responseText: string | null = null;
 
-    // Capture error body when status is not 2xx
-    if (!connectionError && (statusCode < 200 || statusCode >= 300)) {
-      errorBody = responseText ? responseText.slice(0, 500) : null;
+    try {
+      const response = await fetch(monitor.url, {
+        method: httpMethod,
+        cache: "no-store",
+        signal: controller.signal,
+        headers: builtHeaders,
+      });
+      statusCode = response.status;
+      latency = Math.round(performance.now() - startTime);
+
+      // Content matching — only read body for non-HEAD requests
+      if (httpMethod !== "HEAD") {
+        try {
+          responseText = await response.text();
+        } catch {
+          responseText = null;
+        }
+      }
+
+      // Content match validation
+      if (
+        monitor.expectedBodyText &&
+        typeof monitor.expectedBodyText === "string" &&
+        monitor.expectedBodyText.trim() !== ""
+      ) {
+        if (!responseText || !responseText.includes(monitor.expectedBodyText)) {
+          // Content mismatch: override status to 0 to trigger alert
+          statusCode = 0;
+          connectionError = true;
+          errorBody = `Content Mismatch Failure: Expected "${monitor.expectedBodyText}" not found in response body.`;
+        }
+      }
+
+      // Capture error body when status is not 2xx
+      if (!connectionError && (statusCode < 200 || statusCode >= 300)) {
+        errorBody = responseText ? responseText.slice(0, 500) : null;
+      }
+    } catch (fetchError: unknown) {
+      connectionError = true;
+      statusCode = 0;
+      latency = Math.round(performance.now() - startTime);
+      const parsedErr = parseErrorMessage(fetchError);
+      errorBody = parsedErr ? parsedErr.slice(0, 500) : "Network connection failure";
+    } finally {
+      clearTimeout(timeoutId);
     }
-  } catch (fetchError: any) {
-    connectionError = true;
-    statusCode = 0;
-    latency = Math.round(performance.now() - startTime);
-    errorBody = fetchError?.message ? fetchError.message.slice(0, 500) : "Network connection failure";
-  } finally {
-    clearTimeout(timeoutId);
-  }
 
   // ── SSL Expiry Probe (async, non-blocking) ────────────────────────────────
   let sslExpiresAt: Date | null = null;
@@ -414,6 +425,11 @@ async function checkMonitor(monitor: any) {
   }
 
   return { id: monitor.id, url: monitor.url, status: statusCode, latency, connectionError };
+} catch (monitorErr: unknown) {
+    const errMessage = parseErrorMessage(monitorErr);
+    console.error(`Check monitor failed for ${monitor?.id || "unknown"}:`, errMessage);
+    return { id: monitor?.id, status: 0, latency: 0, error: errMessage };
+  }
 }
 
 // ── Heartbeat Watchdog ────────────────────────────────────────────────────────
@@ -497,7 +513,7 @@ async function handleCronRequest(req: NextRequest) {
       const wave1Settled = await Promise.allSettled(wave1Monitors.map((m) => checkMonitor(m)));
       wave1Settled.forEach((r) => {
         if (r.status === "fulfilled") allProcessedResults.push(r.value);
-        else allProcessedResults.push({ error: r.reason });
+        else allProcessedResults.push({ error: parseErrorMessage(r.reason) });
       });
     }
 
