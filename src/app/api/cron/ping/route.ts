@@ -10,9 +10,9 @@ export const dynamic = "force-dynamic";
 
 const getFrequencyMs = (plan?: string, configuredFrequency?: number) => {
   const tier = (plan || "FREE").toUpperCase();
-  if (tier === "BUSINESS") return 30 * 1000; // 30 seconds (30,000 ms)
-  if (tier === "PRO") return 60 * 1000; // 1 minute (60,000 ms)
-  return 10 * 60 * 1000; // FREE: 10 minutes (600,000 ms)
+  if (tier === "BUSINESS") return 25 * 1000; // 25s threshold (5s buffer for 30s stream polling)
+  if (tier === "PRO") return 55 * 1000; // 55s threshold (5s buffer for 60s stream polling)
+  return 9.5 * 60 * 1000; // 9.5 min threshold (30s buffer for 10-min free polling)
 };
 
 // ── SSL Certificate Expiry Probe ──────────────────────────────────────────────

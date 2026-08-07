@@ -37,7 +37,7 @@ export default function LandingPage() {
             <div className="relative z-10 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800/60 bg-sky-50/80 dark:bg-zinc-900/25 backdrop-blur-sm mb-8 shadow-sm transition-colors animate-fade-up">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.55)]" />
               <span className="text-xs font-semibold tracking-wider text-zinc-600 dark:text-zinc-400 uppercase">
-                PulsePing Monitoring • All Systems Operational
+                AUTOMATED UPTIME MONITORING & ALERTING
               </span>
             </div>
 
@@ -91,11 +91,11 @@ export default function LandingPage() {
             </div>
 
             {/* Feature Pills */}
-            <div className="relative z-10 flex flex-wrap items-center justify-center gap-2 md:gap-3 px-4 mt-10 animate-fade-up [animation-delay:0.8s] opacity-0 [animation-fill-mode:forwards]">
+            <div className="relative z-10 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-xs sm:max-w-none mx-auto px-2 mt-10 animate-fade-up [animation-delay:0.8s] opacity-0 [animation-fill-mode:forwards]">
               {["10-min polling cycles", "Discord & Telegram alerts", "Resend Email dispatch", "PostgreSQL log persistence"].map((feat) => (
                 <span
                   key={feat}
-                  className="text-xs text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 rounded-full font-semibold tracking-wide bg-sky-50/70 dark:bg-zinc-900/30"
+                  className="text-[10px] sm:text-xs font-mono font-medium px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-sky-50/80 dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300"
                 >
                   {feat}
                 </span>
@@ -108,54 +108,75 @@ export default function LandingPage() {
             className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-28"
             aria-label="Console Dashboard Preview"
           >
-            <div className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-1.5 shadow-sm backdrop-blur-md transition-colors duration-250">
+            <div className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-1.5 shadow-sm backdrop-blur-md transition-colors duration-250 w-full max-w-full overflow-hidden">
               <div className="border border-zinc-200 dark:border-zinc-800 rounded-xl bg-sky-50/80 dark:bg-zinc-950 overflow-hidden">
 
                 {/* Window Chrome */}
-                <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-5 py-3 bg-sky-50/40 dark:bg-transparent">
-                  <div className="flex items-center gap-1.5">
+                <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-3 sm:px-5 py-2.5 sm:py-3 bg-sky-50/40 dark:bg-transparent min-w-0">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <div className="w-2.5 h-2.5 rounded-full bg-rose-400/70 dark:bg-zinc-800" />
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-400/70 dark:bg-zinc-800" />
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/70 dark:bg-zinc-800" />
                   </div>
-                  <span className="font-mono text-xs text-zinc-600 dark:text-zinc-600 tracking-tight select-none">
-                    pulseping.subharup.com/console
+                  <span className="font-mono text-[9px] sm:text-xs text-zinc-600 dark:text-zinc-600 tracking-tight select-none truncate max-w-[150px] xs:max-w-xs sm:max-w-none text-center">
+                    LIVE PREVIEW DEMO <span className="hidden xs:inline">· pulseping.subharup.com</span>
                   </span>
-                  <div className="w-12" />
+                  <div className="w-8 sm:w-12 shrink-0" />
                 </div>
 
                 {/* Stats matrix */}
-                <div className="grid grid-cols-3 gap-px border-b border-zinc-200 dark:border-zinc-800 bg-zinc-200 dark:bg-zinc-800/30">
-                  {[
-                    { label: "Active Streams", value: "4", sub: "/ unlimited" },
-                    { label: "System Status", value: "Operational", sub: "all nodes", emerald: true },
-                    { label: "Incidents (7d)", value: "0", sub: "no degradation" }
-                  ].map((stat) => (
-                    <div key={stat.label} className="bg-sky-50/80 dark:bg-zinc-900/50 px-5 py-4">
-                      <span className="text-xs uppercase tracking-widest text-zinc-600 dark:text-zinc-500 font-bold block mb-1">{stat.label}</span>
-                      <span className={`text-xl font-semibold tracking-tight ${stat.emerald ? "text-emerald-500 dark:text-emerald-400" : "text-zinc-900 dark:text-zinc-100"}`}>{stat.value}</span>
-                      <span className="text-xs text-zinc-600 dark:text-zinc-600 ml-1.5">{stat.sub}</span>
+                <div className="grid grid-cols-3 divide-x divide-zinc-200 dark:divide-zinc-800 border-b border-zinc-200 dark:border-zinc-800 bg-sky-50/80 dark:bg-zinc-900/50 text-center gap-1 p-2 sm:p-4">
+                  {/* Active Streams */}
+                  <div className="flex flex-col items-center justify-center min-w-0 px-0.5 sm:px-3">
+                    <span className="text-[8px] xs:text-[10px] sm:text-xs font-mono font-medium uppercase tracking-tight text-zinc-500 dark:text-zinc-400 truncate max-w-full">
+                      Active Streams
+                    </span>
+                    <p className="text-xs sm:text-base font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">
+                      4 <span className="text-[10px] text-zinc-400 font-normal">/ ∞</span>
+                    </p>
+                  </div>
+
+                  {/* System Status */}
+                  <div className="flex flex-col items-center justify-center min-w-0 px-0.5 sm:px-3">
+                    <span className="text-[8px] xs:text-[10px] sm:text-xs font-mono font-medium uppercase tracking-tight text-zinc-500 dark:text-zinc-400 truncate max-w-full">
+                      System Status
+                    </span>
+                    <div className="flex items-center justify-center gap-1 mt-0.5 max-w-full min-w-0">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+                      <span className="text-xs sm:text-base font-bold text-emerald-600 dark:text-emerald-400 truncate min-w-0 flex-1">
+                        Operational
+                      </span>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Incidents */}
+                  <div className="flex flex-col items-center justify-center min-w-0 px-0.5 sm:px-3">
+                    <span className="text-[8px] xs:text-[10px] sm:text-xs font-mono font-medium uppercase tracking-tight text-zinc-500 dark:text-zinc-400 truncate max-w-full">
+                      Incidents (7d)
+                    </span>
+                    <p className="text-xs sm:text-base font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">
+                      0 <span className="text-[10px] text-zinc-400 font-normal hidden xs:inline">nodes</span>
+                    </p>
+                  </div>
                 </div>
 
                 {/* Monitor rows */}
-                <div className="p-5 space-y-2.5">
+                <div className="p-3 sm:p-5 space-y-2.5 overflow-x-auto">
                   {[
                     { url: "https://api.example.com/v1/health", latency: "38ms", code: 200, up: true },
                     { url: "https://auth.internal.io/verify", latency: "112ms", code: 200, up: true },
                     { url: "https://cdn.assets.dev/ping", latency: "21ms", code: 200, up: true },
                     { url: "https://payments.gateway.io/status", latency: "—", code: 503, up: false },
                   ].map((item, i) => (
-                    <div key={i} className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl px-4 py-3 flex items-center justify-between gap-4 shadow-sm transition-colors">
-                      <div className="flex items-center gap-3 min-w-0">
+                    <div key={i} className="bg-white/90 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4 shadow-sm transition-colors min-w-0">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${item.up ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.45)]" : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.45)]"}`} />
-                        <span className="font-mono text-sm text-zinc-700 dark:text-zinc-300 truncate">{item.url}</span>
+                        <span className="truncate font-mono text-[11px] sm:text-xs text-zinc-700 dark:text-zinc-300">{item.url}</span>
                       </div>
-                      <div className="flex items-center gap-3 shrink-0">
-                        <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded font-mono">{item.latency}</span>
-                        <span className={`text-xs font-mono font-semibold px-2 py-0.5 rounded ${item.up ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10" : "text-rose-600 dark:text-rose-500/85 bg-rose-500/10"}`}>{item.code}</span>
-                        <div className="flex gap-0.5" aria-hidden="true">
+                      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                        <span className="shrink-0 text-[10px] sm:text-xs text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded font-mono">{item.latency}</span>
+                        <span className={`shrink-0 text-[10px] sm:text-xs font-mono font-semibold px-1.5 py-0.5 rounded ${item.up ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10" : "text-rose-600 dark:text-rose-500/85 bg-rose-500/10"}`}>{item.code}</span>
+                        <div className="hidden sm:flex shrink-0 gap-0.5" aria-hidden="true">
                           {Array.from({ length: 12 }).map((_, j) => (
                             <div key={j} className={`h-3 w-0.5 rounded-full ${item.up ? "bg-emerald-500/20 border-l border-emerald-500/30" : j >= 10 ? "bg-rose-500/25 border-l border-rose-500/30" : "bg-emerald-500/20 border-l border-emerald-500/30"}`} />
                           ))}

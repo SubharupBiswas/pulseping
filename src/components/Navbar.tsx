@@ -76,6 +76,9 @@ export default function Navbar({ activeLink, variant }: NavbarProps) {
           <Link href="/privacy" className={linkCls("privacy")} aria-label="Read privacy policy">
             Privacy
           </Link>
+          <Link href="/cookie-policy" className={linkCls("cookie-policy" as any)} aria-label="Read cookie policy">
+            Cookies
+          </Link>
         </div>
 
         {/* ── Zone 3: Right utilities (always visible, tightly grouped) ── */}

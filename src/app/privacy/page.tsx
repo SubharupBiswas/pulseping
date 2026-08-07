@@ -48,7 +48,7 @@ const sections = [
   },
   {
     title: "6. Billing and Checkout Security",
-    body: `All payment operations are handled by Razorpay's PCI-DSS compliant standard web checkout framework. Under sandbox and production profiles, checkout fields utilize dynamic data sanitization: customer contact details inside prefill objects are restricted to mock credentials (9876543210 / test.premium@pulseping.io) to protect your real profile information.`,
+    body: `All payment operations are processed via Razorpay's PCI-DSS compliant checkout framework. Payment credentials and card transactions are encrypted end-to-end and tokenized directly by Razorpay, ensuring your financial information is never stored or exposed on PulsePing servers.`,
   },
   {
     title: "7. Cookies and Authentication Identifiers",
@@ -98,7 +98,7 @@ export default function PrivacyPage() {
           <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
             This policy outlines how PulsePing processes user authentication information, endpoint targets, and monitoring log archives.
           </p>
-          <p className="text-zinc-400 dark:text-zinc-700 text-xs mt-4 font-mono">Effective: January 1, 2026 · Version 1.0</p>
+          <p className="text-zinc-400 dark:text-zinc-700 text-xs mt-4 font-mono">Effective: August 1, 2026 · Version 1.0</p>
         </div>
 
         {/* Policy Sections */}

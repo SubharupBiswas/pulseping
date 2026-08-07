@@ -34,6 +34,9 @@ export default function Footer() {
           <Link href="/privacy" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
             Privacy
           </Link>
+          <Link href="/cookie-policy" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+            Cookies
+          </Link>
           <Link href="/cancellation-refund" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
             Refund Policy
           </Link>

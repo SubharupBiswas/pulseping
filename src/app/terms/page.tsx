@@ -84,7 +84,7 @@ export default function TermsPage() {
           <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
             Please read these terms carefully before using PulsePing. By accessing the service, you agree to the policies outlined below.
           </p>
-          <p className="text-zinc-400 dark:text-zinc-700 text-xs mt-4 font-mono">Effective: January 1, 2026 · Version 1.0</p>
+          <p className="text-zinc-400 dark:text-zinc-700 text-xs mt-4 font-mono">Effective: August 1, 2026 · Version 1.0</p>
         </div>
 
         {/* Terms Sections */}

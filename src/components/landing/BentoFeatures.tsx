@@ -7,15 +7,15 @@ import Link from "next/link";
 const features = [
   {
     icon: "⬡",
-    title: "Serverless Cron Engine",
-    desc: "10-minute automated polling cycles powered by Cloudflare Cron, zero infrastructure overhead.",
+    title: "Automated Cron Engine",
+    desc: "30-second automated polling cycles with loopback orchestration and zero external infrastructure overhead.",
     colSpan: "md:col-span-2 md:row-span-2",
     large: true,
   },
   {
     icon: "🤖",
     title: "AI Incident Diagnostics",
-    desc: "Groq & Gemini AI analyze HTTP status failures and response bodies to provide instant root-cause reports.",
+    desc: "Dual-provider AI intelligence powered by Gemini and Groq AI analyzes HTTP status failures and response bodies for instant root-cause diagnostics.",
     colSpan: "md:col-span-1",
     large: false,
   },

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
+import { useUser } from "@clerk/nextjs";
 import { getPlanActionState } from "@/lib/plan";
 import { upgradeUserPlan } from "@/app/actions/billing";
 
@@ -13,6 +14,8 @@ export default function BillingUpgradeCard({
   currentPlan: string;
   currency?: "INR" | "USD";
 }) {
+  const { user } = useUser();
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const [currency, setCurrency] = useState<"INR" | "USD">(initialCurrency);
   const [isPending, startTransition] = useTransition();
@@ -150,8 +153,7 @@ export default function BillingUpgradeCard({
           image: "/icon.svg",
           order_id: orderData.order_id as string,
           prefill: {
-            contact: "9876543210",
-            email: "test.premium@pulseping.io",
+            ...(userEmail ? { email: userEmail } : {}),
           },
           theme: {
             color: "#09090b",

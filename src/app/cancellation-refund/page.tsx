@@ -31,6 +31,7 @@ export default function CancellationRefundPage() {
           <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
             Please read our cancellation guidelines and refund terms before purchasing platform subscriptions.
           </p>
+          <p className="text-zinc-400 dark:text-zinc-700 text-xs mt-4 font-mono">Effective: August 1, 2026 · Version 1.0</p>
         </div>
 
         {/* Cancellation and Refund Policy details */}
@@ -52,7 +53,7 @@ export default function CancellationRefundPage() {
           <div>
             <h2 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mb-3">3. Refund Terms</h2>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-[1.8]">
-              Since platform tier resources are instantiated and utilized immediately upon checkout, we do not offer refunds or pro-rated credits for billing cycles already completed or active. All payments processed via the Razorpay gateway sandbox or production nodes are final.
+              Since platform tier resources are instantiated and utilized immediately upon checkout, we do not offer refunds or pro-rated credits for billing cycles already completed or active. All payments processed via the Razorpay gateway framework are final.
             </p>
           </div>
         </div>
